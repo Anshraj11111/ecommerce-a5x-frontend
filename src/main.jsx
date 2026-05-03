@@ -2227,6 +2227,7 @@ function CheckoutPage() {
   const [showQR, setShowQR] = useState(false);
   const [qrTimer, setQrTimer] = useState(120); // 2 minutes
   const [qrExpired, setQrExpired] = useState(false);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false); // UPI scan confirmation
   const timerRef = useRef(null);
 
   // Get UPI ID set by admin
@@ -2254,6 +2255,7 @@ function CheckoutPage() {
       setShowQR(true);
       setQrTimer(120);
       setQrExpired(false);
+      setPaymentConfirmed(false); // reset confirmation when switching
       clearInterval(timerRef.current);
       timerRef.current = setInterval(() => {
         setQrTimer(prev => {
@@ -2303,6 +2305,11 @@ function CheckoutPage() {
     e.preventDefault();
     if (formData.customerPhone.length !== 10) {
       alert('Please enter a valid 10-digit phone number.');
+      return;
+    }
+    // If online payment with QR, user must confirm they've scanned and paid
+    if (formData.paymentMethod === 'online' && upiId && !paymentConfirmed) {
+      alert('Please scan the QR code and tick "I have completed the payment" before placing your order.');
       return;
     }
     setLoading(true);
@@ -2524,6 +2531,16 @@ function CheckoutPage() {
                       <strong>{qrMins}:{qrSecs}</strong>
                     </div>
                     <p className="qr-note">After payment, place your order below</p>
+                    {/* Payment confirmation checkbox */}
+                    <label className="qr-confirm-label">
+                      <input
+                        type="checkbox"
+                        checked={paymentConfirmed}
+                        onChange={e => setPaymentConfirmed(e.target.checked)}
+                        disabled={qrExpired}
+                      />
+                      <span>I have completed the payment ✅</span>
+                    </label>
                   </motion.div>
                 )}
                 {formData.paymentMethod === 'online' && !upiId && (
@@ -2543,7 +2560,14 @@ function CheckoutPage() {
               <textarea name="customerNotes" placeholder="Any special instructions for your order?" value={formData.customerNotes} onChange={handleChange} rows="3" className="notes-textarea" />
             </div>
 
-            <motion.button type="submit" className="checkout-btn" disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <motion.button
+              type="submit"
+              className="checkout-btn"
+              disabled={loading || (formData.paymentMethod === 'online' && upiId && !paymentConfirmed)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              title={formData.paymentMethod === 'online' && upiId && !paymentConfirmed ? 'Please scan QR and confirm payment first' : ''}
+            >
               {loading ? <><div className="spinner" />Processing...</> : <><Shield size={18} />Place Secure Order — {inr(subtotal())}</>}
             </motion.button>
 
