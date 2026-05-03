@@ -112,7 +112,7 @@ const seconds = (value) => `${Math.floor(value / 60)}:${String(value % 60).padSt
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 // Global API URL - uses env variable in production, localhost in development
-const API_BASE = import.meta.env.VITE_API_URL || API_BASE;
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 const categories = ["All", "MicroController", "Sensor", "Motors", "Display", "Connectors", "Motor Driver", "Battery", "Charger", "Cables", "Kits", "Remote", "Custom 3D Prints"];
 const courseCategories = ["All", "Beginner", "Intermediate", "Advanced", "Arduino", "ESP32", "Robotics", "IoT", "3D Printing"];
@@ -2273,9 +2273,7 @@ function CheckoutPage() {
         customerNotes: formData.customerNotes
       };
 
-      const API_URL = import.meta.env.VITE_API_URL || API_BASE;
-      
-      const response = await fetch(`${API_URL}/api/orders`, {
+      const response = await fetch(`${API_BASE}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
@@ -2627,7 +2625,7 @@ function AdminOrders() {
     try {
       const token = localStorage.getItem('a5x-admin-token'); // Fixed: use correct token key
       const url = filter === 'all' 
-        ? 'http://localhost:3001/api/orders'
+        ? `${API_BASE}/api/orders`
         : `${API_BASE}/api/orders?status=${filter}`;
       
       const response = await fetch(url, {
@@ -2935,7 +2933,7 @@ function AdminLogin() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   
-  // Get API URL - use hardcoded for now since env might not be loaded
+  // Get API URL
   const API_URL = API_BASE;
   
   async function submit(event) {
