@@ -272,25 +272,126 @@ function Navbar() {
   const count = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
   const toggle = useCartStore((state) => state.toggle);
   const links = ["Home", "Shop", "Kits", "Learn", "About", "Contact"];
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobile]);
+
   return (
-    <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
-      <Link className="logo" to="/"><span>A5X</span><small>ROBOTICS</small></Link>
-      <nav className="desktop-links">{links.map((label) => <NavLink key={label} className="nav-link-anim" to={label === "Home" ? "/" : `/${label.toLowerCase()}`}>{label}</NavLink>)}</nav>
-      <div className="nav-actions">
-        <button className="icon-btn" aria-label="Search"><Search size={18} /></button>
-        <button className="cart-btn" onClick={toggle}><ShoppingCart size={18} /><b>{count}</b></button>
-        <Link className="outline-btn" to="/quote">Get Quote</Link>
-        <button className="icon-btn mobile-only" onClick={() => setMobile(true)}><Menu /></button>
-      </div>
+    <>
+      <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
+        <Link className="logo" to="/" onClick={() => setMobile(false)}>
+          <span>A5X</span><small>ROBOTICS</small>
+        </Link>
+        <nav className="desktop-links">
+          {links.map((label) => (
+            <NavLink key={label} className="nav-link-anim" to={label === "Home" ? "/" : `/${label.toLowerCase()}`}>
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="nav-actions">
+          <button className="icon-btn" aria-label="Search"><Search size={18} /></button>
+          <button className="cart-btn" onClick={toggle} aria-label="Cart">
+            <ShoppingCart size={18} />
+            {count > 0 && <b>{count}</b>}
+          </button>
+          <Link className="outline-btn" to="/quote">Get Quote</Link>
+          <button
+            className="icon-btn mobile-only"
+            onClick={() => setMobile(true)}
+            aria-label="Open menu"
+            aria-expanded={mobile}
+          >
+            <Menu size={20} />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile menu — rendered outside header so z-index works correctly */}
       <AnimatePresence>
         {mobile && (
-          <motion.div className="mobile-menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <button className="icon-btn close" onClick={() => setMobile(false)}><X /></button>
-            {links.map((label, index) => <motion.div key={label} initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: index * 0.06 }}><Link onClick={() => setMobile(false)} to={label === "Home" ? "/" : `/${label.toLowerCase()}`}>{label}</Link></motion.div>)}
+          <motion.div
+            className="mobile-menu-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Backdrop */}
+            <motion.div
+              className="mobile-menu-backdrop"
+              onClick={() => setMobile(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Drawer panel */}
+            <motion.div
+              className="mobile-menu-panel"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+            >
+              {/* Panel header */}
+              <div className="mobile-menu-header">
+                <Link className="logo" to="/" onClick={() => setMobile(false)}>
+                  <span>A5X</span><small>ROBOTICS</small>
+                </Link>
+                <button className="mobile-menu-close" onClick={() => setMobile(false)} aria-label="Close menu">
+                  <X size={22} />
+                </button>
+              </div>
+
+              {/* Nav links */}
+              <nav className="mobile-menu-nav">
+                {links.map((label, index) => (
+                  <motion.div
+                    key={label}
+                    initial={{ x: 40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.05 + 0.1 }}
+                  >
+                    <NavLink
+                      className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`}
+                      to={label === "Home" ? "/" : `/${label.toLowerCase()}`}
+                      onClick={() => setMobile(false)}
+                    >
+                      <span className="mobile-nav-label">{label}</span>
+                      <ChevronRight size={16} className="mobile-nav-arrow" />
+                    </NavLink>
+                  </motion.div>
+                ))}
+              </nav>
+
+              {/* Bottom CTA */}
+              <motion.div
+                className="mobile-menu-footer"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Link className="btn" to="/quote" onClick={() => setMobile(false)} style={{ width: '100%', justifyContent: 'center' }}>
+                  Get Quote
+                </Link>
+                <button className="btn ghost" onClick={() => { toggle(); setMobile(false); }} style={{ width: '100%', justifyContent: 'center', marginTop: 10 }}>
+                  <ShoppingCart size={16} />
+                  Cart {count > 0 && `(${count})`}
+                </button>
+              </motion.div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
 
