@@ -2596,18 +2596,19 @@ function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [updatingId, setUpdatingId] = useState(null); // tracks which order is being updated
 
   useEffect(() => {
     fetchOrders();
   }, [filter]);
 
   const fetchOrders = async () => {
+    setLoading(true);
     try {
-      const token = localStorage.getItem('a5x-admin-token'); // Fixed: use correct token key
-      const url = filter === 'all' 
+      const token = localStorage.getItem('a5x-admin-token');
+      const url = filter === 'all'
         ? `${API_BASE}/api/orders`
         : `${API_BASE}/api/orders?status=${filter}`;
-      
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -2621,8 +2622,9 @@ function AdminOrders() {
   };
 
   const updateOrderStatus = async (orderId, status) => {
+    setUpdatingId(orderId + status);
     try {
-      const token = localStorage.getItem('a5x-admin-token'); // Fixed: use correct token key
+      const token = localStorage.getItem('a5x-admin-token');
       const response = await fetch(`${API_BASE}/api/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: {
@@ -2632,14 +2634,25 @@ function AdminOrders() {
         body: JSON.stringify({ status })
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        alert(`Order ${status} successfully! Customer will receive notification.`);
-        fetchOrders();
-        setSelectedOrder(null);
+        // Update local state immediately — no need to refetch
+        setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status } : o));
+        setSelectedOrder(prev => prev ? { ...prev, status } : null);
+        const label = status === 'confirmed' ? 'confirmed ✅ — confirmation email sent to customer'
+          : status === 'shipped' ? 'marked as shipped 🚚 — shipping email sent'
+          : status === 'delivered' ? 'marked as delivered 🎉'
+          : 'cancelled ❌';
+        alert(`Order ${label}`);
+      } else {
+        alert(data.error || 'Failed to update order');
       }
     } catch (error) {
       console.error('Error updating order:', error);
-      alert('Failed to update order');
+      alert('Failed to update order. Check your connection.');
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -2753,23 +2766,53 @@ function AdminOrders() {
                 <h3>Update Status</h3>
                 <div className="status-buttons">
                   {selectedOrder.status === 'pending' && (
-                    <button className="btn btn-success" onClick={() => updateOrderStatus(selectedOrder._id, 'confirmed')}>
-                      Confirm Order
+                    <button
+                      className="btn btn-success"
+                      disabled={!!updatingId}
+                      onClick={() => updateOrderStatus(selectedOrder._id, 'confirmed')}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 160 }}
+                    >
+                      {updatingId === selectedOrder._id + 'confirmed'
+                        ? <><div className="spinner" style={{ borderTopColor: '#0a0a0f' }} />Confirming...</>
+                        : <>✅ Confirm Order</>}
                     </button>
                   )}
                   {selectedOrder.status === 'confirmed' && (
-                    <button className="btn btn-primary" onClick={() => updateOrderStatus(selectedOrder._id, 'shipped')}>
-                      Mark as Shipped
+                    <button
+                      className="btn btn-primary"
+                      disabled={!!updatingId}
+                      onClick={() => updateOrderStatus(selectedOrder._id, 'shipped')}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 160 }}
+                    >
+                      {updatingId === selectedOrder._id + 'shipped'
+                        ? <><div className="spinner" style={{ borderTopColor: '#fff' }} />Updating...</>
+                        : <>🚚 Mark as Shipped</>}
                     </button>
                   )}
                   {selectedOrder.status === 'shipped' && (
-                    <button className="btn btn-success" onClick={() => updateOrderStatus(selectedOrder._id, 'delivered')}>
-                      Mark as Delivered
+                    <button
+                      className="btn btn-success"
+                      disabled={!!updatingId}
+                      onClick={() => updateOrderStatus(selectedOrder._id, 'delivered')}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 160 }}
+                    >
+                      {updatingId === selectedOrder._id + 'delivered'
+                        ? <><div className="spinner" style={{ borderTopColor: '#0a0a0f' }} />Updating...</>
+                        : <>🎉 Mark as Delivered</>}
                     </button>
                   )}
-                  <button className="btn btn-danger" onClick={() => updateOrderStatus(selectedOrder._id, 'cancelled')}>
-                    Cancel Order
-                  </button>
+                  {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
+                    <button
+                      className="btn btn-danger"
+                      disabled={!!updatingId}
+                      onClick={() => updateOrderStatus(selectedOrder._id, 'cancelled')}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 140 }}
+                    >
+                      {updatingId === selectedOrder._id + 'cancelled'
+                        ? <><div className="spinner" style={{ borderTopColor: '#fff' }} />Cancelling...</>
+                        : <>❌ Cancel Order</>}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
