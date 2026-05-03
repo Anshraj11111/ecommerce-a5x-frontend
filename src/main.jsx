@@ -2224,7 +2224,17 @@ function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
-  
+  const [showQR, setShowQR] = useState(false);
+  const [qrTimer, setQrTimer] = useState(120); // 2 minutes
+  const [qrExpired, setQrExpired] = useState(false);
+  const timerRef = useRef(null);
+
+  // Get UPI ID set by admin
+  const upiId = localStorage.getItem('a5x-upi-id') || '';
+  const upiQrUrl = upiId
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`upi://pay?pa=${upiId}&pn=A5X+Robotics&am=${subtotal()}&cu=INR`)}`
+    : '';
+
   const [formData, setFormData] = useState({
     customerName: '',
     customerEmail: '',
@@ -2238,12 +2248,63 @@ function CheckoutPage() {
     paymentMethod: 'cod'
   });
 
+  // Start QR timer when online payment selected
+  useEffect(() => {
+    if (formData.paymentMethod === 'online' && upiId) {
+      setShowQR(true);
+      setQrTimer(120);
+      setQrExpired(false);
+      clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setQrTimer(prev => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            setQrExpired(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      setShowQR(false);
+      clearInterval(timerRef.current);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [formData.paymentMethod, upiId]);
+
+  const refreshQR = () => {
+    setQrExpired(false);
+    setQrTimer(120);
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setQrTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setQrExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // Limit phone to 10 digits only
+    if (name === 'customerPhone') {
+      const digits = value.replace(/\D/g, '').slice(0, 10);
+      setFormData({ ...formData, customerPhone: digits });
+      return;
+    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.customerPhone.length !== 10) {
+      alert('Please enter a valid 10-digit phone number.');
+      return;
+    }
     setLoading(true);
 
     try {
@@ -2282,15 +2343,11 @@ function CheckoutPage() {
       const data = await response.json();
 
       if (data.success) {
+        clearInterval(timerRef.current);
         setSuccess(true);
         setOrderNumber(data.order.orderNumber);
-        // Clear cart
         useCartStore.setState({ items: [] });
-        
-        // Redirect to success page after 3 seconds
-        setTimeout(() => {
-          navigate('/');
-        }, 5000);
+        setTimeout(() => navigate('/'), 5000);
       } else {
         alert('Order failed. Please try again.');
       }
@@ -2302,14 +2359,17 @@ function CheckoutPage() {
     }
   };
 
+  const qrMins = String(Math.floor(qrTimer / 60)).padStart(2, '0');
+  const qrSecs = String(qrTimer % 60).padStart(2, '0');
+
   if (items.length === 0 && !success) {
     return (
       <main className="checkout-page">
-        <div className="glass-card" style={{ maxWidth: '600px', margin: '100px auto', padding: '40px', textAlign: 'center' }}>
-          <ShoppingCart size={64} style={{ margin: '0 auto 20px', opacity: 0.5 }} />
+        <div className="checkout-empty glass-card">
+          <ShoppingCart size={56} style={{ opacity: 0.4, marginBottom: 16 }} />
           <h2>Your cart is empty</h2>
-          <p style={{ marginBottom: '30px' }}>Add some products to checkout</p>
-          <Link to="/shop" className="btn">Go to Shop</Link>
+          <p>Add some products before checking out</p>
+          <Link to="/shop" className="btn" style={{ marginTop: 24 }}>Go to Shop</Link>
         </div>
       </main>
     );
@@ -2318,248 +2378,192 @@ function CheckoutPage() {
   if (success) {
     return (
       <main className="checkout-page">
-        <div className="glass-card" style={{ maxWidth: '600px', margin: '100px auto', padding: '40px', textAlign: 'center' }}>
-          <CheckCircle size={64} style={{ margin: '0 auto 20px', color: '#00ff88' }} />
-          <h2>Order Placed Successfully!</h2>
-          <p style={{ fontSize: '24px', margin: '20px 0' }}>Order #{orderNumber}</p>
-          <p style={{ marginBottom: '30px' }}>Thank you for your order. We'll send you a confirmation email shortly.</p>
-          <Link to="/" className="btn">Back to Home</Link>
-        </div>
+        <motion.div className="checkout-success glass-card" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+          <div className="success-icon"><CheckCircle size={64} color="#00ff88" /></div>
+          <h2>Order Placed!</h2>
+          <p className="order-num">#{orderNumber}</p>
+          <p className="success-msg">Thank you! We'll send a confirmation to your email shortly.</p>
+          <Link to="/" className="btn" style={{ marginTop: 24 }}>Back to Home</Link>
+        </motion.div>
       </main>
     );
   }
 
   return (
     <main className="checkout-page">
-      <motion.div 
+      <motion.div
         className="checkout-container"
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.45 }}
       >
+        {/* ── LEFT: FORM ── */}
         <div className="checkout-form glass-card">
           <div className="checkout-header">
+            <Shield size={28} color="#00ff88" />
             <h1>Secure Checkout</h1>
             <p className="checkout-subtitle">Complete your order in a few simple steps</p>
           </div>
-          
-          <form onSubmit={handleSubmit}>
+
+          <form onSubmit={handleSubmit} noValidate>
+            {/* Contact */}
             <div className="form-section">
               <div className="section-header">
-                <div className="section-icon"><MessageSquare size={20} /></div>
+                <div className="section-icon"><MessageSquare size={18} /></div>
                 <h3>Contact Information</h3>
               </div>
               <div className="input-group">
-                <input
-                  type="text"
-                  name="customerName"
-                  placeholder="Full Name"
-                  value={formData.customerName}
-                  onChange={handleChange}
-                  required
-                />
-                <span className="input-icon">👤</span>
+                <span className="input-prefix-icon">👤</span>
+                <input type="text" name="customerName" placeholder="Full Name" value={formData.customerName} onChange={handleChange} required />
               </div>
               <div className="input-group">
-                <input
-                  type="email"
-                  name="customerEmail"
-                  placeholder="Email Address"
-                  value={formData.customerEmail}
-                  onChange={handleChange}
-                  required
-                />
-                <span className="input-icon">📧</span>
+                <span className="input-prefix-icon">📧</span>
+                <input type="email" name="customerEmail" placeholder="Email Address" value={formData.customerEmail} onChange={handleChange} required />
               </div>
               <div className="input-group">
+                <span className="input-prefix-icon">📱</span>
                 <input
                   type="tel"
                   name="customerPhone"
-                  placeholder="Phone Number"
+                  placeholder="10-digit Phone Number"
                   value={formData.customerPhone}
                   onChange={handleChange}
+                  maxLength={10}
+                  pattern="\d{10}"
+                  inputMode="numeric"
                   required
                 />
-                <span className="input-icon">📱</span>
+                <span className="phone-counter" style={{ color: formData.customerPhone.length === 10 ? '#00ff88' : 'rgba(255,255,255,0.4)' }}>
+                  {formData.customerPhone.length}/10
+                </span>
               </div>
             </div>
 
+            {/* Address */}
             <div className="form-section">
               <div className="section-header">
-                <div className="section-icon"><Truck size={20} /></div>
+                <div className="section-icon"><Truck size={18} /></div>
                 <h3>Shipping Address</h3>
               </div>
               <div className="input-group">
-                <input
-                  type="text"
-                  name="street"
-                  placeholder="Street Address"
-                  value={formData.street}
-                  onChange={handleChange}
-                  required
-                />
-                <span className="input-icon">🏠</span>
+                <span className="input-prefix-icon">🏠</span>
+                <input type="text" name="street" placeholder="Street Address" value={formData.street} onChange={handleChange} required />
               </div>
               <div className="form-row">
                 <div className="input-group">
-                  <input
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    value={formData.city}
-                    onChange={handleChange}
-                    required
-                  />
-                  <span className="input-icon">🏙️</span>
+                  <span className="input-prefix-icon">🏙️</span>
+                  <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} required />
                 </div>
                 <div className="input-group">
-                  <input
-                    type="text"
-                    name="state"
-                    placeholder="State"
-                    value={formData.state}
-                    onChange={handleChange}
-                    required
-                  />
-                  <span className="input-icon">📍</span>
+                  <span className="input-prefix-icon">📍</span>
+                  <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleChange} required />
                 </div>
               </div>
-              <div className="input-group">
-                <input
-                  type="text"
-                  name="pincode"
-                  placeholder="Pincode"
-                  value={formData.pincode}
-                  onChange={handleChange}
-                  required
-                />
-                <span className="input-icon">📮</span>
-              </div>
-              <div className="input-group">
-                <input
-                  type="text"
-                  name="landmark"
-                  placeholder="Landmark (Optional)"
-                  value={formData.landmark}
-                  onChange={handleChange}
-                />
-                <span className="input-icon">🗺️</span>
+              <div className="form-row">
+                <div className="input-group">
+                  <span className="input-prefix-icon">📮</span>
+                  <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} required />
+                </div>
+                <div className="input-group">
+                  <span className="input-prefix-icon">🗺️</span>
+                  <input type="text" name="landmark" placeholder="Landmark (Optional)" value={formData.landmark} onChange={handleChange} />
+                </div>
               </div>
             </div>
 
+            {/* Payment */}
             <div className="form-section">
               <div className="section-header">
-                <div className="section-icon"><BadgeIndianRupee size={20} /></div>
+                <div className="section-icon"><BadgeIndianRupee size={18} /></div>
                 <h3>Payment Method</h3>
               </div>
               <div className="payment-options">
-                <label className={`payment-option ${formData.paymentMethod === 'cod' ? 'active' : ''}`}>
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="cod" 
-                    checked={formData.paymentMethod === 'cod'}
-                    onChange={handleChange}
-                  />
-                  <div className="payment-content">
-                    <Truck size={24} />
-                    <div>
-                      <strong>Cash on Delivery</strong>
-                      <p>Pay when you receive</p>
+                {[
+                  { value: 'cod', icon: <Truck size={22} />, label: 'Cash on Delivery', sub: 'Pay when you receive' },
+                  { value: 'online', icon: <Zap size={22} />, label: 'Online Payment', sub: 'UPI, Cards, Net Banking' },
+                  { value: 'bank_transfer', icon: <BadgeIndianRupee size={22} />, label: 'Bank Transfer', sub: 'Direct bank transfer' },
+                ].map(opt => (
+                  <label key={opt.value} className={`payment-option ${formData.paymentMethod === opt.value ? 'active' : ''}`}>
+                    <input type="radio" name="paymentMethod" value={opt.value} checked={formData.paymentMethod === opt.value} onChange={handleChange} />
+                    <div className="payment-content">
+                      <span className="pay-icon">{opt.icon}</span>
+                      <div>
+                        <strong>{opt.label}</strong>
+                        <p>{opt.sub}</p>
+                      </div>
+                      {formData.paymentMethod === opt.value && <Check size={16} className="pay-check" />}
                     </div>
-                  </div>
-                </label>
-                <label className={`payment-option ${formData.paymentMethod === 'online' ? 'active' : ''}`}>
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="online" 
-                    checked={formData.paymentMethod === 'online'}
-                    onChange={handleChange}
-                  />
-                  <div className="payment-content">
-                    <Zap size={24} />
-                    <div>
-                      <strong>Online Payment</strong>
-                      <p>UPI, Cards, Net Banking</p>
-                    </div>
-                  </div>
-                </label>
-                <label className={`payment-option ${formData.paymentMethod === 'bank_transfer' ? 'active' : ''}`}>
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="bank_transfer" 
-                    checked={formData.paymentMethod === 'bank_transfer'}
-                    onChange={handleChange}
-                  />
-                  <div className="payment-content">
-                    <BadgeIndianRupee size={24} />
-                    <div>
-                      <strong>Bank Transfer</strong>
-                      <p>Direct bank transfer</p>
-                    </div>
-                  </div>
-                </label>
+                  </label>
+                ))}
               </div>
+
+              {/* QR Code Panel */}
+              <AnimatePresence>
+                {showQR && upiId && (
+                  <motion.div
+                    className="qr-panel glass-card"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <p className="qr-title">Scan to Pay via UPI</p>
+                    <p className="qr-upi-id">{upiId}</p>
+                    <div className="qr-image-wrap" style={{ position: 'relative' }}>
+                      {qrExpired ? (
+                        <div className="qr-expired-overlay">
+                          <p>QR Expired</p>
+                          <button type="button" className="btn" onClick={refreshQR} style={{ marginTop: 10, padding: '8px 20px', fontSize: 13 }}>Refresh QR</button>
+                        </div>
+                      ) : (
+                        <img src={upiQrUrl} alt="UPI QR Code" className="qr-image" />
+                      )}
+                    </div>
+                    <div className={`qr-timer ${qrTimer <= 30 ? 'urgent' : ''}`}>
+                      <span>⏱ QR expires in </span>
+                      <strong>{qrMins}:{qrSecs}</strong>
+                    </div>
+                    <p className="qr-note">After payment, place your order below</p>
+                  </motion.div>
+                )}
+                {formData.paymentMethod === 'online' && !upiId && (
+                  <motion.div className="qr-panel glass-card" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '20px' }}>
+                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>UPI payment QR not configured yet. Please use COD or Bank Transfer.</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
+            {/* Notes */}
             <div className="form-section">
               <div className="section-header">
-                <div className="section-icon"><MessageSquare size={20} /></div>
-                <h3>Order Notes (Optional)</h3>
+                <div className="section-icon"><MessageSquare size={18} /></div>
+                <h3>Order Notes <span style={{ fontWeight: 400, opacity: 0.5, fontSize: 13 }}>(Optional)</span></h3>
               </div>
-              <textarea
-                name="customerNotes"
-                placeholder="Any special instructions for your order?"
-                value={formData.customerNotes}
-                onChange={handleChange}
-                rows="3"
-                className="notes-textarea"
-              />
+              <textarea name="customerNotes" placeholder="Any special instructions for your order?" value={formData.customerNotes} onChange={handleChange} rows="3" className="notes-textarea" />
             </div>
 
-            <motion.button 
-              type="submit" 
-              className="checkout-btn" 
-              disabled={loading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {loading ? (
-                <>
-                  <div className="spinner"></div>
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Shield size={20} />
-                  Place Secure Order - {inr(subtotal())}
-                </>
-              )}
+            <motion.button type="submit" className="checkout-btn" disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              {loading ? <><div className="spinner" />Processing...</> : <><Shield size={18} />Place Secure Order — {inr(subtotal())}</>}
             </motion.button>
-            
+
             <div className="secure-badge">
-              <Shield size={16} />
+              <Shield size={14} />
               <span>Secure SSL Encrypted Checkout</span>
             </div>
           </form>
         </div>
 
+        {/* ── RIGHT: ORDER SUMMARY ── */}
         <div className="order-summary glass-card">
           <div className="summary-header">
-            <ShoppingCart size={24} />
+            <ShoppingCart size={20} />
             <h3>Order Summary</h3>
+            <span className="summary-count">{items.reduce((s, i) => s + i.qty, 0)} item{items.reduce((s, i) => s + i.qty, 0) !== 1 ? 's' : ''}</span>
           </div>
-          
           <div className="summary-items">
             {items.map(item => (
-              <motion.div 
-                key={item.id} 
-                className="summary-item"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-              >
+              <motion.div key={item.id} className="summary-item" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}>
                 <img src={item.imageUrl || a5xCarKit} alt={item.name} />
                 <div className="item-details">
                   <p className="item-name">{item.name}</p>
@@ -2569,40 +2573,16 @@ function CheckoutPage() {
               </motion.div>
             ))}
           </div>
-          
-          <div className="summary-divider"></div>
-          
+          <div className="summary-divider" />
           <div className="summary-totals">
-            <div className="summary-row">
-              <span>Subtotal</span>
-              <span>{inr(subtotal())}</span>
-            </div>
-            <div className="summary-row shipping">
-              <span>
-                <Truck size={16} />
-                Shipping
-              </span>
-              <span className="free-badge">FREE</span>
-            </div>
-            <div className="summary-row total">
-              <span>Total</span>
-              <span>{inr(subtotal())}</span>
-            </div>
+            <div className="summary-row"><span>Subtotal</span><span>{inr(subtotal())}</span></div>
+            <div className="summary-row shipping"><span><Truck size={14} /> Shipping</span><span className="free-badge">FREE</span></div>
+            <div className="summary-row total"><span>Total</span><span>{inr(subtotal())}</span></div>
           </div>
-          
           <div className="trust-badges">
-            <div className="trust-badge">
-              <Shield size={18} />
-              <span>Secure Payment</span>
-            </div>
-            <div className="trust-badge">
-              <Truck size={18} />
-              <span>Fast Delivery</span>
-            </div>
-            <div className="trust-badge">
-              <CheckCircle size={18} />
-              <span>Quality Assured</span>
-            </div>
+            <div className="trust-badge"><Shield size={16} /><span>Secure Payment</span></div>
+            <div className="trust-badge"><Truck size={16} /><span>Fast Delivery</span></div>
+            <div className="trust-badge"><CheckCircle size={16} /><span>Easy Returns</span></div>
           </div>
         </div>
       </motion.div>
@@ -3578,7 +3558,64 @@ function AdminContacts() {
 }
 
 function AdminSettings() {
-  return <AdminPage title="Settings"><form className="admin-form"><input placeholder="Site name" defaultValue="A5X Robotics" /><input placeholder="Tagline" defaultValue="Build the Future" /><input placeholder="Contact email" defaultValue="support@a5x.in" /><input placeholder="Phone" /><textarea placeholder="Address" /><input placeholder="Meta title" /><textarea placeholder="SEO description" /><button>Save Settings</button></form></AdminPage>;
+  const [upiId, setUpiId] = useState(() => localStorage.getItem('a5x-upi-id') || '');
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    localStorage.setItem('a5x-upi-id', upiId.trim());
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  };
+
+  const previewQr = upiId.trim()
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=${upiId.trim()}&pn=A5X+Robotics&cu=INR`)}`
+    : '';
+
+  return (
+    <AdminPage title="Settings">
+      <form className="admin-form" onSubmit={handleSave}>
+        <input placeholder="Site name" defaultValue="A5X Robotics" />
+        <input placeholder="Tagline" defaultValue="Build the Future" />
+        <input placeholder="Contact email" defaultValue="support@a5x.in" />
+        <input placeholder="Phone" />
+        <textarea placeholder="Address" />
+        <input placeholder="Meta title" />
+        <textarea placeholder="SEO description" />
+
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 24, paddingTop: 24 }}>
+          <h3 style={{ marginBottom: 12, color: '#00ff88', fontSize: 16 }}>💳 UPI Payment Settings</h3>
+          <p style={{ fontSize: 13, opacity: 0.6, marginBottom: 12 }}>
+            Enter your UPI ID. Customers who select "Online Payment" at checkout will see a QR code to scan.
+          </p>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 220 }}>
+              <input
+                type="text"
+                placeholder="yourname@upi (e.g. ansh@paytm)"
+                value={upiId}
+                onChange={e => setUpiId(e.target.value)}
+                style={{ width: '100%' }}
+              />
+              <p style={{ fontSize: 12, opacity: 0.5, marginTop: 6 }}>
+                Supports: @paytm, @gpay, @phonepe, @ybl, @okaxis, etc.
+              </p>
+            </div>
+            {previewQr && (
+              <div style={{ textAlign: 'center' }}>
+                <img src={previewQr} alt="UPI QR Preview" style={{ borderRadius: 8, border: '2px solid rgba(0,255,136,0.3)', display: 'block' }} />
+                <p style={{ fontSize: 11, opacity: 0.5, marginTop: 6 }}>QR Preview</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <button type="submit" style={{ marginTop: 16 }}>
+          {saved ? '✅ Saved!' : 'Save Settings'}
+        </button>
+      </form>
+    </AdminPage>
+  );
 }
 
 // ── SCROLL TO TOP ON ROUTE CHANGE ──

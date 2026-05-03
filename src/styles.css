@@ -1299,6 +1299,143 @@ td button, td a { margin-right: 8px; border: 0; background: transparent; color: 
   to { transform: rotate(360deg); }
 }
 
+/* ── Input prefix icon ── */
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-prefix-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 16px;
+  pointer-events: none;
+  z-index: 1;
+}
+.input-group input,
+.input-group textarea {
+  padding-left: 42px !important;
+}
+.phone-counter {
+  position: absolute;
+  right: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* ── Checkout empty / success ── */
+.checkout-empty,
+.checkout-success {
+  max-width: 520px;
+  margin: 120px auto 60px;
+  padding: 48px 40px;
+  text-align: center;
+  border-radius: 20px;
+}
+.checkout-success .success-icon { margin-bottom: 16px; }
+.checkout-success h2 { font-size: 28px; margin-bottom: 8px; }
+.checkout-success .order-num { font-size: 22px; color: #00ff88; font-weight: 700; margin: 8px 0; }
+.checkout-success .success-msg { opacity: 0.65; font-size: 14px; }
+
+/* ── Checkout header ── */
+.checkout-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 36px;
+  text-align: center;
+}
+.checkout-header h1 { font-size: clamp(22px, 4vw, 32px); margin: 0; }
+
+/* ── Payment option check icon ── */
+.payment-option .pay-icon { display: flex; align-items: center; }
+.payment-option .pay-check { margin-left: auto; color: #00ff88; }
+.payment-content { display: flex; align-items: center; gap: 14px; width: 100%; }
+
+/* ── Summary count badge ── */
+.summary-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.summary-count {
+  margin-left: auto;
+  background: rgba(0,255,136,0.12);
+  color: #00ff88;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ── QR Panel ── */
+.qr-panel {
+  margin-top: 16px;
+  padding: 24px 20px;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid rgba(0,255,136,0.2);
+  overflow: hidden;
+}
+.qr-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #00ff88;
+  margin-bottom: 4px;
+}
+.qr-upi-id {
+  font-size: 13px;
+  opacity: 0.6;
+  margin-bottom: 16px;
+  font-family: monospace;
+}
+.qr-image-wrap {
+  display: inline-block;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid rgba(0,255,136,0.25);
+}
+.qr-image {
+  display: block;
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+}
+.qr-expired-overlay {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10,10,15,0.85);
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  font-weight: 600;
+}
+.qr-timer {
+  margin-top: 14px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.qr-timer strong {
+  font-size: 20px;
+  font-weight: 700;
+  color: #00ff88;
+  font-variant-numeric: tabular-nums;
+  min-width: 52px;
+  display: inline-block;
+}
+.qr-timer.urgent strong { color: #ff4444; }
+.qr-note {
+  font-size: 12px;
+  opacity: 0.45;
+  margin-top: 10px;
+}
+
 .secure-badge {
   display: flex;
   align-items: center;
