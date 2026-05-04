@@ -462,7 +462,7 @@ function KitCard({ kit }) {
   return (
     <Link to={`/kits/${kit.id}`} className="kit-card glass-card" style={{ textDecoration: 'none', color: 'inherit' }}>
       <div className="kit-image">
-        <img src={kit.imageUrl || a5xCarKit} alt={kit.name} />
+        <img src={kit.imageUrl || kitInnovation} alt={kit.name} />
         <span className={`tier ${kit.tier.toLowerCase().split(" ")[0]}`}>{kit.tier}</span>
         <span className="rating">★ {kit.rating}</span>
         <div className="kit-image-glow" />
@@ -1321,9 +1321,7 @@ function KitsSection() {
             <div className="glass-card"><strong>24hr</strong><span>Dispatch Time</span></div>
           </div>
         </div>
-        <div className="kits-hero-spin">
-          <Kit3DSpin size={480} />
-        </div>
+
       </div>
       <div className="kits-grid">{kits.map((kit) => <KitCard key={kit.id} kit={kit} />)}</div>
       <div className="custom-kit"><img src={robotHands} alt="" /><div><h3>Need a custom kit?</h3><p>Tell us your build goal, classroom size, or competition spec. We will bundle the right components.</p><ButtonLink to="/contact">Request Custom Build</ButtonLink></div></div>
