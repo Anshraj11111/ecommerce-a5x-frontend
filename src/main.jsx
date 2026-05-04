@@ -297,12 +297,10 @@ function Navbar() {
           ))}
         </nav>
         <div className="nav-actions">
-          <button className="icon-btn" aria-label="Search"><Search size={18} /></button>
           <button className="cart-btn" onClick={toggle} aria-label="Cart">
             <ShoppingCart size={18} />
             {count > 0 && <b>{count}</b>}
           </button>
-          <Link className="outline-btn" to="/quote">Get Quote</Link>
           <button
             className="icon-btn mobile-only"
             onClick={() => setMobile(true)}
@@ -379,10 +377,7 @@ function Navbar() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <Link className="btn" to="/quote" onClick={() => setMobile(false)} style={{ width: '100%', justifyContent: 'center' }}>
-                  Get Quote
-                </Link>
-                <button className="btn ghost" onClick={() => { toggle(); setMobile(false); }} style={{ width: '100%', justifyContent: 'center', marginTop: 10 }}>
+                <button className="btn" onClick={() => { toggle(); setMobile(false); }} style={{ width: '100%', justifyContent: 'center' }}>
                   <ShoppingCart size={16} />
                   Cart {count > 0 && `(${count})`}
                 </button>
@@ -1106,9 +1101,11 @@ function ShopSection() {
   const [perPage, setPerPage] = useState(12);
   const [qvProduct, setQvProduct] = useState(null);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filtered = useMemo(() => {
     let r = [...products];
+    if (searchQuery.trim()) r = r.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.category.toLowerCase().includes(searchQuery.toLowerCase()) || (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase())));
     if (filters.category !== "All") r = r.filter((p) => p.category === filters.category);
     if (filters.priceMin) r = r.filter((p) => p.price >= Number(filters.priceMin));
     if (filters.priceMax) r = r.filter((p) => p.price <= Number(filters.priceMax));
@@ -1120,7 +1117,7 @@ function ShopSection() {
     else if (sort === "rating") r.sort((a, b) => b.rating - a.rating);
     else if (sort === "newest") r.sort((a, b) => b.id.localeCompare(a.id));
     return r;
-  }, [products, filters, sort]);
+  }, [products, filters, sort, searchQuery]);
 
   const totalPages = Math.ceil(filtered.length / perPage);
   const paged = filtered.slice((page - 1) * perPage, page * perPage);
@@ -1149,6 +1146,24 @@ function ShopSection() {
             <div className="shop-stat-pill"><span className="shop-stat-num">500+</span><span className="shop-stat-label">Happy Makers</span></div>
             <div className="shop-stat-divider" />
             <div className="shop-stat-pill"><span className="shop-stat-num">24hr</span><span className="shop-stat-label">Dispatch</span></div>
+          </div>
+          {/* Search bar */}
+          <div className="shop-hero-search">
+            <div className="shop-search-input-wrap">
+              <Search size={18} className="shop-search-icon" />
+              <input
+                type="text"
+                className="shop-search-input"
+                placeholder="Search products, categories, SKUs..."
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+              />
+              {searchQuery && (
+                <button className="shop-search-clear" onClick={() => { setSearchQuery(""); setPage(1); }} aria-label="Clear search">
+                  <X size={16} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -2315,7 +2330,7 @@ function CartDrawer() {
     navigate('/checkout');
   };
   
-  return <AnimatePresence>{open && <motion.aside className="cart-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}><button className="icon-btn close" onClick={toggle}><X /></button><h2>Quote Cart</h2><div className="cart-items">{items.length === 0 && <p className="empty-cart">Your quote cart is empty.</p>}{items.map((item) => <div className="cart-line" key={item.id}><img src={item.imageUrl || a5xCarKit} alt="" /><div><b>{item.name}</b><p>{inr(Number(item.price))}</p><div className="qty-control"><button onClick={() => dec(item.id)} aria-label={`Decrease ${item.name}`}>-</button><span>{item.qty}</span><button onClick={() => inc(item.id)} aria-label={`Increase ${item.name}`}>+</button></div></div><button className="icon-btn remove-btn" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} title="Remove from cart"><Trash2 size={18} /></button></div>)}</div><footer><p>Subtotal <strong>{inr(subtotal())}</strong></p><button disabled={!items.length}>Request Quote</button><button disabled={!items.length} onClick={handleCheckout}>Checkout</button></footer></motion.aside>}</AnimatePresence>;
+  return <AnimatePresence>{open && <motion.aside className="cart-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}><button className="icon-btn close" onClick={toggle}><X /></button><h2>Cart</h2><div className="cart-items">{items.length === 0 && <p className="empty-cart">Your cart is empty.</p>}{items.map((item) => <div className="cart-line" key={item.id}><img src={item.imageUrl || a5xCarKit} alt="" /><div><b>{item.name}</b><p>{inr(Number(item.price))}</p><div className="qty-control"><button onClick={() => dec(item.id)} aria-label={`Decrease ${item.name}`}>-</button><span>{item.qty}</span><button onClick={() => inc(item.id)} aria-label={`Increase ${item.name}`}>+</button></div></div><button className="icon-btn remove-btn" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} title="Remove from cart"><Trash2 size={18} /></button></div>)}</div><footer><p>Subtotal <strong>{inr(subtotal())}</strong></p><button className="btn" disabled={!items.length} onClick={handleCheckout}>Checkout</button></footer></motion.aside>}</AnimatePresence>;
 }
 
 // Checkout Page
@@ -3018,7 +3033,6 @@ function Footer() {
           <ul className="footer-link-list">
             <li><Link to="/about">About A5X</Link></li>
             <li><Link to="/contact">Contact Us</Link></li>
-            <li><Link to="/quote">Request Quote</Link></li>
             <li><Link to="/contact">Shipping Policy</Link></li>
             <li><Link to="/contact">Return Policy</Link></li>
             <li><Link to="/contact">Privacy Policy</Link></li>
