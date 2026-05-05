@@ -1076,6 +1076,7 @@ function PopularCategories() {
 }
 
 
+function QuickViewModal({ product, onClose }) {
   const add = useCartStore((s) => s.add);
   const [qty, setQty] = useState(1);
   if (!product) return null;
