@@ -30,7 +30,6 @@ import {
   Play,
   PlayCircle,
   Plus,
-  RefreshCw,
   Rocket,
   Search,
   Settings,
@@ -41,7 +40,6 @@ import {
   Trash2,
   Truck,
   Upload,
-  User,
   X,
   Zap
 } from "lucide-react";
@@ -271,117 +269,117 @@ function useFileUpload({ types = [], maxMb = 5 } = {}) {
 function Navbar() {
   const scrolled = useScrolled();
   const [mobile, setMobile] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
   const count = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
-  const wishCount = useWishlistStore((state) => state.ids.length);
   const toggle = useCartStore((state) => state.toggle);
+  const links = ["Home", "Shop", "Kits", "Learn", "About", "Contact"];
 
-  const navItems = [
-    { label: "Home", to: "/" },
-    { label: "Shop", to: "/shop", dropdown: ["All Products", "Microcontrollers", "Sensors", "Motor Drivers"] },
-    { label: "Kits", to: "/kits", dropdown: ["Starter Kit", "Pro Kits", "Elite Kits"] },
-    { label: "Learn", to: "/learn", dropdown: ["All Courses", "Robotics", "IoT"] },
-    { label: "About", to: "/about" },
-    { label: "Contact", to: "/contact" },
-  ];
-
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
-    document.body.style.overflow = mobile ? 'hidden' : '';
+    if (mobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
     return () => { document.body.style.overflow = ''; };
   }, [mobile]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) { navigate(`/shop?q=${encodeURIComponent(searchQuery.trim())}`); setMobile(false); }
-  };
-
   return (
     <>
-      <header className={`nav-v2 ${scrolled ? "is-scrolled" : ""}`}>
-        {/* Logo */}
-        <Link className="nav-v2-logo" to="/" onClick={() => setMobile(false)}>
+      <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
+        <Link className="logo" to="/" onClick={() => setMobile(false)}>
           <span>A5X</span><small>ROBOTICS</small>
         </Link>
-
-        {/* Desktop nav links */}
-        <nav className="nav-v2-links">
-          {navItems.map(({ label, to, dropdown }) => (
-            <div key={label} className={`nav-v2-item ${dropdown ? "has-dropdown" : ""}`}>
-              <NavLink className={({ isActive }) => `nav-v2-link ${isActive ? "active" : ""}`} to={to}>
-                {label}{dropdown && <ChevronDown size={13} className="nav-v2-chevron" />}
-              </NavLink>
-              {dropdown && (
-                <div className="nav-v2-dropdown">
-                  {dropdown.map((item) => (
-                    <Link key={item} className="nav-v2-dropdown-item" to={to}>{item}</Link>
-                  ))}
-                </div>
-              )}
-            </div>
+        <nav className="desktop-links">
+          {links.map((label) => (
+            <NavLink key={label} className="nav-link-anim" to={label === "Home" ? "/" : `/${label.toLowerCase()}`}>
+              {label}
+            </NavLink>
           ))}
         </nav>
-
-        {/* Search bar */}
-        <form className="nav-v2-search" onSubmit={handleSearch}>
-          <Search size={15} className="nav-v2-search-icon" />
-          <input
-            type="text"
-            placeholder="Search for products, kits..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Search"
-          />
-        </form>
-
-        {/* Right actions */}
-        <div className="nav-v2-actions">
-          <button className="nav-v2-action-btn" onClick={() => navigate('/wishlist')} aria-label="Wishlist">
-            <Heart size={18} />
-            <span>Wishlist</span>
-            {wishCount > 0 && <b className="nav-v2-badge">{wishCount}</b>}
-          </button>
-          <button className="nav-v2-action-btn" onClick={toggle} aria-label="Cart">
+        <div className="nav-actions">
+          <button className="cart-btn" onClick={toggle} aria-label="Cart">
             <ShoppingCart size={18} />
-            <span>Cart</span>
-            {count > 0 && <b className="nav-v2-badge">{count}</b>}
+            {count > 0 && <b>{count}</b>}
           </button>
-          <button className="nav-v2-action-btn nav-v2-profile" onClick={() => navigate('/account')} aria-label="Account">
-            <User size={18} />
-          </button>
-          <button className="icon-btn mobile-only" onClick={() => setMobile(true)} aria-label="Open menu" aria-expanded={mobile}>
+          <button
+            className="icon-btn mobile-only"
+            onClick={() => setMobile(true)}
+            aria-label="Open menu"
+            aria-expanded={mobile}
+          >
             <Menu size={20} />
           </button>
         </div>
       </header>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — rendered outside header so z-index works correctly */}
       <AnimatePresence>
         {mobile && (
-          <motion.div className="mobile-menu-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-            <motion.div className="mobile-menu-backdrop" onClick={() => setMobile(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
-            <motion.div className="mobile-menu-panel" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 28, stiffness: 300 }}>
+          <motion.div
+            className="mobile-menu-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Backdrop */}
+            <motion.div
+              className="mobile-menu-backdrop"
+              onClick={() => setMobile(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Drawer panel */}
+            <motion.div
+              className="mobile-menu-panel"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+            >
+              {/* Panel header */}
               <div className="mobile-menu-header">
-                <Link className="logo" to="/" onClick={() => setMobile(false)}><span>A5X</span><small>ROBOTICS</small></Link>
-                <button className="mobile-menu-close" onClick={() => setMobile(false)} aria-label="Close menu"><X size={22} /></button>
+                <Link className="logo" to="/" onClick={() => setMobile(false)}>
+                  <span>A5X</span><small>ROBOTICS</small>
+                </Link>
+                <button className="mobile-menu-close" onClick={() => setMobile(false)} aria-label="Close menu">
+                  <X size={22} />
+                </button>
               </div>
-              <form className="mobile-search" onSubmit={handleSearch}>
-                <Search size={15} />
-                <input type="text" placeholder="Search products..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-              </form>
+
+              {/* Nav links */}
               <nav className="mobile-menu-nav">
-                {navItems.map(({ label, to }, index) => (
-                  <motion.div key={label} initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.05 + 0.1 }}>
-                    <NavLink className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`} to={to} onClick={() => setMobile(false)}>
+                {links.map((label, index) => (
+                  <motion.div
+                    key={label}
+                    initial={{ x: 40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.05 + 0.1 }}
+                  >
+                    <NavLink
+                      className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`}
+                      to={label === "Home" ? "/" : `/${label.toLowerCase()}`}
+                      onClick={() => setMobile(false)}
+                    >
                       <span className="mobile-nav-label">{label}</span>
                       <ChevronRight size={16} className="mobile-nav-arrow" />
                     </NavLink>
                   </motion.div>
                 ))}
               </nav>
-              <motion.div className="mobile-menu-footer" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+
+              {/* Bottom CTA */}
+              <motion.div
+                className="mobile-menu-footer"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
                 <button className="btn" onClick={() => { toggle(); setMobile(false); }} style={{ width: '100%', justifyContent: 'center' }}>
-                  <ShoppingCart size={16} /> Cart {count > 0 && `(${count})`}
+                  <ShoppingCart size={16} />
+                  Cart {count > 0 && `(${count})`}
                 </button>
               </motion.div>
             </motion.div>
@@ -836,7 +834,6 @@ function HomePage() {
     <main>
       <Hero />
       <TrustBar />
-      <PopularCategories />
       <ImageShowcase />
       <GatewayCards />
       <WhyRobotics />
@@ -848,47 +845,52 @@ function HomePage() {
 }
 
 function Hero() {
-  const stats = [
-    { icon: "👥", num: "10,000+", label: "Students Trained" },
-    { icon: "📦", num: "500+", label: "Kits Sold" },
-    { icon: "⭐", num: "4.8/5", label: "Customer Rating" },
-  ];
+  const parallaxY = useParallax(0.25);
+  const stats = [["20M+", "robots by 2030"], ["4-Day", "workshop format"], ["Tier 2", "India access"]];
   return (
-    <section className="hero-v2">
-      <div className="hero-v2-left">
-        <p className="hero-v2-eyebrow">COMPONENTS. KITS. KNOWLEDGE.</p>
-        <h1 className="hero-v2-title">
-          Build <em>Real</em> Robots,<br />Not Just Ideas.
-        </h1>
-        <p className="hero-v2-desc">
-          High quality robotics components, kits and<br />resources for creators, students and innovators.
-        </p>
-        <div className="hero-v2-actions">
-          <Link className="hero-v2-btn-primary" to="/shop">Shop Now →</Link>
-          <Link className="hero-v2-btn-secondary" to="/kits">Explore Kits</Link>
-        </div>
-        <div className="hero-v2-stats">
-          {stats.map(({ icon, num, label }) => (
-            <div key={label} className="hero-v2-stat">
-              <span className="hero-v2-stat-icon">{icon}</span>
-              <div>
-                <strong>{num}</strong>
-                <span>{label}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="hero-v2-right">
-        <img src={a5xCarKit} alt="A5X Robotics Car Kit" className="hero-v2-robot" />
-        <div className="hero-v2-badge">
-          <span className="hero-v2-badge-icon">⊙</span>
+    <section className="hero" id="home">
+      <div className="hero-grid-bg" />
+      <div className="hero-scanline" />
+      <div className="hero-noise" />
+      <ParticleField />
+      <div className="hero-orb hero-orb-1" />
+      <div className="hero-orb hero-orb-2" />
+      <div className="hero-orb hero-orb-3" />
+      <motion.div className="hero-copy" initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.14 } } }}>
+        <motion.p className="hero-label" variants={fadeUp}>
+          <TypewriterText texts={["ROBOTICS & AI", "BUILD THE FUTURE", "MADE IN INDIA"]} />
+        </motion.p>
+        <motion.div className="hero-title-block" variants={fadeUp}>
+          <span className="hero-accent-bar" />
           <div>
-            <strong>Arduino Compatible</strong>
-            <span>Easy to use &amp; integrate</span>
+            <p className="hero-pre-title"><LetterReveal text="BUILD THE" /></p>
+            <h1 className="hero-chrome glitch-text" data-text="FUTURE">FUTURE</h1>
           </div>
-        </div>
-      </div>
+        </motion.div>
+        <motion.p className="hero-subtitle" variants={fadeUp}>People who build the future push hardware beyond limits and take action with a plan of precision.</motion.p>
+        <motion.div className="hero-stats-inline" variants={fadeUp}>
+          {stats.map(([num, label]) => <div key={num}><strong>{num}</strong><span>{label}</span></div>)}
+        </motion.div>
+        <motion.div className="actions" variants={fadeUp}>
+          <MagneticButton to="/shop">LET'S GO</MagneticButton>
+          <ButtonLink to="/kits" ghost>VIEW KITS</ButtonLink>
+        </motion.div>
+      </motion.div>
+      <motion.div className="hero-art" initial={{ opacity: 0, scale: 0.9, x: 80 }} animate={{ opacity: 1, scale: 1, x: 0 }} transition={{ duration: 1.6, ease: [.22,1,.36,1] }} style={{ transform: `translateY(${parallaxY * 0.15}px)` }}>
+        <div className="hero-art-radial" />
+        <HeroTilt>
+          <img src={robotUnit003} alt="Robot Unit 003" className="hero-main-robot" />
+        </HeroTilt>
+        <div className="hero-art-underglow" />
+        {["ARTIFICIAL INTELLIGENCE", "IOT PLATFORM", "AUTONOMOUS SYSTEMS"].map((label, i) => (
+          <motion.span key={label} className="hero-chip" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.2 + i * 0.25, duration: 0.6 }} style={{ animationDelay: `${i * 0.8}s` }}><i />{label}</motion.span>
+        ))}
+      </motion.div>
+      <motion.div className="hero-bottom-cards glass-panel-deep" initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.8, ease: "easeOut" }}>
+        <div className="hero-bottom-card"><Cpu size={20} /><h3>TECHNOLOGY</h3><p>ESP32, Arduino, Raspberry Pi for autonomous robotics builds.</p></div>
+        <div className="hero-bottom-divider" />
+        <div className="hero-bottom-card"><Rocket size={20} /><h3>INNOVATION</h3><p>Complete kits, workshops, and courses for India's next generation of builders.</p></div>
+      </motion.div>
     </section>
   );
 }
@@ -1019,63 +1021,18 @@ function HomeStatsBar() {
 }
 
 function TrustBar() {
-  const items = [
-    { icon: <Truck size={22} />, title: "Free Shipping", sub: "On all orders above ₹999" },
-    { icon: <Shield size={22} />, title: "Secure Payments", sub: "100% secure & trusted" },
-    { icon: <RefreshCw size={22} />, title: "7 Days Return", sub: "Hassle free returns" },
-    { icon: <MessageSquare size={22} />, title: "24/7 Support", sub: "We're here to help" },
-  ];
+  const items = [[CircuitBoard, "Quality Tested"], [Truck, "Fast Shipping"], [Shield, "1-Year Warranty"], [MessageSquare, "Expert Support"], [Package, "Bulk Discounts"]];
+  const doubled = [...items, ...items];
   return (
-    <section className="trust-bar-v2">
-      {items.map(({ icon, title, sub }) => (
-        <div key={title} className="trust-bar-v2-item">
-          <span className="trust-bar-v2-icon">{icon}</span>
-          <div>
-            <strong>{title}</strong>
-            <span>{sub}</span>
-          </div>
-        </div>
-      ))}
-    </section>
-  );
-}
-
-function PopularCategories() {
-  const categories = [
-    { label: "Robotics Kits", sub: "Build. Experiment. Innovate.", img: a5xCarKit, to: "/kits" },
-    { label: "Microcontrollers", sub: "Power your ideas.", img: motorDriver, to: "/shop" },
-    { label: "Sensors", sub: "Sense. Measure. Act.", img: motorDriver, to: "/shop" },
-    { label: "Motors & Drivers", sub: "Move your projects.", img: motorDriver, to: "/shop" },
-    { label: "Tools & Accessories", sub: "Everything you need.", img: motorDriver, to: "/shop" },
-  ];
-  return (
-    <section className="popular-cats">
-      <div className="popular-cats-header">
-        <div>
-          <p className="popular-cats-eyebrow">BROWSE CATEGORIES</p>
-          <h2 className="popular-cats-title">Popular Categories</h2>
-        </div>
-        <Link className="popular-cats-viewall" to="/shop">View All Categories →</Link>
-      </div>
-      <div className="popular-cats-grid">
-        {categories.map(({ label, sub, img, to }) => (
-          <Link key={label} className="popular-cat-card" to={to}>
-            <div className="popular-cat-img">
-              <img src={img} alt={label} />
-            </div>
-            <div className="popular-cat-body">
-              <strong>{label}</strong>
-              <span>{sub}</span>
-              <span className="popular-cat-link">Shop Now →</span>
-            </div>
-          </Link>
-        ))}
+    <section className="trust-bar">
+      <div className="trust-bar-track">
+        {doubled.map(([Icon, text], i) => <div key={`${text}-${i}`}><Icon size={18} /><span>{text}</span></div>)}
       </div>
     </section>
   );
 }
 
-
+function QuickViewModal({ product, onClose }) {
   const add = useCartStore((s) => s.add);
   const [qty, setQty] = useState(1);
   if (!product) return null;
