@@ -102,6 +102,7 @@ import holoPrism from "./assets/holo-prism.png";
 import robotUnit003 from "./assets/robot-unit-003.jpg";
 import cyberAndroid from "./assets/cyber-android.jpg";
 import carousel1 from "./assets/team/crausel 1.png";
+import bgImage from "./assets/team/bgimage.png";
 import teamAnsh from "./assets/team/Ansh.png";
 import teamAnupam from "./assets/team/Anupam.png";
 import teamChris from "./assets/team/Chris.JPG";
@@ -839,7 +840,13 @@ function HomePage() {
 }
 function Hero() {
   return (
-    <section className="hero-v4">
+    <section className="hero-v4" style={{
+      backgroundImage: `linear-gradient(135deg, rgba(3,3,13,0.75) 0%, rgba(5,5,21,0.70) 50%, rgba(3,3,13,0.75) 100%), url(${bgImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'fixed'
+    }}>
       {/* Animated background */}
       <div className="hero-v4-bg">
         <div className="hero-v4-grid" />
