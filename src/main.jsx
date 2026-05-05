@@ -30,6 +30,7 @@ import {
   Play,
   PlayCircle,
   Plus,
+  RefreshCw,
   Rocket,
   Search,
   Settings,
@@ -40,6 +41,7 @@ import {
   Trash2,
   Truck,
   Upload,
+  User,
   X,
   Zap
 } from "lucide-react";
@@ -63,6 +65,9 @@ import learnCorridor from "./assets/learn-corridor.jpg";
 import aboutArc from "./assets/about-arc.jpg";
 import darkSpheres from "./assets/dark-spheres.jpg";
 import a5xCarKit from "./assets/a5x-car-kit.jpg";
+import heroCarRobot from "./assets/ChatGPT Image May 5, 2026, 10_52_52 AM.png";
+import roboCentre from "./assets/team/robocentre.jpeg";
+import unit003Hero from "./assets/team/unit003.jpeg";
 import robotHands from "./assets/robot-hands.jpg";
 import gridInnovation from "./assets/grid-innovation.jpg";
 import neonFigure from "./assets/neon-figure.jpg";
@@ -96,12 +101,16 @@ import holoPrismHead from "./assets/holo-prism-head.jpg";
 import holoPrism from "./assets/holo-prism.png";
 import robotUnit003 from "./assets/robot-unit-003.jpg";
 import cyberAndroid from "./assets/cyber-android.jpg";
+import carousel1 from "./assets/team/crausel 1.png";
 import teamAnsh from "./assets/team/Ansh.png";
 import teamAnupam from "./assets/team/Anupam.png";
 import teamChris from "./assets/team/Chris.JPG";
 import teamAmit from "./assets/team/Amit.jpg";
 import teamAditya from "./assets/team/Aditya.jpg";
 import "./styles.css";
+import "./home-premium.css";
+import "./hero-v4.css";
+import "./shop-amazon.css";
 import "./learn-watch.css";
 
 const kitSpinFrames = [kitSpin035, kitSpin050, kitSpin065, kitSpin076, kitSpin080, kitSpin095, kitSpin110, kitSpin125, kitSpin140, kitSpin155, kitSpin170, kitSpin185, kitSpin200, kitSpin215, kitSpin230];
@@ -118,17 +127,17 @@ const categories = ["All", "MicroController", "Sensor", "Motors", "Display", "Co
 const courseCategories = ["All", "Beginner", "Intermediate", "Advanced", "Arduino", "ESP32", "Robotics", "IoT", "3D Printing"];
 
 const productsSeed = [
-  { id: "esp32", name: "ESP32 Devkit V1", price: 350, mrp: 499, minQty: 1, category: "MicroController", sku: "A5X-MC-001", rating: 4.8, reviewCount: 124, inStock: true, stockCount: 45, shortDescription: "Dual-core 240MHz with Wi-Fi + Bluetooth. The go-to board for IoT.", features: ["Dual-core Xtensa 240MHz", "Wi-Fi 802.11 b/g/n", "Bluetooth 4.2 + BLE", "34 GPIO pins", "Ultra-low power co-processor"], specs: { "CPU": "Xtensa LX6 Dual-Core 240MHz", "Flash": "4MB", "SRAM": "520KB", "GPIO": "34 pins", "ADC": "18 channels", "Voltage": "3.3V", "USB": "Micro-USB", "Dimensions": "55 x 28 mm" }, compatibility: ["Arduino IDE", "MicroPython", "ESP-IDF", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 350 }, { min: 10, max: 49, price: 320 }, { min: 50, max: 999, price: 290 }], badges: ["Best Seller", "IoT Ready"], frequentlyBoughtWith: ["oled", "hcsr04"], relatedIds: ["esp8266", "esp32cam", "uno-r3"] },
-  { id: "uno-r3", name: "Arduino Uno R3 Compatible", price: 300, mrp: 450, minQty: 1, category: "MicroController", sku: "A5X-MC-002", rating: 4.6, reviewCount: 89, inStock: true, stockCount: 60, shortDescription: "Classic ATmega328P board. Perfect for beginners and prototyping.", features: ["ATmega328P processor", "14 digital I/O pins", "6 analog inputs", "USB Type-B", "Extensive library support"], specs: { "CPU": "ATmega328P 16MHz", "Flash": "32KB", "SRAM": "2KB", "GPIO": "14 digital + 6 analog", "Voltage": "5V", "USB": "Type-B", "Dimensions": "68.6 x 53.4 mm" }, compatibility: ["Arduino IDE", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 300 }, { min: 10, max: 49, price: 270 }, { min: 50, max: 999, price: 240 }], badges: ["Beginner Friendly"], frequentlyBoughtWith: ["l298n", "hcsr04"], relatedIds: ["nano", "mega", "uno-smd"] },
+  { id: "esp32", name: "ESP32 Devkit V1", price: 350, mrp: 499, minQty: 1, category: "MicroController", sku: "A5X-MC-001", rating: 4.8, reviewCount: 124, inStock: true, stockCount: 45, quickDelivery: true, shortDescription: "Dual-core 240MHz with Wi-Fi + Bluetooth. The go-to board for IoT.", features: ["Dual-core Xtensa 240MHz", "Wi-Fi 802.11 b/g/n", "Bluetooth 4.2 + BLE", "34 GPIO pins", "Ultra-low power co-processor"], specs: { "CPU": "Xtensa LX6 Dual-Core 240MHz", "Flash": "4MB", "SRAM": "520KB", "GPIO": "34 pins", "ADC": "18 channels", "Voltage": "3.3V", "USB": "Micro-USB", "Dimensions": "55 x 28 mm" }, compatibility: ["Arduino IDE", "MicroPython", "ESP-IDF", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 350 }, { min: 10, max: 49, price: 320 }, { min: 50, max: 999, price: 290 }], badges: ["Best Seller", "IoT Ready"], frequentlyBoughtWith: ["oled", "hcsr04"], relatedIds: ["esp8266", "esp32cam", "uno-r3"] },
+  { id: "uno-r3", name: "Arduino Uno R3 Compatible", price: 300, mrp: 450, minQty: 1, category: "MicroController", sku: "A5X-MC-002", rating: 4.6, reviewCount: 89, inStock: true, stockCount: 60, quickDelivery: true, shortDescription: "Classic ATmega328P board. Perfect for beginners and prototyping.", features: ["ATmega328P processor", "14 digital I/O pins", "6 analog inputs", "USB Type-B", "Extensive library support"], specs: { "CPU": "ATmega328P 16MHz", "Flash": "32KB", "SRAM": "2KB", "GPIO": "14 digital + 6 analog", "Voltage": "5V", "USB": "Type-B", "Dimensions": "68.6 x 53.4 mm" }, compatibility: ["Arduino IDE", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 300 }, { min: 10, max: 49, price: 270 }, { min: 50, max: 999, price: 240 }], badges: ["Beginner Friendly"], frequentlyBoughtWith: ["l298n", "hcsr04"], relatedIds: ["nano", "mega", "uno-smd"] },
   { id: "uno-smd", name: "Arduino UNO R3 SMD ATmega328", price: 249, mrp: 399, minQty: 1, category: "MicroController", sku: "A5X-MC-003", rating: 4.5, reviewCount: 56, inStock: true, stockCount: 30, shortDescription: "SMD variant of the classic Uno. Compact and reliable.", features: ["SMD ATmega328P", "Same pinout as Uno R3", "Compact form factor"], specs: { "CPU": "ATmega328P 16MHz", "Flash": "32KB", "SRAM": "2KB", "Voltage": "5V" }, compatibility: ["Arduino IDE"], bulkPricing: [{ min: 1, max: 9, price: 249 }, { min: 10, max: 49, price: 220 }], badges: [], frequentlyBoughtWith: ["lcd16"], relatedIds: ["uno-r3", "nano"] },
-  { id: "esp8266", name: "ESP8266 NodeMCU", price: 190, mrp: 299, minQty: 1, category: "MicroController", sku: "A5X-MC-004", rating: 4.7, reviewCount: 203, inStock: true, stockCount: 80, shortDescription: "Wi-Fi enabled microcontroller. Best value for IoT projects.", features: ["ESP8266 Wi-Fi SoC", "80/160MHz clock", "4MB Flash", "GPIO, I2C, SPI, ADC"], specs: { "CPU": "Tensilica L106 80MHz", "Flash": "4MB", "GPIO": "11 pins", "ADC": "1 channel (10-bit)", "Voltage": "3.3V", "WiFi": "802.11 b/g/n" }, compatibility: ["Arduino IDE", "MicroPython", "NodeMCU Lua"], bulkPricing: [{ min: 1, max: 9, price: 190 }, { min: 10, max: 49, price: 165 }], badges: ["Value Pick"], frequentlyBoughtWith: ["oled", "tp4056"], relatedIds: ["esp32", "esp32cam"] },
+  { id: "esp8266", name: "ESP8266 NodeMCU", price: 190, mrp: 299, minQty: 1, category: "MicroController", sku: "A5X-MC-004", rating: 4.7, reviewCount: 203, inStock: true, stockCount: 80, quickDelivery: true, shortDescription: "Wi-Fi enabled microcontroller. Best value for IoT projects.", features: ["ESP8266 Wi-Fi SoC", "80/160MHz clock", "4MB Flash", "GPIO, I2C, SPI, ADC"], specs: { "CPU": "Tensilica L106 80MHz", "Flash": "4MB", "GPIO": "11 pins", "ADC": "1 channel (10-bit)", "Voltage": "3.3V", "WiFi": "802.11 b/g/n" }, compatibility: ["Arduino IDE", "MicroPython", "NodeMCU Lua"], bulkPricing: [{ min: 1, max: 9, price: 190 }, { min: 10, max: 49, price: 165 }], badges: ["Value Pick"], frequentlyBoughtWith: ["oled", "tp4056"], relatedIds: ["esp32", "esp32cam"] },
   { id: "esp32cam", name: "ESP32 CAM Module", price: 599, mrp: 849, minQty: 1, category: "MicroController", sku: "A5X-MC-005", rating: 4.9, reviewCount: 78, inStock: true, stockCount: 12, shortDescription: "ESP32 with 2MP camera. Stream video over Wi-Fi.", features: ["OV2640 2MP Camera", "ESP32-S chip", "MicroSD slot", "Wi-Fi + BT", "Face detection support"], specs: { "CPU": "ESP32-S 240MHz", "Camera": "OV2640 2MP", "Flash": "4MB", "PSRAM": "4MB", "MicroSD": "Up to 4GB", "Voltage": "5V" }, compatibility: ["Arduino IDE", "ESP-IDF"], bulkPricing: [{ min: 1, max: 9, price: 599 }, { min: 10, max: 49, price: 540 }], badges: ["New Arrival", "Camera"], frequentlyBoughtWith: ["18650", "tp4056"], relatedIds: ["esp32", "esp8266"] },
   { id: "nano", name: "Arduino Nano V3", price: 199, mrp: 349, minQty: 1, category: "MicroController", sku: "A5X-MC-006", rating: 4.5, reviewCount: 145, inStock: true, stockCount: 90, shortDescription: "Compact ATmega328P board. Breadboard-friendly form factor.", features: ["ATmega328P", "Mini-USB", "Breadboard compatible", "30 pins"], specs: { "CPU": "ATmega328P 16MHz", "Flash": "32KB", "SRAM": "2KB", "GPIO": "22 pins", "Voltage": "5V", "Dimensions": "45 x 18 mm" }, compatibility: ["Arduino IDE", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 199 }, { min: 10, max: 49, price: 175 }], badges: ["Compact"], frequentlyBoughtWith: ["l298n", "mpu6050"], relatedIds: ["uno-r3", "mega"] },
   { id: "mega", name: "Arduino Mega 2560", price: 999, mrp: 1499, minQty: 1, category: "MicroController", sku: "A5X-MC-007", rating: 4.8, reviewCount: 67, inStock: true, stockCount: 8, shortDescription: "54 I/O pins, 256KB flash. For complex robotics projects.", features: ["ATmega2560", "54 digital I/O pins", "16 analog inputs", "4 UARTs", "256KB flash"], specs: { "CPU": "ATmega2560 16MHz", "Flash": "256KB", "SRAM": "8KB", "GPIO": "54 digital + 16 analog", "Voltage": "5V", "Dimensions": "101.5 x 53.3 mm" }, compatibility: ["Arduino IDE", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 999 }, { min: 10, max: 49, price: 899 }], badges: ["Pro Choice"], frequentlyBoughtWith: ["l298n", "oled"], relatedIds: ["uno-r3", "pico"] },
   { id: "pico", name: "Raspberry Pi Pico", price: 549, mrp: 799, minQty: 1, category: "MicroController", sku: "A5X-MC-008", rating: 4.7, reviewCount: 92, inStock: true, stockCount: 25, shortDescription: "RP2040 dual-core ARM. The future of microcontrollers.", features: ["RP2040 dual-core ARM Cortex-M0+", "264KB SRAM", "2MB Flash", "26 GPIO", "PIO state machines"], specs: { "CPU": "RP2040 Dual-Core 133MHz", "Flash": "2MB", "SRAM": "264KB", "GPIO": "26 pins", "ADC": "3 channels (12-bit)", "Voltage": "3.3V" }, compatibility: ["MicroPython", "C/C++", "CircuitPython"], bulkPricing: [{ min: 1, max: 9, price: 549 }, { min: 10, max: 49, price: 490 }], badges: ["Trending"], frequentlyBoughtWith: ["oled", "mpu6050"], relatedIds: ["esp32", "nano"] },
-  { id: "l298n", name: "L298N Motor Driver", price: 85, mrp: 149, minQty: 1, category: "Motor Driver", sku: "A5X-MD-001", rating: 4.8, reviewCount: 312, inStock: true, stockCount: 150, imageUrl: motorDriver, shortDescription: "Dual H-Bridge driver. Control 2 DC motors or 1 stepper.", features: ["Dual H-Bridge", "Up to 2A per channel", "5V–35V operating", "Built-in 5V regulator", "PWM speed control"], specs: { "Channels": "2", "Max Current": "2A per channel", "Voltage": "5V–35V", "Logic": "5V", "Dimensions": "43 x 43 x 27 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 85 }, { min: 10, max: 49, price: 72 }, { min: 50, max: 999, price: 60 }], badges: ["Best Seller"], frequentlyBoughtWith: ["uno-r3", "18650"], relatedIds: ["a4988"] },
+  { id: "l298n", name: "L298N Motor Driver", price: 85, mrp: 149, minQty: 1, category: "Motor Driver", sku: "A5X-MD-001", rating: 4.8, reviewCount: 312, inStock: true, stockCount: 150, quickDelivery: true, imageUrl: motorDriver, shortDescription: "Dual H-Bridge driver. Control 2 DC motors or 1 stepper.", features: ["Dual H-Bridge", "Up to 2A per channel", "5V–35V operating", "Built-in 5V regulator", "PWM speed control"], specs: { "Channels": "2", "Max Current": "2A per channel", "Voltage": "5V–35V", "Logic": "5V", "Dimensions": "43 x 43 x 27 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 85 }, { min: 10, max: 49, price: 72 }, { min: 50, max: 999, price: 60 }], badges: ["Best Seller"], frequentlyBoughtWith: ["uno-r3", "18650"], relatedIds: ["a4988"] },
   { id: "a4988", name: "A4988 Stepper Driver", price: 120, mrp: 199, minQty: 1, category: "Motor Driver", sku: "A5X-MD-002", rating: 4.6, reviewCount: 87, inStock: true, stockCount: 40, shortDescription: "Microstepping stepper motor driver. Up to 1/16 step.", features: ["Up to 1/16 microstepping", "Adjustable current limiting", "Automatic current decay", "3.3V/5V compatible"], specs: { "Max Current": "2A (with heatsink)", "Voltage": "8V–35V", "Step Modes": "Full, 1/2, 1/4, 1/8, 1/16", "Logic": "3.3V–5V" }, compatibility: ["Arduino", "GRBL", "Marlin"], bulkPricing: [{ min: 1, max: 9, price: 120 }, { min: 10, max: 49, price: 100 }], badges: ["3D Printing"], frequentlyBoughtWith: ["mega", "18650"], relatedIds: ["l298n"] },
-  { id: "hcsr04", name: "HC-SR04 Ultrasonic Sensor", price: 45, mrp: 89, minQty: 1, category: "Sensor", sku: "A5X-SN-001", rating: 4.7, reviewCount: 267, inStock: true, stockCount: 200, shortDescription: "2cm–400cm distance measurement. Essential for obstacle avoidance.", features: ["2cm–400cm range", "3mm accuracy", "15° beam angle", "Trigger/Echo pins"], specs: { "Range": "2–400 cm", "Accuracy": "±3mm", "Beam Angle": "15°", "Voltage": "5V", "Current": "15mA", "Frequency": "40kHz" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 45 }, { min: 10, max: 49, price: 38 }, { min: 50, max: 999, price: 30 }], badges: ["Essential"], frequentlyBoughtWith: ["uno-r3", "l298n"], relatedIds: ["mpu6050"] },
+  { id: "hcsr04", name: "HC-SR04 Ultrasonic Sensor", price: 45, mrp: 89, minQty: 1, category: "Sensor", sku: "A5X-SN-001", rating: 4.7, reviewCount: 267, inStock: true, stockCount: 200, quickDelivery: true, shortDescription: "2cm–400cm distance measurement. Essential for obstacle avoidance.", features: ["2cm–400cm range", "3mm accuracy", "15° beam angle", "Trigger/Echo pins"], specs: { "Range": "2–400 cm", "Accuracy": "±3mm", "Beam Angle": "15°", "Voltage": "5V", "Current": "15mA", "Frequency": "40kHz" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 45 }, { min: 10, max: 49, price: 38 }, { min: 50, max: 999, price: 30 }], badges: ["Essential"], frequentlyBoughtWith: ["uno-r3", "l298n"], relatedIds: ["mpu6050"] },
   { id: "mpu6050", name: "MPU-6050 IMU 6DOF", price: 120, mrp: 199, minQty: 1, category: "Sensor", sku: "A5X-SN-002", rating: 4.8, reviewCount: 156, inStock: true, stockCount: 35, shortDescription: "3-axis accelerometer + 3-axis gyroscope. For motion tracking.", features: ["3-axis accelerometer", "3-axis gyroscope", "Digital motion processor", "I2C interface", "16-bit ADC"], specs: { "Accelerometer": "±2/4/8/16g", "Gyroscope": "±250/500/1000/2000°/s", "Interface": "I2C (400kHz)", "Voltage": "3.3V–5V", "Current": "3.9mA" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 120 }, { min: 10, max: 49, price: 100 }], badges: ["Motion"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["hcsr04"] },
   { id: "oled", name: "OLED 0.96 I2C Display", price: 180, mrp: 299, minQty: 1, category: "Display", sku: "A5X-DI-001", rating: 4.9, reviewCount: 198, inStock: true, stockCount: 55, shortDescription: "128x64 pixel OLED. Crystal clear display over I2C.", features: ["128x64 pixels", "SSD1306 driver", "I2C interface", "Self-emitting — no backlight", "Wide viewing angle"], specs: { "Resolution": "128 x 64", "Driver": "SSD1306", "Interface": "I2C", "Voltage": "3.3V–5V", "Size": "0.96 inch", "Dimensions": "27 x 27 x 4 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 180 }, { min: 10, max: 49, price: 155 }], badges: ["Popular"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["lcd16"] },
   { id: "lcd16", name: "16x2 LCD with I2C", price: 70, mrp: 129, minQty: 1, category: "Display", sku: "A5X-DI-002", rating: 4.5, reviewCount: 134, inStock: true, stockCount: 70, shortDescription: "16x2 character LCD with I2C backpack. Only 2 wires needed.", features: ["16x2 character display", "I2C backpack included", "Blue backlight", "Adjustable contrast"], specs: { "Characters": "16 x 2", "Interface": "I2C (PCF8574)", "Backlight": "Blue LED", "Voltage": "5V", "Dimensions": "80 x 36 x 12 mm" }, compatibility: ["Arduino", "ESP32"], bulkPricing: [{ min: 1, max: 9, price: 70 }, { min: 10, max: 49, price: 58 }], badges: [], frequentlyBoughtWith: ["uno-r3"], relatedIds: ["oled"] },
@@ -269,117 +278,101 @@ function useFileUpload({ types = [], maxMb = 5 } = {}) {
 function Navbar() {
   const scrolled = useScrolled();
   const [mobile, setMobile] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
   const count = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
+  const wishCount = useWishlistStore((state) => state.ids.length);
   const toggle = useCartStore((state) => state.toggle);
-  const links = ["Home", "Shop", "Kits", "Learn", "About", "Contact"];
 
-  // Lock body scroll when mobile menu is open
+  const navItems = [
+    { label: "Home", to: "/" },
+    { label: "Shop", to: "/shop", dropdown: ["All Products", "Microcontrollers", "Sensors", "Motor Drivers"] },
+    { label: "Kits", to: "/kits", dropdown: ["Starter Kit", "Pro Kits", "Elite Kits"] },
+    { label: "Learn", to: "/learn", dropdown: ["All Courses", "Robotics", "IoT"] },
+    { label: "About", to: "/about" },
+    { label: "Contact", to: "/contact" },
+  ];
+
   useEffect(() => {
-    if (mobile) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = mobile ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [mobile]);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) { navigate(`/shop?q=${encodeURIComponent(searchQuery.trim())}`); setMobile(false); }
+  };
+
   return (
     <>
-      <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
-        <Link className="logo" to="/" onClick={() => setMobile(false)}>
+      <header className={`nav-v2 ${scrolled ? "is-scrolled" : ""}`}>
+        <Link className="nav-v2-logo" to="/" onClick={() => setMobile(false)}>
           <span>A5X</span><small>ROBOTICS</small>
         </Link>
-        <nav className="desktop-links">
-          {links.map((label) => (
-            <NavLink key={label} className="nav-link-anim" to={label === "Home" ? "/" : `/${label.toLowerCase()}`}>
-              {label}
-            </NavLink>
+        <nav className="nav-v2-links">
+          {navItems.map(({ label, to, dropdown }) => (
+            <div key={label} className={`nav-v2-item ${dropdown ? "has-dropdown" : ""}`}>
+              <NavLink className={({ isActive }) => `nav-v2-link ${isActive ? "active" : ""}`} to={to}>
+                {label}{dropdown && <ChevronDown size={13} className="nav-v2-chevron" />}
+              </NavLink>
+              {dropdown && (
+                <div className="nav-v2-dropdown">
+                  {dropdown.map((item) => (
+                    <Link key={item} className="nav-v2-dropdown-item" to={to}>{item}</Link>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </nav>
-        <div className="nav-actions">
-          <button className="cart-btn" onClick={toggle} aria-label="Cart">
-            <ShoppingCart size={18} />
-            {count > 0 && <b>{count}</b>}
+        <form className="nav-v2-search" onSubmit={handleSearch}>
+          <Search size={15} className="nav-v2-search-icon" />
+          <input type="text" placeholder="Search for products, kits..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} aria-label="Search" />
+        </form>
+        <div className="nav-v2-actions">
+          <button className="nav-v2-action-btn" onClick={() => navigate('/wishlist')} aria-label="Wishlist">
+            <Heart size={18} /><span>Wishlist</span>
+            {wishCount > 0 && <b className="nav-v2-badge">{wishCount}</b>}
           </button>
-          <button
-            className="icon-btn mobile-only"
-            onClick={() => setMobile(true)}
-            aria-label="Open menu"
-            aria-expanded={mobile}
-          >
+          <button className="nav-v2-action-btn" onClick={toggle} aria-label="Cart">
+            <ShoppingCart size={18} /><span>Cart</span>
+            {count > 0 && <b className="nav-v2-badge">{count}</b>}
+          </button>
+          <button className="nav-v2-action-btn nav-v2-profile" onClick={() => navigate('/account')} aria-label="Account">
+            <User size={18} />
+          </button>
+          <button className="icon-btn mobile-only" onClick={() => setMobile(true)} aria-label="Open menu" aria-expanded={mobile}>
             <Menu size={20} />
           </button>
         </div>
       </header>
 
-      {/* Mobile menu — rendered outside header so z-index works correctly */}
       <AnimatePresence>
         {mobile && (
-          <motion.div
-            className="mobile-menu-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {/* Backdrop */}
-            <motion.div
-              className="mobile-menu-backdrop"
-              onClick={() => setMobile(false)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
-
-            {/* Drawer panel */}
-            <motion.div
-              className="mobile-menu-panel"
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            >
-              {/* Panel header */}
+          <motion.div className="mobile-menu-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+            <motion.div className="mobile-menu-backdrop" onClick={() => setMobile(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+            <motion.div className="mobile-menu-panel" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 28, stiffness: 300 }}>
               <div className="mobile-menu-header">
-                <Link className="logo" to="/" onClick={() => setMobile(false)}>
-                  <span>A5X</span><small>ROBOTICS</small>
-                </Link>
-                <button className="mobile-menu-close" onClick={() => setMobile(false)} aria-label="Close menu">
-                  <X size={22} />
-                </button>
+                <Link className="logo" to="/" onClick={() => setMobile(false)}><span>A5X</span><small>ROBOTICS</small></Link>
+                <button className="mobile-menu-close" onClick={() => setMobile(false)} aria-label="Close menu"><X size={22} /></button>
               </div>
-
-              {/* Nav links */}
+              <form className="mobile-search" onSubmit={handleSearch}>
+                <Search size={15} />
+                <input type="text" placeholder="Search products..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              </form>
               <nav className="mobile-menu-nav">
-                {links.map((label, index) => (
-                  <motion.div
-                    key={label}
-                    initial={{ x: 40, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: index * 0.05 + 0.1 }}
-                  >
-                    <NavLink
-                      className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`}
-                      to={label === "Home" ? "/" : `/${label.toLowerCase()}`}
-                      onClick={() => setMobile(false)}
-                    >
+                {navItems.map(({ label, to }, index) => (
+                  <motion.div key={label} initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.05 + 0.1 }}>
+                    <NavLink className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`} to={to} onClick={() => setMobile(false)}>
                       <span className="mobile-nav-label">{label}</span>
                       <ChevronRight size={16} className="mobile-nav-arrow" />
                     </NavLink>
                   </motion.div>
                 ))}
               </nav>
-
-              {/* Bottom CTA */}
-              <motion.div
-                className="mobile-menu-footer"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
+              <motion.div className="mobile-menu-footer" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
                 <button className="btn" onClick={() => { toggle(); setMobile(false); }} style={{ width: '100%', justifyContent: 'center' }}>
-                  <ShoppingCart size={16} />
-                  Cart {count > 0 && `(${count})`}
+                  <ShoppingCart size={16} /> Cart {count > 0 && `(${count})`}
                 </button>
               </motion.div>
             </motion.div>
@@ -834,6 +827,7 @@ function HomePage() {
     <main>
       <Hero />
       <TrustBar />
+      <PopularCategories />
       <ImageShowcase />
       <GatewayCards />
       <WhyRobotics />
@@ -843,61 +837,154 @@ function HomePage() {
     </main>
   );
 }
-
 function Hero() {
-  const parallaxY = useParallax(0.25);
-  const stats = [["20M+", "robots by 2030"], ["4-Day", "workshop format"], ["Tier 2", "India access"]];
   return (
-    <section className="hero" id="home">
-      <div className="hero-grid-bg" />
-      <div className="hero-scanline" />
-      <div className="hero-noise" />
-      <ParticleField />
-      <div className="hero-orb hero-orb-1" />
-      <div className="hero-orb hero-orb-2" />
-      <div className="hero-orb hero-orb-3" />
-      <motion.div className="hero-copy" initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.14 } } }}>
-        <motion.p className="hero-label" variants={fadeUp}>
-          <TypewriterText texts={["ROBOTICS & AI", "BUILD THE FUTURE", "MADE IN INDIA"]} />
-        </motion.p>
-        <motion.div className="hero-title-block" variants={fadeUp}>
-          <span className="hero-accent-bar" />
-          <div>
-            <p className="hero-pre-title"><LetterReveal text="BUILD THE" /></p>
-            <h1 className="hero-chrome glitch-text" data-text="FUTURE">FUTURE</h1>
+    <section className="hero-v4">
+      {/* Animated background */}
+      <div className="hero-v4-bg">
+        <div className="hero-v4-grid" />
+        <div className="hero-v4-orbs" />
+      </div>
+
+      {/* Left content */}
+      <div className="hero-v4-left">
+        <div className="hero-v4-eyebrow">
+          <span className="hero-v4-dot" />
+          <span>A5X ROBOTICS — NEXT GEN</span>
+        </div>
+
+        <h1 className="hero-v4-title">
+          <span className="hero-v4-title-line1">BUILD</span>
+          <span className="hero-v4-title-line2">THE FUTURE</span>
+          <span className="hero-v4-title-line3">WITH <em>ROBOTS</em></span>
+        </h1>
+
+        <p className="hero-v4-desc">
+          Premium robotics kits, components, and courses for builders who want to create something real.
+        </p>
+
+        <div className="hero-v4-actions">
+          <Link to="/shop" className="hero-v4-btn-primary">
+            <Rocket size={16} />
+            Shop Now
+          </Link>
+          <Link to="/kits" className="hero-v4-btn-secondary">
+            <Zap size={16} />
+            Explore Kits
+          </Link>
+        </div>
+
+        <div className="hero-v4-stats">
+          <div className="hero-v4-stat">
+            <strong>750+</strong>
+            <span>Happy Builders</span>
           </div>
-        </motion.div>
-        <motion.p className="hero-subtitle" variants={fadeUp}>People who build the future push hardware beyond limits and take action with a plan of precision.</motion.p>
-        <motion.div className="hero-stats-inline" variants={fadeUp}>
-          {stats.map(([num, label]) => <div key={num}><strong>{num}</strong><span>{label}</span></div>)}
-        </motion.div>
-        <motion.div className="actions" variants={fadeUp}>
-          <MagneticButton to="/shop">LET'S GO</MagneticButton>
-          <ButtonLink to="/kits" ghost>VIEW KITS</ButtonLink>
-        </motion.div>
-      </motion.div>
-      <motion.div className="hero-art" initial={{ opacity: 0, scale: 0.9, x: 80 }} animate={{ opacity: 1, scale: 1, x: 0 }} transition={{ duration: 1.6, ease: [.22,1,.36,1] }} style={{ transform: `translateY(${parallaxY * 0.15}px)` }}>
-        <div className="hero-art-radial" />
-        <HeroTilt>
-          <img src={robotUnit003} alt="Robot Unit 003" className="hero-main-robot" />
-        </HeroTilt>
-        <div className="hero-art-underglow" />
-        {["ARTIFICIAL INTELLIGENCE", "IOT PLATFORM", "AUTONOMOUS SYSTEMS"].map((label, i) => (
-          <motion.span key={label} className="hero-chip" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.2 + i * 0.25, duration: 0.6 }} style={{ animationDelay: `${i * 0.8}s` }}><i />{label}</motion.span>
+          <div className="hero-v4-stat-divider" />
+          <div className="hero-v4-stat">
+            <strong>4.9★</strong>
+            <span>Avg Rating</span>
+          </div>
+          <div className="hero-v4-stat-divider" />
+          <div className="hero-v4-stat">
+            <strong>50+</strong>
+            <span>Components</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Right — robot image with effects */}
+      <div className="hero-v4-right">
+        <div className="hero-v4-img-glow" />
+        <div className="hero-v4-img-ring hero-v4-ring-1" />
+        <div className="hero-v4-img-ring hero-v4-ring-2" />
+        <img src="/assets/robot-head.jpg" alt="A5X Robot" className="hero-v4-robot-img" />
+        <div className="hero-v4-img-ground" />
+
+        {/* Floating badge */}
+        <div className="hero-v4-badge">
+          <div className="hero-v4-badge-icon"><CircuitBoard size={18} /></div>
+          <div>
+            <strong>ESP32 + AI Ready</strong>
+            <span>Next-gen hardware</span>
+          </div>
+        </div>
+
+        {/* Floating stat chip */}
+        <div className="hero-v4-chip">
+          <Star size={14} className="hero-v4-chip-star" />
+          <span>Rated #1 Robotics Store in India</span>
+        </div>
+      </div>
+
+      {/* Scroll hint */}
+      <div className="hero-v4-scroll">
+        <div className="hero-v4-scroll-line" />
+        <span>Scroll</span>
+      </div>
+    </section>
+  );
+}
+
+function TrustBar() {
+  const items = [
+    { icon: <Truck size={22} />, title: "Free Shipping", sub: "On all orders above ₹999" },
+    { icon: <Shield size={22} />, title: "Secure Payments", sub: "100% secure & trusted" },
+    { icon: <RefreshCw size={22} />, title: "7 Days Return", sub: "Hassle free returns" },
+    { icon: <MessageSquare size={22} />, title: "24/7 Support", sub: "We're here to help" },
+  ];
+  return (
+    <section className="trust-bar-v2">
+      {items.map(({ icon, title, sub }) => (
+        <div key={title} className="trust-bar-v2-item">
+          <span className="trust-bar-v2-icon">{icon}</span>
+          <div>
+            <strong>{title}</strong>
+            <span>{sub}</span>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function PopularCategories() {
+  const categories = [
+    { label: "Robotics Kits", sub: "Build. Experiment. Innovate.", img: heroCarRobot, to: "/kits" },
+    { label: "Microcontrollers", sub: "Power your ideas.", img: motorDriver, to: "/shop" },
+    { label: "Sensors", sub: "Sense. Measure. Act.", img: motorDriver, to: "/shop" },
+    { label: "Motors & Drivers", sub: "Move your projects.", img: motorDriver, to: "/shop" },
+    { label: "Tools & Accessories", sub: "Everything you need.", img: motorDriver, to: "/shop" },
+  ];
+  return (
+    <section className="popular-cats">
+      <div className="popular-cats-header">
+        <div>
+          <p className="popular-cats-eyebrow">BROWSE CATEGORIES</p>
+          <h2 className="popular-cats-title">Popular Categories</h2>
+        </div>
+        <Link className="popular-cats-viewall" to="/shop">View All Categories →</Link>
+      </div>
+      <div className="popular-cats-grid">
+        {categories.map(({ label, sub, img, to }) => (
+          <Link key={label} className="popular-cat-card" to={to}>
+            <div className="popular-cat-img">
+              <img src={img} alt={label} />
+            </div>
+            <div className="popular-cat-body">
+              <strong>{label}</strong>
+              <span>{sub}</span>
+              <span className="popular-cat-link">Shop Now →</span>
+            </div>
+          </Link>
         ))}
-      </motion.div>
-      <motion.div className="hero-bottom-cards glass-panel-deep" initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.8, ease: "easeOut" }}>
-        <div className="hero-bottom-card"><Cpu size={20} /><h3>TECHNOLOGY</h3><p>ESP32, Arduino, Raspberry Pi for autonomous robotics builds.</p></div>
-        <div className="hero-bottom-divider" />
-        <div className="hero-bottom-card"><Rocket size={20} /><h3>INNOVATION</h3><p>Complete kits, workshops, and courses for India's next generation of builders.</p></div>
-      </motion.div>
+      </div>
     </section>
   );
 }
 
 function ImageShowcase() {
   const showcaseItems = [
-    { img: robotUnit003, label: "UNIT 003", sublabel: "Next-Gen Humanoid" },
+    { img: unit003Hero, label: "UNIT 003", sublabel: "Next-Gen Humanoid" },
     { img: holoPrism, label: "NEURAL", sublabel: "AI Core Processing" },
     { img: silhouetteFigure, label: "CYBER", sublabel: "Autonomous Systems" },
   ];
@@ -1020,18 +1107,6 @@ function HomeStatsBar() {
   );
 }
 
-function TrustBar() {
-  const items = [[CircuitBoard, "Quality Tested"], [Truck, "Fast Shipping"], [Shield, "1-Year Warranty"], [MessageSquare, "Expert Support"], [Package, "Bulk Discounts"]];
-  const doubled = [...items, ...items];
-  return (
-    <section className="trust-bar">
-      <div className="trust-bar-track">
-        {doubled.map(([Icon, text], i) => <div key={`${text}-${i}`}><Icon size={18} /><span>{text}</span></div>)}
-      </div>
-    </section>
-  );
-}
-
 function QuickViewModal({ product, onClose }) {
   const add = useCartStore((s) => s.add);
   const [qty, setQty] = useState(1);
@@ -1093,7 +1168,7 @@ function FilterSidebar({ filters, setFilters, onClear, categories: cats }) {
 
 function ShopSection() {
   const products = useAdminStore((s) => s.products);
-  const defaultFilters = { category: "All", priceMin: "", priceMax: "", minRating: 0, compat: [], inStockOnly: false };
+  const defaultFilters = { category: "All", priceMin: "", priceMax: "", minRating: 0, compat: [], inStockOnly: false, deliveryType: "all" };
   const [filters, setFilters] = useState(defaultFilters);
   const [sort, setSort] = useState("popular");
   const [view, setView] = useState("grid");
@@ -1102,6 +1177,22 @@ function ShopSection() {
   const [qvProduct, setQvProduct] = useState(null);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // Hero Carousel State
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const heroSlides = [
+    { image: carousel1, title: "A5X ROBOTICS KIT", subtitle: "Complete Kit with Servo, Sensors & Motors", tag: "FEATURED KIT" },
+    { image: kitInnovation, title: "PREMIUM COMPONENTS", subtitle: "High-Quality Microcontrollers & Modules", tag: "BEST SELLERS" },
+    { image: gridInnovation, title: "BUILD & INNOVATE", subtitle: "Everything You Need for Your Next Project", tag: "NEW ARRIVALS" }
+  ];
+  
+  // Auto-play hero carousel
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 4000); // Change slide every 4 seconds
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
 
   const filtered = useMemo(() => {
     let r = [...products];
@@ -1112,6 +1203,9 @@ function ShopSection() {
     if (filters.minRating) r = r.filter((p) => p.rating >= filters.minRating);
     if (filters.inStockOnly) r = r.filter((p) => p.inStock);
     if (filters.compat.length) r = r.filter((p) => p.compatibility?.some((c) => filters.compat.includes(c)));
+    // Delivery filter: Quick (1 day) or Scheduled (1 week)
+    if (filters.deliveryType === "quick") r = r.filter((p) => p.quickDelivery === true);
+    if (filters.deliveryType === "scheduled") r = r.filter((p) => p.quickDelivery !== true);
     if (sort === "price-asc") r.sort((a, b) => a.price - b.price);
     else if (sort === "price-desc") r.sort((a, b) => b.price - a.price);
     else if (sort === "rating") r.sort((a, b) => b.rating - a.rating);
@@ -1126,51 +1220,81 @@ function ShopSection() {
 
   return (
     <div className="shop-page-redesign">
-      {/* Hero Banner */}
-      <div className="shop-hero-banner">
-        <div className="shop-hero-bg">
-          <div className="shop-hero-orb shop-hero-orb-1" />
-          <div className="shop-hero-orb shop-hero-orb-2" />
-          <div className="shop-hero-grid" />
-        </div>
-        <div className="shop-hero-content">
-          <p className="shop-hero-eyebrow">A5X ROBOTICS STORE</p>
-          <h1 className="shop-hero-title">
-            <span className="shop-hero-title-main">COMPONENTS</span>
-            <span className="shop-hero-title-sub">& MODULES</span>
-          </h1>
-          <p className="shop-hero-desc">Premium robotics parts, sensors, and controllers for makers, students, and engineers.</p>
-          <div className="shop-hero-stats">
-            <div className="shop-stat-pill"><span className="shop-stat-num">{products.length}+</span><span className="shop-stat-label">Products</span></div>
-            <div className="shop-stat-divider" />
-            <div className="shop-stat-pill"><span className="shop-stat-num">500+</span><span className="shop-stat-label">Happy Makers</span></div>
-            <div className="shop-stat-divider" />
-            <div className="shop-stat-pill"><span className="shop-stat-num">24hr</span><span className="shop-stat-label">Dispatch</span></div>
-          </div>
-          {/* Search bar */}
-          <div className="shop-hero-search">
-            <div className="shop-search-input-wrap">
-              <Search size={18} className="shop-search-icon" />
-              <input
-                type="text"
-                className="shop-search-input"
-                placeholder="Search products, categories, SKUs..."
-                value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-              />
-              {searchQuery && (
-                <button className="shop-search-clear" onClick={() => { setSearchQuery(""); setPage(1); }} aria-label="Clear search">
-                  <X size={16} />
+
+      {/* Hero Carousel */}
+      <div className="shop-hero-carousel">
+        <div className="shop-hero-slides">
+          {heroSlides.map((slide, index) => (
+            <div
+              key={index}
+              className={`shop-hero-slide ${index === currentSlide ? "active" : ""}`}
+              style={{ backgroundImage: `url(${slide.image})` }}
+            >
+              <div className="shop-hero-overlay" />
+              <div className="shop-hero-content">
+                <span className="shop-hero-tag">{slide.tag}</span>
+                <h1 className="shop-hero-title">{slide.title}</h1>
+                <p className="shop-hero-subtitle">{slide.subtitle}</p>
+                <button className="shop-hero-btn" onClick={() => window.scrollTo({ top: 800, behavior: 'smooth' })}>
+                  Shop Now <ChevronRight size={18} />
                 </button>
-              )}
+              </div>
             </div>
-          </div>
+          ))}
         </div>
+        
+        {/* Carousel Indicators */}
+        <div className="shop-hero-indicators">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              className={`shop-hero-indicator ${index === currentSlide ? "active" : ""}`}
+              onClick={() => setCurrentSlide(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+        
+        {/* Navigation Arrows */}
+        <button 
+          className="shop-hero-nav shop-hero-nav-prev" 
+          onClick={() => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
+          aria-label="Previous slide"
+        >
+          <ChevronLeft size={32} />
+        </button>
+        <button 
+          className="shop-hero-nav shop-hero-nav-next" 
+          onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)}
+          aria-label="Next slide"
+        >
+          <ChevronRight size={32} />
+        </button>
       </div>
 
-      {/* Category Pills */}
-      <div className="shop-category-bar">
-        <div className="shop-category-scroll">
+      {/* Search + Categories Section */}
+      <div className="shop-search-section">
+        {/* Search Bar */}
+        <div className="shop-search-bar-wrapper">
+          <div className="shop-search-input-wrap">
+            <input
+              type="text"
+              className="shop-search-input"
+              placeholder="Search products, categories, SKUs..."
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            />
+            {searchQuery && (
+              <button className="shop-search-clear" onClick={() => { setSearchQuery(""); setPage(1); }} aria-label="Clear search">
+                <X size={18} />
+              </button>
+            )}
+            <Search size={20} className="shop-search-icon" />
+          </div>
+        </div>
+
+        {/* Category Pills */}
+        <div className="shop-category-pills">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -1183,6 +1307,74 @@ function ShopSection() {
         </div>
       </div>
 
+      {/* Compact Header: Search + Categories + Deals */}
+      <div className="shop-compact-header" style={{display: 'none'}}>
+        {/* Search Bar */}
+        <div className="shop-top-search-bar">
+          <div className="shop-search-input-wrap">
+            <Search size={18} className="shop-search-icon" />
+            <input
+              type="text"
+              className="shop-search-input"
+              placeholder="Search products, categories, SKUs..."
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            />
+            {searchQuery && (
+              <button className="shop-search-clear" onClick={() => { setSearchQuery(""); setPage(1); }} aria-label="Clear search">
+                <X size={16} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Category Pills */}
+        <div className="shop-category-bar">
+          <div className="shop-category-scroll">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={`shop-cat-pill ${filters.category === cat ? "active" : ""}`}
+                onClick={() => { setFilters({ ...filters, category: cat }); setPage(1); }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Deal Banners */}
+        <div className="shop-deal-banners">
+          <div className="shop-deal-card shop-deal-blue">
+            <div className="shop-deal-text">
+              <span className="shop-deal-tag">BEST SELLER</span>
+              <h3>Arduino Starter Kit</h3>
+              <p>Complete kit for beginners</p>
+              <strong>₹2,499 <s>₹3,499</s></strong>
+            </div>
+            <div className="shop-deal-badge">-29%</div>
+          </div>
+          <div className="shop-deal-card shop-deal-purple">
+            <div className="shop-deal-text">
+              <span className="shop-deal-tag">TOP RATED</span>
+              <h3>Motor Driver L298N</h3>
+              <p>Dual H-Bridge controller</p>
+              <strong>₹349 <s>₹499</s></strong>
+            </div>
+            <div className="shop-deal-badge">-30%</div>
+          </div>
+          <div className="shop-deal-card shop-deal-teal">
+            <div className="shop-deal-text">
+              <span className="shop-deal-tag">HOT DEAL</span>
+              <h3>Ultrasonic Sensor</h3>
+              <p>HC-SR04 distance sensor</p>
+              <strong>₹149 <s>₹249</s></strong>
+            </div>
+            <div className="shop-deal-badge">-40%</div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="shop-body">
         {/* Sidebar */}
@@ -1192,7 +1384,6 @@ function ShopSection() {
             <button className="shop-sidebar-clear" onClick={() => { setFilters(defaultFilters); setPage(1); }}>Clear All</button>
           </div>
 
-          {/* Price Range */}
           <div className="shop-filter-group">
             <p className="shop-filter-label">PRICE RANGE</p>
             <div className="shop-price-inputs">
@@ -1202,7 +1393,6 @@ function ShopSection() {
             </div>
           </div>
 
-          {/* Rating */}
           <div className="shop-filter-group">
             <p className="shop-filter-label">MIN RATING</p>
             <div className="shop-rating-btns">
@@ -1214,7 +1404,6 @@ function ShopSection() {
             </div>
           </div>
 
-          {/* In Stock */}
           <div className="shop-filter-group">
             <label className="shop-toggle-label">
               <span>In Stock Only</span>
@@ -1224,18 +1413,39 @@ function ShopSection() {
             </label>
           </div>
 
-          {/* Mobile close */}
+          <div className="shop-filter-group">
+            <p className="shop-filter-label">DELIVERY OPTIONS</p>
+            <div className="shop-delivery-btns">
+              <button 
+                className={`shop-delivery-btn ${filters.deliveryType === "all" ? "active" : ""}`} 
+                onClick={() => setFilters({ ...filters, deliveryType: "all" })}
+              >
+                <Truck size={16} /> All
+              </button>
+              <button 
+                className={`shop-delivery-btn ${filters.deliveryType === "quick" ? "active" : ""}`} 
+                onClick={() => setFilters({ ...filters, deliveryType: "quick" })}
+              >
+                <Zap size={16} /> Quick (1 Day)
+              </button>
+              <button 
+                className={`shop-delivery-btn ${filters.deliveryType === "scheduled" ? "active" : ""}`} 
+                onClick={() => setFilters({ ...filters, deliveryType: "scheduled" })}
+              >
+                <Package size={16} /> Scheduled (1 Week)
+              </button>
+            </div>
+          </div>
+
           <button className="shop-sidebar-close-btn" onClick={() => setShowMobileFilter(false)}>
             <X size={18} /> Close Filters
           </button>
         </aside>
 
-        {/* Mobile filter overlay */}
         {showMobileFilter && <div className="shop-filter-overlay" onClick={() => setShowMobileFilter(false)} />}
 
         {/* Products Area */}
         <div className="shop-products-area">
-          {/* Toolbar */}
           <div className="shop-toolbar">
             <div className="shop-toolbar-left">
               <button className="shop-filter-toggle-btn" onClick={() => setShowMobileFilter(true)}>
@@ -1265,7 +1475,6 @@ function ShopSection() {
             </div>
           </div>
 
-          {/* Products Grid */}
           {paged.length === 0 ? (
             <div className="shop-empty">
               <Search size={48} style={{ opacity: 0.3, marginBottom: 16 }} />
@@ -1279,7 +1488,6 @@ function ShopSection() {
             </div>
           )}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="shop-pagination">
               <button className="shop-page-btn" disabled={page === 1} onClick={() => setPage(page - 1)}>
