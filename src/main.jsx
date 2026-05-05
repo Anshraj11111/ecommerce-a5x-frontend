@@ -2233,6 +2233,106 @@ function ProductDetailPage() {
   );
 }
 
+function WishlistPage() {
+  const products = useAdminStore((state) => state.products);
+  const wishlistIds = useWishlistStore((state) => state.ids);
+  const toggleWishlist = useWishlistStore((state) => state.toggle);
+  const addToCart = useCartStore((state) => state.add);
+  const navigate = useNavigate();
+
+  const wishlistProducts = products.filter((product) => wishlistIds.includes(product.id));
+
+  if (wishlistIds.length === 0) {
+    return (
+      <main className="shop-page-redesign" style={{ minHeight: 'calc(100vh - 68px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="shop-no-results">
+          <Heart size={64} style={{ color: '#cbd5e0', marginBottom: '16px' }} />
+          <h3>Your Wishlist is Empty</h3>
+          <p>Add products you love to your wishlist and find them here later!</p>
+          <button onClick={() => navigate('/shop')}>
+            <ShoppingCart size={16} />
+            Start Shopping
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="shop-page-redesign">
+      <div style={{ padding: '120px 48px 60px', maxWidth: '1400px', margin: '0 auto' }}>
+        <div style={{ marginBottom: '40px' }}>
+          <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: '42px', fontWeight: 900, color: '#1a1a1a', marginBottom: '12px' }}>
+            My Wishlist
+          </h1>
+          <p style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '16px', color: '#718096' }}>
+            {wishlistProducts.length} {wishlistProducts.length === 1 ? 'item' : 'items'} saved for later
+          </p>
+        </div>
+
+        <div className="shop-amazon-grid">
+          {wishlistProducts.map((product) => (
+            <div key={product.id} className="product-card">
+              <div className="product-image" style={{ backgroundImage: `url(${product.imageUrl || motorDriver})` }}>
+                {product.badges?.map((badge) => <span key={badge} className="product-badge">{badge}</span>)}
+                <button
+                  className="product-wishlist-btn active"
+                  onClick={() => toggleWishlist(product.id)}
+                  aria-label="Remove from wishlist"
+                >
+                  <Heart size={16} fill="#ff4444" stroke="#ff4444" />
+                </button>
+              </div>
+              <div className="product-body">
+                <h3 className="product-name">{product.name}</h3>
+                <div className="product-rating">
+                  <div className="product-stars">
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <Star key={i} size={12} fill={i < Math.floor(product.rating) ? "#f59e0b" : "none"} stroke="#f59e0b" />
+                    ))}
+                  </div>
+                  <span className="product-rating-text">{product.rating}</span>
+                </div>
+                <div className="product-price-row">
+                  <span className="product-price">{inr(product.price)}</span>
+                  {product.mrp && <span className="product-mrp">{inr(product.mrp)}</span>}
+                </div>
+                <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                  <button
+                    className="product-cart-btn"
+                    onClick={() => {
+                      addToCart(product);
+                      toggleWishlist(product.id);
+                    }}
+                    style={{ flex: 1 }}
+                  >
+                    <ShoppingCart size={14} />
+                    Add to Cart
+                  </button>
+                  <button
+                    onClick={() => navigate(`/shop/${product.id}`)}
+                    style={{
+                      padding: '8px 12px',
+                      background: '#f8f9fa',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      color: '#4a5568',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <Eye size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
+}
+
 function ShopPage() { return <main className="shop-page-main"><ShopSection /></main>; }
 function KitsPage() { return <main className="kits-page-wrap"><KitsSection /></main>; }
 function PricingPage() { return <main><PricingSection /></main>; }
@@ -4035,6 +4135,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/shop/:id" element={<ProductDetailPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/kits" element={<KitsPage />} />
           <Route path="/kits/:id" element={<KitDetailPage />} />
           <Route path="/learn" element={<LearnPage />} />
