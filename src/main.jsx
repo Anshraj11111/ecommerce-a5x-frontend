@@ -109,6 +109,8 @@ import teamChris from "./assets/team/Chris.JPG";
 import teamAmit from "./assets/team/Amit.jpg";
 import teamAditya from "./assets/team/Aditya.jpg";
 import loginImage from "./assets/team/login.png";
+import futureBg from "./assets/team/future-bg.jpg";
+import robotModel from "./assets/team/robot-model.png";
 import "./styles.css";
 import "./home-premium.css";
 import "./hero-v4.css";
@@ -1008,109 +1010,125 @@ function HomePage() {
   );
 }
 function Hero() {
-  const [scrollY, setScrollY] = useState(0);
+  const heroRef = useRef(null);
+  const [parallax, setParallax] = useState({
+    modelX: 0,
+    modelY: 0,
+    textX: 0,
+    textY: 0,
+    bgX: 50,
+    bgY: 50
+  });
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (prefersReducedMotion.matches || window.innerWidth < 760) return;
+
+    let target = { modelX: 0, modelY: 0, textX: 0, textY: 0, bgX: 50, bgY: 50 };
+    let current = { ...target };
+    let rafId;
+
+    const render = () => {
+      current.modelX += (target.modelX - current.modelX) * 0.08;
+      current.modelY += (target.modelY - current.modelY) * 0.08;
+      current.textX += (target.textX - current.textX) * 0.07;
+      current.textY += (target.textY - current.textY) * 0.07;
+      current.bgX += (target.bgX - current.bgX) * 0.05;
+      current.bgY += (target.bgY - current.bgY) * 0.05;
+
+      setParallax({ ...current });
+      rafId = requestAnimationFrame(render);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    const handleMouseMove = (event) => {
+      const rect = hero.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+      target = {
+        modelX: x * 22,
+        modelY: y * 16,
+        textX: x * -18,
+        textY: y * -10,
+        bgX: 50 + x * 2.2,
+        bgY: 50 + y * 1.8
+      };
+    };
+
+    const handleMouseLeave = () => {
+      target = { modelX: 0, modelY: 0, textX: 0, textY: 0, bgX: 50, bgY: 50 };
+    };
+
+    hero.addEventListener('pointermove', handleMouseMove);
+    hero.addEventListener('pointerleave', handleMouseLeave);
+    rafId = requestAnimationFrame(render);
+
+    return () => {
+      hero.removeEventListener('pointermove', handleMouseMove);
+      hero.removeEventListener('pointerleave', handleMouseLeave);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
-  // Subtle parallax multipliers for smooth effect
-  const bgParallax = scrollY * 0.5;
-  const leftParallax = scrollY * -0.15;
-  const rightParallax = scrollY * -0.25;
-
   return (
-    <section className="hero-v4" style={{
-      backgroundImage: `linear-gradient(135deg, rgba(3,3,13,0.75) 0%, rgba(5,5,21,0.70) 50%, rgba(3,3,13,0.75) 100%), url(${bgImage})`,
-      backgroundSize: 'cover',
-      backgroundPosition: `center ${bgParallax}px`,
-      backgroundRepeat: 'no-repeat'
-    }}>
-      {/* Animated background */}
-      <div className="hero-v4-bg" style={{ transform: `translateY(${scrollY * 0.3}px)`, willChange: 'transform' }}>
-        <div className="hero-v4-grid" />
-        <div className="hero-v4-orbs" />
+    <section 
+      ref={heroRef}
+      className="hero-v4" 
+      data-parallax-scene
+      style={{
+        '--hero-bg': `url(${futureBg})`,
+        '--model-x': `${parallax.modelX}px`,
+        '--model-y': `${parallax.modelY}px`,
+        '--text-x': `${parallax.textX}px`,
+        '--text-y': `${parallax.textY}px`,
+        '--bg-x': `${parallax.bgX}%`,
+        '--bg-y': `${parallax.bgY}%`
+      }}
+    >
+      <div className="hero-copy-v4" aria-hidden="true">
+        <span className="future-text">FUTURE</span>
+        <span className="vision-text">VISION</span>
       </div>
 
-      {/* Left content */}
-      <div className="hero-v4-left" style={{ transform: `translateY(${leftParallax}px)`, willChange: 'transform' }}>
-        <div className="hero-v4-eyebrow">
-          <span className="hero-v4-dot" />
-          <span>A5X ROBOTICS — NEXT GEN</span>
+      <section className="shop-panel-v4" aria-label="A5X Robotics shopping actions">
+        <p>Premium robotics kits, components, and courses for builders who want to create something real.</p>
+        <div className="shop-actions-v4">
+          <Link to="/shop" className="shop-primary-v4">Shop Now</Link>
+          <Link to="/kits" className="shop-secondary-v4">Explore Kits</Link>
         </div>
+      </section>
 
-        <h1 className="hero-v4-title">
-          <span className="hero-v4-title-line1">BUILD</span>
-          <span className="hero-v4-title-line2">THE FUTURE</span>
-          <span className="hero-v4-title-line3">WITH <em>ROBOTS</em></span>
-        </h1>
+      <figure className="model-wrap-v4">
+        <img src={robotModel} alt="Futuristic black robotic model with glowing blue lenses" />
+      </figure>
 
-        <p className="hero-v4-desc">
-          Premium robotics kits, components, and courses for builders who want to create something real.
-        </p>
-
-        <div className="hero-v4-actions">
-          <Link to="/shop" className="hero-v4-btn-primary">
-            <Rocket size={16} />
-            Shop Now
-          </Link>
-          <Link to="/kits" className="hero-v4-btn-secondary">
-            <Zap size={16} />
-            Explore Kits
-          </Link>
+      <aside className="callout-v4 callout-left-v4" aria-label="Robotics kit note">
+        <div className="thumb-v4">
+          <img src={robotModel} alt="" />
         </div>
+        <p>PREMIUM<br />ROBOTICS<br />KITS</p>
+      </aside>
 
-        <div className="hero-v4-stats">
-          <div className="hero-v4-stat">
-            <strong>750+</strong>
-            <span>Happy Builders</span>
-          </div>
-          <div className="hero-v4-stat-divider" />
-          <div className="hero-v4-stat">
-            <strong>4.9★</strong>
-            <span>Avg Rating</span>
-          </div>
-          <div className="hero-v4-stat-divider" />
-          <div className="hero-v4-stat">
-            <strong>50+</strong>
-            <span>Components</span>
-          </div>
+      <aside className="callout-v4 callout-right-v4" aria-label="Future vision note">
+        <p>NEXT GEN<br />FUTURE<br />VISION</p>
+        <div className="thumb-v4">
+          <img src={robotModel} alt="" />
         </div>
-      </div>
+      </aside>
 
-      {/* Right — robot image with effects */}
-      <div className="hero-v4-right" style={{ transform: `translateY(${rightParallax}px)`, willChange: 'transform' }}>
-        <div className="hero-v4-img-glow" />
-        <div className="hero-v4-img-ring hero-v4-ring-1" style={{ transform: `translateY(${scrollY * -0.1}px) rotate(${scrollY * 0.05}deg)` }} />
-        <div className="hero-v4-img-ring hero-v4-ring-2" style={{ transform: `translateY(${scrollY * -0.15}px) rotate(${scrollY * -0.05}deg)` }} />
-        <img src="/assets/robot-head.jpg" alt="A5X Robot" className="hero-v4-robot-img" />
-        <div className="hero-v4-img-ground" />
+      <aside className="rating-badge-v4" aria-label="Rated number one robotics store in India">
+        <span>Rated #1 Robotics Store in India</span>
+      </aside>
 
-        {/* Floating badge */}
-        <div className="hero-v4-badge" style={{ transform: `translateY(${scrollY * -0.2}px)` }}>
-          <div className="hero-v4-badge-icon"><CircuitBoard size={18} /></div>
-          <div>
-            <strong>ESP32 + AI Ready</strong>
-            <span>Next-gen hardware</span>
-          </div>
-        </div>
+      <span className="node-v4 node-left-v4" aria-hidden="true"></span>
+      <span className="node-v4 node-right-v4" aria-hidden="true"></span>
+      <div className="line-v4 line-left-v4" aria-hidden="true"></div>
+      <div className="line-v4 line-right-v4" aria-hidden="true"></div>
 
-        {/* Floating stat chip */}
-        <div className="hero-v4-chip" style={{ transform: `translateY(${scrollY * -0.18}px)` }}>
-          <Star size={14} className="hero-v4-chip-star" />
-          <span>Rated #1 Robotics Store in India</span>
-        </div>
-      </div>
-
-      {/* Scroll hint */}
-      <div className="hero-v4-scroll" style={{ opacity: Math.max(0, 1 - scrollY / 200), transform: `translateY(${scrollY * 0.5}px)` }}>
-        <div className="hero-v4-scroll-line" />
-        <span>Scroll</span>
-      </div>
+      <Link to="/shop" className="buy-v4">Shop Now</Link>
     </section>
   );
 }
