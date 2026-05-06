@@ -108,6 +108,7 @@ import teamAnupam from "./assets/team/Anupam.png";
 import teamChris from "./assets/team/Chris.JPG";
 import teamAmit from "./assets/team/Amit.jpg";
 import teamAditya from "./assets/team/Aditya.jpg";
+import loginImage from "./assets/team/login.png";
 import "./styles.css";
 import "./home-premium.css";
 import "./hero-v4.css";
@@ -410,7 +411,21 @@ function Navbar() {
 }
 
 function MainLayout() {
-  return <><AuroraBackground /><TwinkleField /><FloatingOrbs /><CustomCursor /><Navbar /><Outlet /><Footer /><CartDrawer /></>;
+  const location = useLocation();
+  const hideNavbar = location.pathname === '/login';
+  
+  return (
+    <>
+      <AuroraBackground />
+      <TwinkleField />
+      <FloatingOrbs />
+      <CustomCursor />
+      {!hideNavbar && <Navbar />}
+      <Outlet />
+      {!hideNavbar && <Footer />}
+      <CartDrawer />
+    </>
+  );
 }
 
 function ButtonLink({ to, children, ghost }) {
@@ -2567,13 +2582,16 @@ function LoginPage() {
       </div>
 
       {/* Right Side - Visual with Image */}
-      <div className="login-visual-side" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div className="login-visual-side" style={{ background: '#0a0e1a', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
         {/* Background Image */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${robotUnit003})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.15, filter: 'blur(2px)' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${loginImage})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.6 }} />
         
-        {/* Animated circles */}
-        <div style={{ position: 'absolute', top: '10%', left: '10%', width: '350px', height: '350px', background: 'radial-gradient(circle, rgba(0,212,255,0.25) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite' }} />
-        <div style={{ position: 'absolute', bottom: '15%', right: '10%', width: '450px', height: '450px', background: 'radial-gradient(circle, rgba(0,102,255,0.2) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite 2s' }} />
+        {/* Gradient Overlay - lighter */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(10,14,26,0.5) 0%, rgba(15,23,42,0.4) 50%, rgba(10,14,26,0.6) 100%)' }} />
+        
+        {/* Animated circles - more subtle */}
+        <div style={{ position: 'absolute', top: '10%', left: '10%', width: '350px', height: '350px', background: 'radial-gradient(circle, rgba(0,212,255,0.15) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', bottom: '15%', right: '10%', width: '450px', height: '450px', background: 'radial-gradient(circle, rgba(0,102,255,0.1) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite 2s' }} />
         
         {/* Content */}
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '60px' }}>
