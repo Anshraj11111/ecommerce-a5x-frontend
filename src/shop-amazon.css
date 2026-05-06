@@ -243,8 +243,7 @@
 }
 
 .shop-search-input-wrap {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
+  display: flex;
   align-items: center;
   background: #f8f9fa;
   border: 2px solid #e2e8f0;
@@ -268,9 +267,9 @@
   color: #1a1a1a;
   font-family: 'Space Grotesk', sans-serif;
   font-size: 16px;
-  padding: 16px 0;
+  padding: 16px 0 16px 16px;
   min-width: 0;
-  grid-column: 1;
+  flex: 1;
 }
 
 .shop-search-input::placeholder {
@@ -302,7 +301,7 @@
   color: #718096;
   width: 20px;
   height: 20px;
-  grid-column: 3;
+  flex-shrink: 0;
 }
 
 .shop-category-pills {
@@ -1034,4 +1033,109 @@ select {
 
 select::-ms-expand {
   display: none;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRODUCT CARD - ONLY FONTS & COLORS FROM PHOTO (NO SIZE CHANGES)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Category Pill - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .category-pill,
+.wishlist-page-premium .product-card .category-pill {
+  font-family: 'Inter', sans-serif !important;
+  color: #1e90ff !important;
+  background: rgba(30, 144, 255, 0.1) !important;
+  font-weight: 800 !important;
+}
+
+/* Product Name - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .product-name-link h3,
+.wishlist-page-premium .product-card .product-name-link h3 {
+  font-family: 'Syne', sans-serif !important;
+  color: #2d3748 !important;
+  font-weight: 700 !important;
+}
+
+/* SKU - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .sku,
+.wishlist-page-premium .product-card .sku {
+  font-family: 'Inter', sans-serif !important;
+  color: #94a3b8 !important;
+}
+
+/* Rating Count - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .review-count,
+.wishlist-page-premium .product-card .review-count {
+  font-family: 'Inter', sans-serif !important;
+  color: #94a3b8 !important;
+}
+
+/* Price - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .price-row strong,
+.wishlist-page-premium .product-card .price-row strong {
+  font-family: 'Inter', sans-serif !important;
+  color: #1a202c !important;
+  font-weight: 900 !important;
+}
+
+/* MRP Strikethrough - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .price-row .mrp,
+.wishlist-page-premium .product-card .price-row .mrp {
+  font-family: 'Inter', sans-serif !important;
+  color: #cbd5e0 !important;
+}
+
+/* Discount Badge - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .price-row .discount-badge,
+.wishlist-page-premium .product-card .price-row .discount-badge {
+  font-family: 'Inter', sans-serif !important;
+  background: #10b981 !important;
+  color: white !important;
+  font-weight: 800 !important;
+}
+
+/* Stock Badge - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .stock-badge,
+.wishlist-page-premium .product-card .stock-badge {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 700 !important;
+}
+
+.shop-page-redesign .product-card .stock-badge.in-stock,
+.wishlist-page-premium .product-card .stock-badge.in-stock {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #10b981 !important;
+}
+
+/* Delivery Text - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .delivery-est,
+.wishlist-page-premium .product-card .delivery-est {
+  font-family: 'Inter', sans-serif !important;
+  color: #718096 !important;
+}
+
+/* Add to Cart Button - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .add-quote-btn,
+.wishlist-page-premium .product-card .add-quote-btn {
+  font-family: 'Inter', sans-serif !important;
+  background: #0066FF !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+/* View Details Button - ONLY COLOR */
+.shop-page-redesign .product-card .view-details-btn,
+.wishlist-page-premium .product-card .view-details-btn {
+  color: #0066FF !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Product Badge - ONLY FONT & COLOR */
+.shop-page-redesign .product-card .product-badge,
+.wishlist-page-premium .product-card .product-badge {
+  font-family: 'Inter', sans-serif !important;
+  background: #1e90ff !important;
+  color: white !important;
+  font-weight: 800 !important;
 }

@@ -1355,6 +1355,7 @@ function ShopSection() {
         {/* Search Bar */}
         <div className="shop-search-bar-wrapper">
           <div className="shop-search-input-wrap">
+            <Search size={20} className="shop-search-icon" />
             <input
               type="text"
               className="shop-search-input"
@@ -1367,7 +1368,6 @@ function ShopSection() {
                 <X size={18} />
               </button>
             )}
-            <Search size={20} className="shop-search-icon" />
           </div>
         </div>
 
