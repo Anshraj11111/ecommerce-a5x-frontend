@@ -2247,9 +2247,24 @@ function WishlistPage() {
       <main className="shop-page-redesign" style={{ minHeight: 'calc(100vh - 68px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="shop-no-results">
           <Heart size={64} style={{ color: '#cbd5e0', marginBottom: '16px' }} />
-          <h3>Your Wishlist is Empty</h3>
-          <p>Add products you love to your wishlist and find them here later!</p>
-          <button onClick={() => navigate('/shop')}>
+          <h3 style={{ fontFamily: 'Syne, sans-serif', fontSize: '28px', fontWeight: 700, color: '#1a1a1a', margin: '0 0 12px' }}>Your Wishlist is Empty</h3>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: '#718096', margin: '0 0 24px' }}>Add products you love to your wishlist and find them here later!</p>
+          <button onClick={() => navigate('/shop')} style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '14px 28px',
+            background: '#0066FF',
+            border: 'none',
+            borderRadius: '10px',
+            color: '#fff',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '15px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.3s',
+            boxShadow: '0 4px 16px rgba(0, 102, 255, 0.3)'
+          }}>
             <ShoppingCart size={16} />
             Start Shopping
           </button>
@@ -2260,51 +2275,147 @@ function WishlistPage() {
 
   return (
     <main className="shop-page-redesign">
-      <div style={{ padding: '120px 48px 60px', maxWidth: '1400px', margin: '0 auto' }}>
-        <div style={{ marginBottom: '40px' }}>
-          <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: '42px', fontWeight: 900, color: '#1a1a1a', marginBottom: '12px' }}>
-            My Wishlist
-          </h1>
-          <p style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '16px', color: '#718096' }}>
+      {/* Header Section */}
+      <div style={{
+        background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
+        borderBottom: '1px solid #e2e8f0',
+        padding: '100px 48px 40px',
+        marginBottom: '40px'
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <Heart size={32} style={{ color: '#0066FF', fill: '#0066FF' }} />
+            <h1 style={{
+              fontFamily: 'Syne, sans-serif',
+              fontSize: '42px',
+              fontWeight: 800,
+              color: '#1a1a1a',
+              margin: 0,
+              letterSpacing: '-0.02em'
+            }}>
+              My Wishlist
+            </h1>
+          </div>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '16px',
+            color: '#718096',
+            margin: 0,
+            fontWeight: 500
+          }}>
             {wishlistProducts.length} {wishlistProducts.length === 1 ? 'item' : 'items'} saved for later
           </p>
         </div>
+      </div>
 
+      {/* Products Grid */}
+      <div style={{ padding: '0 48px 60px', maxWidth: '1400px', margin: '0 auto' }}>
         <div className="shop-amazon-grid">
           {wishlistProducts.map((product) => (
-            <div key={product.id} className="product-card">
-              <div className="product-image" style={{ backgroundImage: `url(${product.imageUrl || motorDriver})` }}>
-                {product.badges?.map((badge) => <span key={badge} className="product-badge">{badge}</span>)}
+            <div key={product.id} className="product-card" style={{
+              background: '#fff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              transition: 'all 0.3s',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
+            }}>
+              <div className="product-image" style={{ backgroundImage: `url(${product.imageUrl || motorDriver})`, position: 'relative' }}>
+                {product.badges?.map((badge) => (
+                  <span key={badge} className="product-badge" style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    letterSpacing: '0.5px'
+                  }}>{badge}</span>
+                ))}
                 <button
                   className="product-wishlist-btn active"
                   onClick={() => toggleWishlist(product.id)}
                   aria-label="Remove from wishlist"
+                  style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                  }}
                 >
                   <Heart size={16} fill="#ff4444" stroke="#ff4444" />
                 </button>
               </div>
-              <div className="product-body">
-                <h3 className="product-name">{product.name}</h3>
-                <div className="product-rating">
-                  <div className="product-stars">
+              <div className="product-body" style={{ padding: '16px' }}>
+                <h3 className="product-name" style={{
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  color: '#1a1a1a',
+                  margin: '0 0 8px',
+                  lineHeight: 1.4
+                }}>{product.name}</h3>
+                <div className="product-rating" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+                  <div className="product-stars" style={{ display: 'flex', gap: '2px' }}>
                     {Array.from({ length: 5 }, (_, i) => (
                       <Star key={i} size={12} fill={i < Math.floor(product.rating) ? "#f59e0b" : "none"} stroke="#f59e0b" />
                     ))}
                   </div>
-                  <span className="product-rating-text">{product.rating}</span>
+                  <span className="product-rating-text" style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: '#4a5568'
+                  }}>{product.rating}</span>
                 </div>
-                <div className="product-price-row">
-                  <span className="product-price">{inr(product.price)}</span>
-                  {product.mrp && <span className="product-mrp">{inr(product.mrp)}</span>}
+                <div className="product-price-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <span className="product-price" style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '20px',
+                    fontWeight: 700,
+                    color: '#0066FF'
+                  }}>{inr(product.price)}</span>
+                  {product.mrp && (
+                    <span className="product-mrp" style={{
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      color: '#a0aec0',
+                      textDecoration: 'line-through'
+                    }}>{inr(product.mrp)}</span>
+                  )}
                 </div>
-                <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                <div style={{ display: 'flex', gap: '8px' }}>
                   <button
-                    className="product-cart-btn"
                     onClick={() => {
                       addToCart(product);
                       toggleWishlist(product.id);
                     }}
-                    style={{ flex: 1 }}
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '12px 16px',
+                      background: '#0066FF',
+                      border: 'none',
+                      borderRadius: '10px',
+                      color: '#fff',
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.3s',
+                      boxShadow: '0 4px 12px rgba(0, 102, 255, 0.25)'
+                    }}
                   >
                     <ShoppingCart size={14} />
                     Add to Cart
@@ -2312,13 +2423,16 @@ function WishlistPage() {
                   <button
                     onClick={() => navigate(`/shop/${product.id}`)}
                     style={{
-                      padding: '8px 12px',
+                      padding: '12px 14px',
                       background: '#f8f9fa',
                       border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
+                      borderRadius: '10px',
                       color: '#4a5568',
                       cursor: 'pointer',
-                      transition: 'all 0.2s'
+                      transition: 'all 0.3s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}
                   >
                     <Eye size={14} />
@@ -2568,7 +2682,7 @@ function ContactPage() {
     const contactData = { ...formData, id: Date.now().toString(), createdAt: new Date().toISOString(), status: 'new' };
 
     try {
-      const res = await fetch('http://localhost:3001/api/contacts', {
+      const res = await fetch(`${API_BASE}/api/contacts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -2597,38 +2711,38 @@ function ContactPage() {
 
   if (submitted) return (
     <main className="contact-page">
-      <section className="contact-form glass-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-        <div style={{ fontSize: '64px', marginBottom: '20px' }}>✅</div>
-        <h2 style={{ color: 'var(--brand-cyan)', marginBottom: '12px' }}>Message Sent!</h2>
-        <p style={{ color: 'var(--brand-steel)', marginBottom: '28px' }}>We'll get back to you within 24 hours.</p>
-        <button className="btn" onClick={() => setSubmitted(false)}>Send Another Message</button>
+      <section className="contact-form" style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '72px', marginBottom: '24px' }}>✅</div>
+        <h2 style={{ fontFamily: 'Syne, sans-serif', fontSize: '32px', fontWeight: 900, color: '#0066FF', marginBottom: '16px' }}>Message Sent Successfully!</h2>
+        <p style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '15px', color: '#64748b', marginBottom: '32px' }}>We'll get back to you within 24 hours.</p>
+        <button onClick={() => setSubmitted(false)} style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '15px', fontWeight: 700, border: 'none', borderRadius: '12px', padding: '14px 32px', background: 'linear-gradient(135deg, #0066FF 0%, #0052cc 100%)', color: '#ffffff', cursor: 'pointer', transition: 'all 0.3s ease', boxShadow: '0 4px 16px rgba(0, 102, 255, 0.3)' }}>Send Another Message</button>
       </section>
-      <section className="contact-image"><img src={robotHandshake} alt="" /></section>
+      <section className="contact-image"><img src={robotHandshake} alt="Robot handshake" /></section>
     </main>
   );
 
   return (
     <main className="contact-page">
-      <section className="contact-form glass-card">
-        <p className="eyebrow">CONTACT</p>
+      <section className="contact-form">
+        <p className="eyebrow">CONTACT US</p>
         <h1>Let's Build Together</h1>
-        <p style={{ color: 'var(--brand-steel)', marginBottom: '28px' }}>Partner with A5X Industries for robotics workshops, lab setup, or bulk component orders.</p>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <input name="name" value={formData.name} onChange={handleChange} placeholder="Full Name *" required style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', padding: '12px 16px', fontSize: '14px' }} />
-          <input name="organization" value={formData.organization} onChange={handleChange} placeholder="School / Organization" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', padding: '12px 16px', fontSize: '14px' }} />
-          <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Email Address *" required style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', padding: '12px 16px', fontSize: '14px' }} />
+        <p>Partner with A5X Robotics for workshops, lab setup, or bulk component orders. We're here to help you succeed.</p>
+        <form onSubmit={handleSubmit}>
+          <input name="name" value={formData.name} onChange={handleChange} placeholder="Full Name *" required />
+          <input name="organization" value={formData.organization} onChange={handleChange} placeholder="School / Organization (Optional)" />
+          <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Email Address *" required />
           <input name="phone" value={formData.phone} onChange={(e) => {
             // Only allow digits, max 10
             const val = e.target.value.replace(/\D/g, '').slice(0, 10);
             setFormData({ ...formData, phone: val });
-          }} placeholder="Phone Number (10 digits)" maxLength={10} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', padding: '12px 16px', fontSize: '14px' }} />
-          <textarea name="message" value={formData.message} onChange={handleChange} placeholder="Your Message *" rows={5} required style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', padding: '12px 16px', fontSize: '14px', resize: 'vertical' }} />
-          <button type="submit" className="btn" disabled={loading} style={{ marginTop: '4px' }}>
+          }} placeholder="Phone Number (10 digits)" maxLength={10} />
+          <textarea name="message" value={formData.message} onChange={handleChange} placeholder="Your Message *" rows={5} required />
+          <button type="submit" disabled={loading}>
             {loading ? 'Sending...' : 'Send Message'}
           </button>
         </form>
       </section>
-      <section className="contact-image"><img src={robotHandshake} alt="Robot and human hand with cyan ring" /></section>
+      <section className="contact-image"><img src={robotHandshake} alt="Robot and human handshake" /></section>
     </main>
   );
 }
