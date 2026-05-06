@@ -1,8 +1,6 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   PREMIUM DARK ADMIN PANEL DESIGN - CLEAN & CLASSY
-   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Admin Page Layout - Dark Theme */
+
+
 .admin-page {
   padding: 32px;
   background: #0f1419;
@@ -1230,6 +1228,140 @@ table td a:hover {
   .contact-detail-fields {
     grid-template-columns: 1fr;
   }
+}
+
+/* Bulk Product Upload - Dark Theme */
+.bulk-upload-section {
+  margin: 24px 0;
+  padding: 24px;
+  background: #1a1f2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+.bulk-upload-card {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.bulk-upload-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: rgba(0, 102, 255, 0.1);
+  border: 2px solid rgba(0, 102, 255, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0066FF;
+}
+
+.bulk-upload-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.bulk-upload-card > p {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 24px;
+}
+
+.bulk-upload-format {
+  background: #0f1419;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+  text-align: left;
+}
+
+.bulk-upload-format p {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 12px;
+}
+
+.bulk-upload-format code {
+  display: block;
+  padding: 12px;
+  background: rgba(0, 102, 255, 0.05);
+  border: 1px solid rgba(0, 102, 255, 0.2);
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #00f5ff;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.bulk-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #0066FF 0%, #0044cc 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 16px;
+}
+
+.bulk-upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 102, 255, 0.5);
+}
+
+.bulk-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.bulk-upload-result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 24px;
+}
+
+.bulk-upload-result.success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.bulk-upload-result.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
 }
 
 @media (max-width: 768px) {

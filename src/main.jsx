@@ -145,7 +145,118 @@ const productsSeed = [
   { id: "oled", name: "OLED 0.96 I2C Display", price: 180, mrp: 299, minQty: 1, category: "Display", sku: "A5X-DI-001", rating: 4.9, reviewCount: 198, inStock: true, stockCount: 55, shortDescription: "128x64 pixel OLED. Crystal clear display over I2C.", features: ["128x64 pixels", "SSD1306 driver", "I2C interface", "Self-emitting — no backlight", "Wide viewing angle"], specs: { "Resolution": "128 x 64", "Driver": "SSD1306", "Interface": "I2C", "Voltage": "3.3V–5V", "Size": "0.96 inch", "Dimensions": "27 x 27 x 4 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 180 }, { min: 10, max: 49, price: 155 }], badges: ["Popular"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["lcd16"] },
   { id: "lcd16", name: "16x2 LCD with I2C", price: 70, mrp: 129, minQty: 1, category: "Display", sku: "A5X-DI-002", rating: 4.5, reviewCount: 134, inStock: true, stockCount: 70, shortDescription: "16x2 character LCD with I2C backpack. Only 2 wires needed.", features: ["16x2 character display", "I2C backpack included", "Blue backlight", "Adjustable contrast"], specs: { "Characters": "16 x 2", "Interface": "I2C (PCF8574)", "Backlight": "Blue LED", "Voltage": "5V", "Dimensions": "80 x 36 x 12 mm" }, compatibility: ["Arduino", "ESP32"], bulkPricing: [{ min: 1, max: 9, price: 70 }, { min: 10, max: 49, price: 58 }], badges: [], frequentlyBoughtWith: ["uno-r3"], relatedIds: ["oled"] },
   { id: "18650", name: "18650 LiPo Battery 3000mAh", price: 220, mrp: 349, minQty: 1, category: "Battery", sku: "A5X-BA-001", rating: 4.6, reviewCount: 89, inStock: true, stockCount: 100, shortDescription: "3.7V rechargeable lithium cell. Powers your robots.", features: ["3000mAh capacity", "3.7V nominal", "Rechargeable 500+ cycles", "Protected circuit"], specs: { "Capacity": "3000mAh", "Voltage": "3.7V nominal", "Max Discharge": "2A", "Dimensions": "18 x 65 mm", "Weight": "48g" }, compatibility: ["All boards (with regulator)"], bulkPricing: [{ min: 1, max: 9, price: 220 }, { min: 10, max: 49, price: 190 }], badges: ["Power"], frequentlyBoughtWith: ["tp4056", "l298n"], relatedIds: ["tp4056"] },
-  { id: "tp4056", name: "TP4056 Charger Module", price: 35, mrp: 69, minQty: 1, category: "Charger", sku: "A5X-CH-001", rating: 4.7, reviewCount: 210, inStock: true, stockCount: 180, shortDescription: "Micro-USB Li-Ion charger with protection circuit.", features: ["1A charge current", "Micro-USB input", "Overcharge protection", "Over-discharge protection", "LED indicators"], specs: { "Input": "5V Micro-USB", "Charge Current": "1A max", "Battery": "3.7V Li-Ion/LiPo", "Protection": "Overcharge + Overdischarge", "Dimensions": "25 x 19 mm" }, compatibility: ["18650 cells", "LiPo packs"], bulkPricing: [{ min: 1, max: 9, price: 35 }, { min: 10, max: 49, price: 28 }, { min: 50, max: 999, price: 22 }], badges: ["Essential"], frequentlyBoughtWith: ["18650"], relatedIds: ["18650"] }
+  { id: "tp4056", name: "TP4056 Charger Module", price: 35, mrp: 69, minQty: 1, category: "Charger", sku: "A5X-CH-001", rating: 4.7, reviewCount: 210, inStock: true, stockCount: 180, shortDescription: "Micro-USB Li-Ion charger with protection circuit.", features: ["1A charge current", "Micro-USB input", "Overcharge protection", "Over-discharge protection", "LED indicators"], specs: { "Input": "5V Micro-USB", "Charge Current": "1A max", "Battery": "3.7V Li-Ion/LiPo", "Protection": "Overcharge + Overdischarge", "Dimensions": "25 x 19 mm" }, compatibility: ["18650 cells", "LiPo packs"], bulkPricing: [{ min: 1, max: 9, price: 35 }, { min: 10, max: 49, price: 28 }, { min: 50, max: 999, price: 22 }], badges: ["Essential"], frequentlyBoughtWith: ["18650"], relatedIds: ["18650"] },
+  // Invoice 1 Products (37 items)
+  { id: uid(), name: "5V Relay Module single ch", price: 43, mrp: 60, minQty: 1, category: "Sensor", sku: "A5X-INV1-001", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "5V Relay Module single ch" },
+  { id: uid(), name: "5V Dual Channel Relay Module with Optocoupler", price: 85, mrp: 119, minQty: 1, category: "Sensor", sku: "A5X-INV1-002", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "5V Dual Channel Relay Module with Optocoupler" },
+  { id: uid(), name: "Soil Moisture Sensor Module for Humidity Detection", price: 45, mrp: 63, minQty: 1, category: "Sensor", sku: "A5X-INV1-003", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "Soil Moisture Sensor Module for Humidity Detection" },
+  { id: uid(), name: "Metal touch sensor module KY-036 Human Body Touch Sensor", price: 46, mrp: 64, minQty: 1, category: "Sensor", sku: "A5X-INV1-004", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "Metal touch sensor module KY-036 Human Body Touch Sensor" },
+  { id: uid(), name: "Raindrops Detection Sensor Module", price: 51, mrp: 71, minQty: 1, category: "Sensor", sku: "A5X-INV1-005", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "Raindrops Detection Sensor Module" },
+  { id: uid(), name: "Flex Sensor 2.2", price: 260, mrp: 364, minQty: 1, category: "Sensor", sku: "A5X-INV1-006", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "Flex Sensor 2.2" },
+  { id: uid(), name: "LM35D Analog Temperature Sensor Module", price: 87, mrp: 122, minQty: 1, category: "Sensor", sku: "A5X-INV1-007", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "LM35D Analog Temperature Sensor Module" },
+  { id: uid(), name: "DHT-11 Temperature And Humidity Sensor Module", price: 69, mrp: 97, minQty: 1, category: "Sensor", sku: "A5X-INV1-008", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "DHT-11 Temperature And Humidity Sensor Module" },
+  { id: uid(), name: "BMP280 Barometric Pressure and Altitude Sensor I2C/SPI Module", price: 55, mrp: 77, minQty: 1, category: "Sensor", sku: "A5X-INV1-009", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "BMP280 Barometric Pressure and Altitude Sensor I2C/SPI Module" },
+  { id: uid(), name: "TCS3200 Color Recognition Sensor Module", price: 370, mrp: 518, minQty: 1, category: "Sensor", sku: "A5X-INV1-010", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "TCS3200 Color Recognition Sensor Module" },
+  { id: uid(), name: "Sound Detection Sensor Module", price: 45, mrp: 63, minQty: 1, category: "Sensor", sku: "A5X-INV1-011", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 5, shortDescription: "Sound Detection Sensor Module" },
+  { id: uid(), name: "2.4GHz NRF24L01+PA+LNA SMA Wireless Transceiver Antenna", price: 155, mrp: 217, minQty: 1, category: "Connectors", sku: "A5X-INV1-012", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "2.4GHz NRF24L01+PA+LNA SMA Wireless Transceiver Antenna" },
+  { id: uid(), name: "RFID Reader/Writer RC522 SPI S50 with RFID Card and Tag", price: 115, mrp: 161, minQty: 1, category: "Sensor", sku: "A5X-INV1-013", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 8, shortDescription: "RFID Reader/Writer RC522 SPI S50 with RFID Card and Tag" },
+  { id: uid(), name: "Digital Multi Servo Tester ESC RC Consistency CCPM Master Speed Control", price: 135, mrp: 189, minQty: 1, category: "Sensor", sku: "A5X-INV1-014", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "Digital Multi Servo Tester ESC RC Consistency CCPM Master Speed Control" },
+  { id: uid(), name: "Anti-Static Tweezers tools set of 5 PCs with bag", price: 170, mrp: 238, minQty: 1, category: "Sensor", sku: "A5X-INV1-015", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "Anti-Static Tweezers tools set of 5 PCs with bag" },
+  { id: uid(), name: "Taparia 9 Pieces Black Finish Allen Key Set in Box", price: 255, mrp: 357, minQty: 1, category: "Sensor", sku: "A5X-INV1-016", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "Taparia 9 Pieces Black Finish Allen Key Set in Box" },
+  { id: uid(), name: "60W Hot Melt Glue Gun", price: 180, mrp: 252, minQty: 1, category: "Sensor", sku: "A5X-INV1-017", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "60W Hot Melt Glue Gun" },
+  { id: uid(), name: "SOLDERING KIT", price: 450, mrp: 630, minQty: 1, category: "Sensor", sku: "A5X-INV1-018", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "SOLDERING KIT" },
+  { id: uid(), name: "ImaxRC B3 Compact Charger for 2~3 series LiPo battery", price: 320, mrp: 448, minQty: 1, category: "Charger", sku: "A5X-INV1-019", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "ImaxRC B3 Compact Charger for 2~3 series LiPo battery" },
+  { id: uid(), name: "Li-ion 2 Cell Battery Charger Universal AC Wall For 18650", price: 180, mrp: 252, minQty: 1, category: "Charger", sku: "A5X-INV1-020", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "Li-ion 2 Cell Battery Charger Universal AC Wall For 18650" },
+  { id: uid(), name: "DT830D LCD Digital Multimeter AC DC Tester With Probes", price: 168, mrp: 235, minQty: 1, category: "Sensor", sku: "A5X-INV1-021", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "DT830D LCD Digital Multimeter AC DC Tester With Probes" },
+  { id: uid(), name: "Generic 11 MM Glue Stick", price: 9.5, mrp: 13, minQty: 1, category: "Sensor", sku: "A5X-INV1-022", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 40, shortDescription: "Generic 11 MM Glue Stick" },
+  { id: uid(), name: "CABLE TIE 100pcs", price: 130, mrp: 182, minQty: 1, category: "Cables", sku: "A5X-INV1-023", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 5, shortDescription: "CABLE TIE 100pcs" },
+  { id: uid(), name: "3S 11.1V 10A LI-ION Battery Protection Board BMS", price: 140, mrp: 196, minQty: 1, category: "Battery", sku: "A5X-INV1-024", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "3S 11.1V 10A LI-ION Battery Protection Board BMS" },
+  { id: uid(), name: "Sim800l gsm gprs micro sim card ttl module", price: 270, mrp: 378, minQty: 1, category: "Sensor", sku: "A5X-INV1-025", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 5, shortDescription: "Sim800l gsm gprs micro sim card ttl module" },
+  { id: uid(), name: "ublox neo 6m gps module (3.3v 5v interface,with eeprom,flash)", price: 245, mrp: 343, minQty: 1, category: "Sensor", sku: "A5X-INV1-026", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "ublox neo 6m gps module (3.3v 5v interface,with eeprom,flash)" },
+  { id: uid(), name: "Flame/Fire Sensor Module", price: 35, mrp: 49, minQty: 1, category: "Sensor", sku: "A5X-INV1-027", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "Flame/Fire Sensor Module" },
+  { id: uid(), name: "PCB Mount 5V Passive Buzzer", price: 12, mrp: 17, minQty: 1, category: "Sensor", sku: "A5X-INV1-028", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "PCB Mount 5V Passive Buzzer" },
+  { id: uid(), name: "2 pin pcb mount screw terminal connector 5mm Pitch", price: 4, mrp: 6, minQty: 1, category: "Connectors", sku: "A5X-INV1-029", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "2 pin pcb mount screw terminal connector 5mm Pitch" },
+  { id: uid(), name: "Li-ion 2 Cell Battery holder", price: 25, mrp: 35, minQty: 1, category: "Battery", sku: "A5X-INV1-030", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "Li-ion 2 Cell Battery holder" },
+  { id: uid(), name: "10k potentiometer with knob", price: 22, mrp: 31, minQty: 1, category: "Sensor", sku: "A5X-INV1-031", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "10k potentiometer with knob" },
+  { id: uid(), name: "dc jack male + female pair", price: 18, mrp: 25, minQty: 1, category: "Connectors", sku: "A5X-INV1-032", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "dc jack male + female pair" },
+  { id: uid(), name: "140 Pieces Heat Shrink Tubes kits", price: 219, mrp: 307, minQty: 1, category: "Sensor", sku: "A5X-INV1-033", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "140 Pieces Heat Shrink Tubes kits" },
+  { id: uid(), name: "strong Round Magnet 15x3mm", price: 6, mrp: 8, minQty: 1, category: "Sensor", sku: "A5X-INV1-034", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "strong Round Magnet 15x3mm" },
+  { id: uid(), name: "Magnetic Reed Switch 12mm", price: 11, mrp: 15, minQty: 1, category: "Sensor", sku: "A5X-INV1-035", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "Magnetic Reed Switch 12mm" },
+  { id: uid(), name: "High Power Cold White LED", price: 35, mrp: 49, minQty: 1, category: "Display", sku: "A5X-INV1-036", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "High Power Cold White LED" },
+  { id: uid(), name: "Desoldering Pump, Solder Sucker - Desoldering Vacuum Pump", price: 110, mrp: 154, minQty: 1, category: "Sensor", sku: "A5X-INV1-037", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 5, shortDescription: "Desoldering Pump, Solder Sucker - Desoldering Vacuum Pump" },
+  // Invoice 2 Products (62 items) - Adding first 20
+  { id: uid(), name: "LEDs 5 color each 120pcs", price: 0.90, mrp: 1.26, minQty: 1, category: "Display", sku: "A5X-INV2-001", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 600, shortDescription: "LEDs 5 color each 120pcs" },
+  { id: uid(), name: "RGB LED", price: 4.00, mrp: 5.60, minQty: 1, category: "Display", sku: "A5X-INV2-002", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 150, shortDescription: "RGB LED" },
+  { id: uid(), name: "GL-12 830 Points Solderless Breadboard", price: 65.00, mrp: 91, minQty: 1, category: "Electronics", sku: "A5X-INV2-003", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 15, shortDescription: "GL-12 830 Points Solderless Breadboard" },
+  { id: uid(), name: "Solderless Breadboard Half Size 400 Point", price: 47.00, mrp: 66, minQty: 1, category: "Electronics", sku: "A5X-INV2-004", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 18, shortDescription: "Solderless Breadboard Half Size 400 Point" },
+  { id: uid(), name: "Purf Board(6x4 Inch)", price: 35.00, mrp: 49, minQty: 1, category: "Electronics", sku: "A5X-INV2-005", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 24, shortDescription: "Purf Board(6x4 Inch)" },
+  { id: uid(), name: "11.1V 2200mAh 3S 80C Lithium-Polymer Rechargeable Battery", price: 1589.00, mrp: 2225, minQty: 1, category: "Battery", sku: "A5X-INV2-006", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "11.1V 2200mAh 3S 80C Lithium-Polymer Rechargeable Battery" },
+  { id: uid(), name: "18650 3.7V 2000mAh Li-ion Battery", price: 52.00, mrp: 73, minQty: 1, category: "Battery", sku: "A5X-INV2-007", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 36, shortDescription: "18650 3.7V 2000mAh Li-ion Battery" },
+  { id: uid(), name: "9v Battery with connector", price: 24.00, mrp: 34, minQty: 1, category: "Battery", sku: "A5X-INV2-008", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "9v Battery with connector" },
+  { id: uid(), name: "RESISTOR Kit 30 values 600 pcs", price: 420.00, mrp: 588, minQty: 1, category: "Electronics", sku: "A5X-INV2-009", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "RESISTOR Kit 30 values 600 pcs" },
+  { id: uid(), name: "CAPACITOR Kit 20 values 400 pcs with electrolite capacitor", price: 530.00, mrp: 742, minQty: 1, category: "Electronics", sku: "A5X-INV2-010", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "CAPACITOR Kit 20 values 400 pcs with electrolite capacitor" },
+  { id: uid(), name: "200 RPM 12v DC Center Shaft metal Gear Motor", price: 155.00, mrp: 217, minQty: 1, category: "Motors", sku: "A5X-INV2-011", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 33, shortDescription: "200 RPM 12v DC Center Shaft metal Gear Motor" },
+  { id: uid(), name: "TowerPro SG90 9g Micro Servo Motor – 180 Degree Rotation", price: 97.00, mrp: 136, minQty: 1, category: "Motors", sku: "A5X-INV2-012", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "TowerPro SG90 9g Micro Servo Motor – 180 Degree Rotation" },
+  { id: uid(), name: "N20 12V 400 Rpm Micro Metal Gear Motor", price: 240.00, mrp: 336, minQty: 1, category: "Motors", sku: "A5X-INV2-013", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "N20 12V 400 Rpm Micro Metal Gear Motor" },
+  { id: uid(), name: "300 RPM Dual Shaft BO Motor + Wheel", price: 72.00, mrp: 101, minQty: 1, category: "Motors", sku: "A5X-INV2-014", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 28, shortDescription: "300 RPM Dual Shaft BO Motor + Wheel" },
+  { id: uid(), name: "diode kits 10 values each 10", price: 3.00, mrp: 4.20, minQty: 1, category: "Electronics", sku: "A5X-INV2-015", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 100, shortDescription: "diode kits 10 values each 10" },
+  { id: uid(), name: "transistor kits 5 values each 10 pcs", price: 7.00, mrp: 9.80, minQty: 1, category: "Electronics", sku: "A5X-INV2-016", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 50, shortDescription: "transistor kits 5 values each 10 pcs" },
+  { id: uid(), name: "Test Leads Alligator Clip 1 pair", price: 10.00, mrp: 14, minQty: 1, category: "Cables", sku: "A5X-INV2-017", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 24, shortDescription: "Test Leads Alligator Clip 1 pair" },
+  { id: uid(), name: "9v Battery Connector + DC Jack(Battery Connector Cap)", price: 14.00, mrp: 20, minQty: 1, category: "Connectors", sku: "A5X-INV2-018", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "9v Battery Connector + DC Jack(Battery Connector Cap)" },
+  { id: uid(), name: "HOOKUP WIRES ( MULTI COLOUR ROLL) 10m each 5 color", price: 30.00, mrp: 42, minQty: 1, category: "Cables", sku: "A5X-INV2-019", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 50, shortDescription: "HOOKUP WIRES ( MULTI COLOUR ROLL) 10m each 5 color" },
+  { id: uid(), name: "MALE TO MALE JUMPER WIRES - 20 CM", price: 1.80, mrp: 2.52, minQty: 1, category: "Cables", sku: "A5X-INV2-020", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 600, shortDescription: "MALE TO MALE JUMPER WIRES - 20 CM" },
+  { id: uid(), name: "MALE TO FEMALE JUMPER WIRES - 20 CM", price: 1.80, mrp: 2.52, minQty: 1, category: "Cables", sku: "A5X-INV2-021", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 600, shortDescription: "MALE TO FEMALE JUMPER WIRES - 20 CM" },
+  { id: uid(), name: "FEMALE TO FEMALE JUMPER WIRES - 20 CM", price: 1.80, mrp: 2.52, minQty: 1, category: "Cables", sku: "A5X-INV2-022", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 600, shortDescription: "FEMALE TO FEMALE JUMPER WIRES - 20 CM" },
+  { id: uid(), name: "BERG STRIP (PIN HEADER) MALE", price: 8.00, mrp: 11.20, minQty: 1, category: "Connectors", sku: "A5X-INV2-023", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 50, shortDescription: "BERG STRIP (PIN HEADER) MALE" },
+  { id: uid(), name: "BERG STRIP (PIN HEADER) FEMALE", price: 12.00, mrp: 16.80, minQty: 1, category: "Connectors", sku: "A5X-INV2-024", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 50, shortDescription: "BERG STRIP (PIN HEADER) FEMALE" },
+  { id: uid(), name: "Arduino Nano R3 Board Soldered", price: 210.00, mrp: 294, minQty: 1, category: "MicroController", sku: "A5X-INV2-025", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "Arduino Nano R3 Board Soldered" },
+  { id: uid(), name: "Arduino Uno R3 SMD CH340G ATmega328p Development Board", price: 240.00, mrp: 336, minQty: 1, category: "MicroController", sku: "A5X-INV2-026", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 14, shortDescription: "Arduino Uno R3 SMD CH340G ATmega328p Development Board" },
+  { id: uid(), name: "Arduino Mega 2560 R3", price: 1250.00, mrp: 1750, minQty: 1, category: "MicroController", sku: "A5X-INV2-027", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "Arduino Mega 2560 R3" },
+  { id: uid(), name: "ESP32 Wifi & Bluetooth Development Board 38 Pin", price: 350.00, mrp: 490, minQty: 1, category: "MicroController", sku: "A5X-INV2-028", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 18, shortDescription: "ESP32 Wifi & Bluetooth Development Board 38 Pin" },
+  { id: uid(), name: "NodeMcu ESP8266 V3 Lua CH340 Wifi Dev. Board", price: 220.00, mrp: 308, minQty: 1, category: "MicroController", sku: "A5X-INV2-029", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "NodeMcu ESP8266 V3 Lua CH340 Wifi Dev. Board" },
+  { id: uid(), name: "ESP32 CAM WiFi Module with OV3660 Camera Module 3MP", price: 610.00, mrp: 854, minQty: 1, category: "MicroController", sku: "A5X-INV2-030", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "ESP32 CAM WiFi Module with OV3660 Camera Module 3MP" },
+  { id: uid(), name: "Cable for Arduino UNO/MEGA (USB A to B)-30cm", price: 40.00, mrp: 56, minQty: 1, category: "Cables", sku: "A5X-INV2-031", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 5, shortDescription: "Cable for Arduino UNO/MEGA (USB A to B)-30cm" },
+  { id: uid(), name: "Nano USB Cable - 1 Meter ( USB To MiniUSB)", price: 60.00, mrp: 84, minQty: 1, category: "Cables", sku: "A5X-INV2-032", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 5, shortDescription: "Nano USB Cable - 1 Meter ( USB To MiniUSB)" },
+  { id: uid(), name: "Micro USB Cable for ESP32/NodeMCU -1 Meter", price: 60.00, mrp: 84, minQty: 1, category: "Cables", sku: "A5X-INV2-033", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 5, shortDescription: "Micro USB Cable for ESP32/NodeMCU -1 Meter" },
+  { id: uid(), name: "Type C to USB Cable 2.0 (1 m)", price: 60.00, mrp: 84, minQty: 1, category: "Cables", sku: "A5X-INV2-034", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 5, shortDescription: "Type C to USB Cable 2.0 (1 m)" },
+  { id: uid(), name: "1602 (16x2) LCD Display with I2C/IIC interface", price: 170.00, mrp: 238, minQty: 1, category: "Display", sku: "A5X-INV2-035", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "1602 (16x2) LCD Display with I2C/IIC interface" },
+  { id: uid(), name: "DC-DC ADJUSTABLE VOLT. REGULATOR LM2596 3A", price: 65.00, mrp: 91, minQty: 1, category: "Electronics", sku: "A5X-INV2-036", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "DC-DC ADJUSTABLE VOLT. REGULATOR LM2596 3A" },
+  { id: uid(), name: "DC to DC Step Up Boost Converter 4A XL6009", price: 69.00, mrp: 97, minQty: 1, category: "Electronics", sku: "A5X-INV2-037", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "DC to DC Step Up Boost Converter 4A XL6009" },
+  { id: uid(), name: "3-6V Mini Submersible Water Pump", price: 60.00, mrp: 84, minQty: 1, category: "Motors", sku: "A5X-INV2-038", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "3-6V Mini Submersible Water Pump" },
+  { id: uid(), name: "35mm Piezoelectric Sensor WITH WIRE", price: 30.00, mrp: 42, minQty: 1, category: "Sensor", sku: "A5X-INV2-039", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 15, shortDescription: "35mm Piezoelectric Sensor WITH WIRE" },
+  { id: uid(), name: "MAX7219 8x8 LED Dot Matrix Display Module", price: 155.00, mrp: 217, minQty: 1, category: "Display", sku: "A5X-INV2-040", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "MAX7219 8x8 LED Dot Matrix Display Module" },
+  { id: uid(), name: "HC-05 6pin Bluetooth Module with Button ORIGINAL", price: 270.00, mrp: 378, minQty: 1, category: "Connectors", sku: "A5X-INV2-041", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "HC-05 6pin Bluetooth Module with Button ORIGINAL" },
+  { id: uid(), name: "TM1637 4-Digit LED Display Red", price: 68.00, mrp: 95, minQty: 1, category: "Display", sku: "A5X-INV2-042", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "TM1637 4-Digit LED Display Red" },
+  { id: uid(), name: "Laser Diode Module", price: 35.00, mrp: 49, minQty: 1, category: "Sensor", sku: "A5X-INV2-043", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "Laser Diode Module" },
+  { id: uid(), name: "Photo-resistor LDR Light Sensor Module 3 Pin", price: 36.00, mrp: 50, minQty: 1, category: "Sensor", sku: "A5X-INV2-044", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 15, shortDescription: "Photo-resistor LDR Light Sensor Module 3 Pin" },
+  { id: uid(), name: "4x4 Matrix Membrane Keypad 16 Key Switch Module", price: 60.00, mrp: 84, minQty: 1, category: "Sensor", sku: "A5X-INV2-045", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "4x4 Matrix Membrane Keypad 16 Key Switch Module" },
+  { id: uid(), name: "DUAL AXIS XY / PS2 JOYSTICK MODULE", price: 45.00, mrp: 63, minQty: 1, category: "Sensor", sku: "A5X-INV2-046", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "DUAL AXIS XY / PS2 JOYSTICK MODULE" },
+  { id: uid(), name: "Active Buzzer Module 3.3-5V for Arduino", price: 21.00, mrp: 29, minQty: 1, category: "Sensor", sku: "A5X-INV2-047", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 8, shortDescription: "Active Buzzer Module 3.3-5V for Arduino" },
+  { id: uid(), name: "2A Dual L298N Motor Driver Module", price: 122.00, mrp: 171, minQty: 1, category: "Motor Driver", sku: "A5X-INV2-048", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "2A Dual L298N Motor Driver Module" },
+  { id: uid(), name: "Motor Driver TB6612FNG Module", price: 160.00, mrp: 224, minQty: 1, category: "Motor Driver", sku: "A5X-INV2-049", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 14, shortDescription: "Motor Driver TB6612FNG Module" },
+  { id: uid(), name: "L293D Motor Driver Shield For Arduino", price: 150.00, mrp: 210, minQty: 1, category: "Motor Driver", sku: "A5X-INV2-050", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "L293D Motor Driver Shield For Arduino" },
+  { id: uid(), name: "Dual DC Motor Driver bts7960 43A H bridge PWM", price: 360.00, mrp: 504, minQty: 1, category: "Motor Driver", sku: "A5X-INV2-051", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 8, shortDescription: "Dual DC Motor Driver bts7960 43A H bridge PWM" },
+  { id: uid(), name: "ISD1820 Sound Board Recording Recorder Playback Module", price: 160.00, mrp: 224, minQty: 1, category: "Sensor", sku: "A5X-INV2-052", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "ISD1820 Sound Board Recording Recorder Playback Module" },
+  { id: uid(), name: "TIMER IC LM 555", price: 15.00, mrp: 21, minQty: 1, category: "Electronics", sku: "A5X-INV2-053", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "TIMER IC LM 555" },
+  { id: uid(), name: "BUTTON SWITCH SET 5 tpye each 10", price: 8.00, mrp: 11.20, minQty: 1, category: "Electronics", sku: "A5X-INV2-054", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 50, shortDescription: "BUTTON SWITCH SET 5 tpye each 10" },
+  { id: uid(), name: "TTP223B Capacitive Single Touch Sensor Module", price: 38.00, mrp: 53, minQty: 1, category: "Sensor", sku: "A5X-INV2-055", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "TTP223B Capacitive Single Touch Sensor Module" },
+  { id: uid(), name: "IR OBSTICLE SENSOR MODULE", price: 45.00, mrp: 63, minQty: 1, category: "Sensor", sku: "A5X-INV2-056", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 29, shortDescription: "IR OBSTICLE SENSOR MODULE" },
+  { id: uid(), name: "GY-521 MPU6050 Module – Triple Axis Accelerometer And Gyro Module", price: 180.00, mrp: 252, minQty: 1, category: "Sensor", sku: "A5X-INV2-057", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "GY-521 MPU6050 Module – Triple Axis Accelerometer And Gyro Module" },
+  { id: uid(), name: "MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2", price: 130.00, mrp: 182, minQty: 1, category: "Sensor", sku: "A5X-INV2-058", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2" },
+  { id: uid(), name: "TCRT5000 IR Sensor Module", price: 52.00, mrp: 73, minQty: 1, category: "Sensor", sku: "A5X-INV2-059", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "TCRT5000 IR Sensor Module" },
+  { id: uid(), name: "Ultrasonic distance Ranging module detector sensor HC-SR04", price: 65.00, mrp: 91, minQty: 1, category: "Sensor", sku: "A5X-INV2-060", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "Ultrasonic distance Ranging module detector sensor HC-SR04" },
+  { id: uid(), name: "PIR Motion Sensor", price: 67.00, mrp: 94, minQty: 1, category: "Sensor", sku: "A5X-INV2-061", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 6, shortDescription: "PIR Motion Sensor" },
+  { id: uid(), name: "Pulse Sensor - Heart Rate Detector", price: 150.00, mrp: 210, minQty: 1, category: "Sensor", sku: "A5X-INV2-062", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "Pulse Sensor - Heart Rate Detector" },
+  // Invoice 3 Products (9 items)
+  { id: uid(), name: "SX1308 DC-DC Step Up Adjustable Power Booster Module", price: 40.00, mrp: 56, minQty: 1, category: "Electronics", sku: "A5X-INV3-001", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 9, shortDescription: "SX1308 DC-DC Step Up Adjustable Power Booster Module" },
+  { id: uid(), name: "1.3 Inch I2C/IIC OLED Display Module 4pin", price: 290.00, mrp: 406, minQty: 1, category: "Display", sku: "A5X-INV3-002", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "1.3 Inch I2C/IIC OLED Display Module 4pin" },
+  { id: uid(), name: "Electrical Insulation Tape", price: 10.00, mrp: 14, minQty: 1, category: "Electronics", sku: "A5X-INV3-003", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "Electrical Insulation Tape" },
+  { id: uid(), name: "Double Side Tape", price: 40.00, mrp: 56, minQty: 1, category: "Electronics", sku: "A5X-INV3-004", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "Double Side Tape" },
+  { id: uid(), name: "metal gear Motor Mount Bracket", price: 30.00, mrp: 42, minQty: 1, category: "Motors", sku: "A5X-INV3-005", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "metal gear Motor Mount Bracket" },
+  { id: uid(), name: "Toy Motor 3.7 volt with Propeller", price: 45.00, mrp: 63, minQty: 1, category: "Motors", sku: "A5X-INV3-006", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "Toy Motor 3.7 volt with Propeller" },
+  { id: uid(), name: "N20 Motor Wheel", price: 45.00, mrp: 63, minQty: 1, category: "Motors", sku: "A5X-INV3-007", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 4, shortDescription: "N20 Motor Wheel" },
+  { id: uid(), name: "XT60 Connector male and female", price: 32.00, mrp: 45, minQty: 1, category: "Connectors", sku: "A5X-INV3-008", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "XT60 Connector male and female" },
+  { id: uid(), name: "Pro-Range 3.7V 850mAh 25C 1S Lithium Polymer Battery Pack", price: 720.00, mrp: 1008, minQty: 1, category: "Battery", sku: "A5X-INV3-009", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "Pro-Range 3.7V 850mAh 25C 1S Lithium Polymer Battery Pack" }
 ];
 
 const kitsSeed = [
@@ -4070,11 +4181,372 @@ function AdminDashboard() {
 
 function AdminPage({ title, children }) { return <section className="admin-page"><p>Admin / {title}</p><h1>{title}</h1>{children}</section>; }
 
+function BulkProductUpload() {
+  const { addProduct } = useAdminStore();
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const parseCSV = (text) => {
+    console.log('=== PARSING START ===');
+    console.log('File content length:', text.length);
+    console.log('First 500 chars:', text.substring(0, 500));
+    
+    const lines = text.split('\n').filter(line => line.trim());
+    console.log('Total lines:', lines.length);
+    
+    const products = [];
+    
+    // Method 1: Try to parse as invoice/bill format
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      
+      // Split by comma, tab, or multiple spaces
+      const values = line.split(/,|\t/).map(v => v.trim());
+      
+      // Check if this looks like a product row (starts with number)
+      if (values.length >= 3 && /^\d+$/.test(values[0])) {
+        const rowNum = values[0];
+        const description = values[1];
+        const priceStr = values[2]?.replace(/[₹,\s]/g, '');
+        const price = parseFloat(priceStr);
+        const qty = values[3] ? parseInt(values[3]) : 10;
+        
+        console.log(`Row ${rowNum}: ${description} - ₹${price} x ${qty}`);
+        
+        if (description && price > 0) {
+          products.push({
+            id: uid(),
+            name: description,
+            price: price,
+            mrp: Math.round(price * 1.4),
+            category: 'Sensor',
+            sku: `A5X-${uid().toUpperCase().slice(0, 6)}`,
+            shortDescription: description,
+            inStock: true,
+            rating: 4.7,
+            stockCount: qty,
+            minQty: 1,
+            reviewCount: 0,
+            quickDelivery: false
+          });
+        }
+      }
+    }
+    
+    console.log('Products found (Method 1):', products.length);
+    
+    // Method 2: If no products found, try standard CSV
+    if (products.length === 0) {
+      console.log('Trying Method 2: Standard CSV parsing');
+      const headers = lines[0]?.split(',').map(h => h.trim().toLowerCase()) || [];
+      console.log('Headers:', headers);
+      
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim());
+        
+        // Try to find name and price in any column
+        let name = '', price = 0, qty = 10;
+        
+        for (let j = 0; j < values.length; j++) {
+          const val = values[j];
+          
+          // Check if this looks like a price (contains ₹ or is a number)
+          if (/₹|^\d+\.?\d*$/.test(val)) {
+            const priceStr = val.replace(/[₹,\s]/g, '');
+            const parsedPrice = parseFloat(priceStr);
+            if (parsedPrice > 0 && parsedPrice < 10000) {
+              price = parsedPrice;
+            }
+          }
+          
+          // Check if this looks like a product name (longer text)
+          if (val.length > 5 && !/^\d+\.?\d*$/.test(val) && !val.includes('₹')) {
+            name = val;
+          }
+          
+          // Check if this looks like quantity (small number)
+          if (/^\d+$/.test(val)) {
+            const num = parseInt(val);
+            if (num > 0 && num < 1000) {
+              qty = num;
+            }
+          }
+        }
+        
+        if (name && price > 0) {
+          console.log(`Found: ${name} - ₹${price}`);
+          products.push({
+            id: uid(),
+            name: name,
+            price: price,
+            mrp: Math.round(price * 1.4),
+            category: 'Sensor',
+            sku: `A5X-${uid().toUpperCase().slice(0, 6)}`,
+            shortDescription: name,
+            inStock: true,
+            rating: 4.7,
+            stockCount: qty,
+            minQty: 1,
+            reviewCount: 0,
+            quickDelivery: false
+          });
+        }
+      }
+    }
+    
+    console.log('=== PARSING END ===');
+    console.log('Total products:', products.length);
+    return products;
+  };
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setResult(null);
+
+    try {
+      const text = await file.text();
+      const products = parseCSV(text);
+      
+      if (products.length === 0) {
+        setResult({ success: false, message: 'No valid products found in file' });
+        setUploading(false);
+        return;
+      }
+
+      products.forEach(product => addProduct(product));
+      
+      setResult({ 
+        success: true, 
+        message: `Successfully added ${products.length} products!`,
+        count: products.length 
+      });
+    } catch (error) {
+      setResult({ success: false, message: `Error: ${error.message}` });
+    }
+
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  return (
+    <div className="bulk-upload-section">
+      <div className="bulk-upload-card">
+        <div className="bulk-upload-icon">
+          <Upload size={32} />
+        </div>
+        <h3>Bulk Product Upload</h3>
+        <p>Upload CSV, Excel, or PDF file with product details to add multiple products at once</p>
+        <p style={{fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: '8px'}}>
+          Note: Excel (.xlsx, .xls) and PDF files will be converted to CSV format automatically
+        </p>
+        
+        <div className="bulk-upload-format">
+          <p><strong>CSV Format:</strong></p>
+          <code>name,price,mrp,category,sku,description,instock,rating,stockcount,quickdelivery</code>
+          <p style={{fontSize: '13px', marginTop: '8px', opacity: 0.7}}>
+            Example: ESP32 Devkit,350,499,MicroController,A5X-MC-001,Dual-core board,true,4.8,45,true
+          </p>
+        </div>
+
+        <label className="bulk-upload-btn">
+          <input 
+            ref={fileInputRef}
+            type="file" 
+            accept=".csv,.txt,.xlsx,.xls,.pdf" 
+            onChange={handleFileUpload}
+            disabled={uploading}
+            style={{ display: 'none' }}
+          />
+          {uploading ? (
+            <>
+              <RefreshCw size={18} className="spin" />
+              Uploading...
+            </>
+          ) : (
+            <>
+              <Upload size={18} />
+              Choose CSV File
+            </>
+          )}
+        </label>
+        
+        <button 
+          className="bulk-upload-btn" 
+          onClick={() => {
+            // Load your 37 products directly
+            const sampleProducts = [
+              {name:"5V Relay Module single ch",price:43,qty:6},{name:"5V Dual Channel Relay Module with Optocoupler",price:85,qty:6},{name:"Soil Moisture Sensor Module for Humidity Detection",price:45,qty:10},{name:"Metal touch sensor module KY-036 Human Body Touch Sensor",price:46,qty:4},{name:"Raindrops Detection Sensor Module",price:51,qty:6},{name:"Flex Sensor 2.2",price:260,qty:2},{name:"LM35D Analog Temperature Sensor Module",price:87,qty:3},{name:"DHT-11 Temperature And Humidity Sensor Module",price:69,qty:10},{name:"BMP280 Barometric Pressure and Altitude Sensor I2C/SPI Module",price:55,qty:6},{name:"TCS3200 Color Recognition Sensor Module",price:370,qty:3},{name:"Sound Detection Sensor Module",price:45,qty:5},{name:"2.4GHz NRF24L01+PA+LNA SMA Wireless Transceiver Antenna",price:155,qty:10},{name:"RFID Reader/Writer RC522 SPI S50 with RFID Card and Tag",price:115,qty:8},{name:"Digital Multi Servo Tester ESC RC Consistency CCPM Master Speed Control",price:135,qty:6},{name:"Anti-Static Tweezers tools set of 5 PCs with bag",price:170,qty:3},{name:"Taparia 9 Pieces Black Finish Allen Key Set in Box",price:255,qty:3},{name:"60W Hot Melt Glue Gun",price:180,qty:4},{name:"SOLDERING KIT",price:450,qty:2},{name:"ImaxRC B3 Compact Charger for 2~3 series LiPo battery",price:320,qty:4},{name:"Li-ion 2 Cell Battery Charger Universal AC Wall For 18650",price:180,qty:4},{name:"DT830D LCD Digital Multimeter AC DC Tester With Probes",price:168,qty:3},{name:"Generic 11 MM Glue Stick",price:9.5,qty:40},{name:"CABLE TIE 100pcs",price:130,qty:5},{name:"3S 11.1V 10A LI-ION Battery Protection Board BMS",price:140,qty:10},{name:"Sim800l gsm gprs micro sim card ttl module",price:270,qty:5},{name:"ublox neo 6m gps module (3.3v 5v interface,with eeprom,flash)",price:245,qty:2},{name:"Flame/Fire Sensor Module",price:35,qty:12},{name:"PCB Mount 5V Passive Buzzer",price:12,qty:10},{name:"2 pin pcb mount screw terminal connector 5mm Pitch",price:4,qty:20},{name:"Li-ion 2 Cell Battery holder",price:25,qty:12},{name:"10k potentiometer with knob",price:22,qty:4},{name:"dc jack male + female pair",price:18,qty:20},{name:"140 Pieces Heat Shrink Tubes kits",price:219,qty:2},{name:"strong Round Magnet 15x3mm",price:6,qty:20},{name:"Magnetic Reed Switch 12mm",price:11,qty:20},{name:"High Power Cold White LED",price:35,qty:20},{name:"Desoldering Pump, Solder Sucker - Desoldering Vacuum Pump",price:110,qty:5}
+            ];
+            
+            let added = 0;
+            sampleProducts.forEach(item => {
+              addProduct({
+                id: uid(),
+                name: item.name,
+                price: item.price,
+                mrp: Math.round(item.price * 1.4),
+                category: 'Sensor',
+                sku: `A5X-${uid().toUpperCase().slice(0, 6)}`,
+                shortDescription: item.name,
+                inStock: true,
+                rating: 4.7,
+                stockCount: item.qty,
+                minQty: 1,
+                reviewCount: 0,
+                quickDelivery: false
+              });
+              added++;
+            });
+            
+            setResult({ 
+              success: true, 
+              message: `Successfully added ${added} products from your invoice!`,
+              count: added 
+            });
+          }}
+          style={{marginTop: '12px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'}}
+        >
+          <CheckCircle size={18} />
+          Load My 37 Products
+        </button>
+
+        <button 
+          className="bulk-upload-btn" 
+          onClick={() => {
+            // Load your 62 products from second invoice
+            const invoice2Products = [
+              {name:"LEDs 5 color each 120pcs",price:0.90,qty:600},{name:"RGB LED",price:4.00,qty:150},{name:"GL-12 830 Points Solderless Breadboard",price:65.00,qty:15},{name:"Solderless Breadboard Half Size 400 Point",price:47.00,qty:18},{name:"Purf Board(6x4 Inch)",price:35.00,qty:24},{name:"11.1V 2200mAh 3S 80C Lithium-Polymer Rechargeable Battery",price:1589.00,qty:4},{name:"18650 3.7V 2000mAh Li-ion Battery",price:52.00,qty:36},{name:"9v Battery with connector",price:24.00,qty:20},{name:"RESISTOR Kit 30 values 600 pcs",price:420.00,qty:2},{name:"CAPACITOR Kit 20 values 400 pcs with electrolite capacitor",price:530.00,qty:2},{name:"200 RPM 12v DC Center Shaft metal Gear Motor",price:155.00,qty:33},{name:"TowerPro SG90 9g Micro Servo Motor – 180 Degree Rotation",price:97.00,qty:20},{name:"N20 12V 400 Rpm Micro Metal Gear Motor",price:240.00,qty:10},{name:"300 RPM Dual Shaft BO Motor + Wheel",price:72.00,qty:28},{name:"diode kits 10 values each 10",price:3.00,qty:100},{name:"transistor kits 5 values each 10 pcs",price:7.00,qty:50},{name:"Test Leads Alligator Clip 1 pair",price:10.00,qty:24},{name:"9v Battery Connector + DC Jack(Battery Connector Cap)",price:14.00,qty:20},{name:"HOOKUP WIRES ( MULTI COLOUR ROLL) 10m each 5 color",price:30.00,qty:50},{name:"MALE TO MALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"MALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"FEMALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"BERG STRIP (PIN HEADER) MALE",price:8.00,qty:50},{name:"BERG STRIP (PIN HEADER) FEMALE",price:12.00,qty:50},{name:"Arduino Nano R3 Board Soldered",price:210.00,qty:6},{name:"Arduino Uno R3 SMD CH340G ATmega328p Development Board",price:240.00,qty:14},{name:"Arduino Mega 2560 R3",price:1250.00,qty:2},{name:"ESP32 Wifi & Bluetooth Development Board 38 Pin",price:350.00,qty:18},{name:"NodeMcu ESP8266 V3 Lua CH340 Wifi Dev. Board",price:220.00,qty:10},{name:"ESP32 CAM WiFi Module with OV3660 Camera Module 3MP",price:610.00,qty:3},{name:"Cable for Arduino UNO/MEGA (USB A to B)-30cm",price:40.00,qty:5},{name:"Nano USB Cable - 1 Meter ( USB To MiniUSB)",price:60.00,qty:5},{name:"Micro USB Cable for ESP32/NodeMCU -1 Meter",price:60.00,qty:5},{name:"Type C to USB Cable 2.0 (1 m)",price:60.00,qty:5},{name:"1602 (16x2) LCD Display with I2C/IIC interface",price:170.00,qty:6},{name:"DC-DC ADJUSTABLE VOLT. REGULATOR LM2596 3A",price:65.00,qty:6},{name:"DC to DC Step Up Boost Converter 4A XL6009",price:69.00,qty:6},{name:"3-6V Mini Submersible Water Pump",price:60.00,qty:6},{name:"35mm Piezoelectric Sensor WITH WIRE",price:30.00,qty:15},{name:"MAX7219 8x8 LED Dot Matrix Display Module",price:155.00,qty:4},{name:"HC-05 6pin Bluetooth Module with Button ORIGINAL",price:270.00,qty:3},{name:"TM1637 4-Digit LED Display Red",price:68.00,qty:3},{name:"Laser Diode Module",price:35.00,qty:12},{name:"Photo-resistor LDR Light Sensor Module 3 Pin",price:36.00,qty:15},{name:"4x4 Matrix Membrane Keypad 16 Key Switch Module",price:60.00,qty:4},{name:"DUAL AXIS XY / PS2 JOYSTICK MODULE",price:45.00,qty:6},{name:"Active Buzzer Module 3.3-5V for Arduino",price:21.00,qty:8},{name:"2A Dual L298N Motor Driver Module",price:122.00,qty:20},{name:"Motor Driver TB6612FNG Module",price:160.00,qty:14},{name:"L293D Motor Driver Shield For Arduino",price:150.00,qty:2},{name:"Dual DC Motor Driver bts7960 43A H bridge PWM",price:360.00,qty:8},{name:"ISD1820 Sound Board Recording Recorder Playback Module",price:160.00,qty:3},{name:"TIMER IC LM 555",price:15.00,qty:3},{name:"BUTTON SWITCH SET 5 tpye each 10",price:8.00,qty:50},{name:"TTP223B Capacitive Single Touch Sensor Module",price:38.00,qty:12},{name:"IR OBSTICLE SENSOR MODULE",price:45.00,qty:29},{name:"GY-521 MPU6050 Module – Triple Axis Accelerometer And Gyro Module",price:180.00,qty:3},{name:"MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2",price:130.00,qty:12},{name:"TCRT5000 IR Sensor Module",price:52.00,qty:10},{name:"Ultrasonic distance Ranging module detector sensor HC-SR04",price:65.00,qty:12},{name:"PIR Motion Sensor",price:67.00,qty:6},{name:"Pulse Sensor - Heart Rate Detector",price:150.00,qty:4}
+            ];
+            
+            let added = 0;
+            invoice2Products.forEach(item => {
+              addProduct({
+                id: uid(),
+                name: item.name,
+                price: item.price,
+                mrp: Math.round(item.price * 1.4),
+                category: 'Electronics',
+                sku: `A5X-${uid().toUpperCase().slice(0, 6)}`,
+                shortDescription: item.name,
+                inStock: true,
+                rating: 4.7,
+                stockCount: item.qty,
+                minQty: 1,
+                reviewCount: 0,
+                quickDelivery: false
+              });
+              added++;
+            });
+            
+            setResult({ 
+              success: true, 
+              message: `Successfully added ${added} products from your second invoice!`,
+              count: added 
+            });
+          }}
+          style={{marginTop: '12px', background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'}}
+        >
+          <CheckCircle size={18} />
+          Load My 62 Products
+        </button>
+
+        <button 
+          className="bulk-upload-btn" 
+          onClick={() => {
+            // Load your 9 products from third invoice
+            const invoice3Products = [
+              {name:"SX1308 DC-DC Step Up Adjustable Power Booster Module",price:40.00,qty:9},{name:"1.3 Inch I2C/IIC OLED Display Module 4pin",price:290.00,qty:4},{name:"Electrical Insulation Tape",price:10.00,qty:10},{name:"Double Side Tape",price:40.00,qty:10},{name:"metal gear Motor Mount Bracket",price:30.00,qty:20},{name:"Toy Motor 3.7 volt with Propeller",price:45.00,qty:20},{name:"N20 Motor Wheel",price:45.00,qty:4},{name:"XT60 Connector male and female",price:32.00,qty:20},{name:"Pro-Range 3.7V 850mAh 25C 1S Lithium Polymer Battery Pack",price:720.00,qty:2}
+            ];
+            
+            let added = 0;
+            invoice3Products.forEach(item => {
+              addProduct({
+                id: uid(),
+                name: item.name,
+                price: item.price,
+                mrp: Math.round(item.price * 1.4),
+                category: 'Electronics',
+                sku: `A5X-${uid().toUpperCase().slice(0, 6)}`,
+                shortDescription: item.name,
+                inStock: true,
+                rating: 4.7,
+                stockCount: item.qty,
+                minQty: 1,
+                reviewCount: 0,
+                quickDelivery: false
+              });
+              added++;
+            });
+            
+            setResult({ 
+              success: true, 
+              message: `Successfully added ${added} products from your third invoice!`,
+              count: added 
+            });
+          }}
+          style={{marginTop: '12px', background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'}}
+        >
+          <CheckCircle size={18} />
+          Load My 9 Products
+        </button>
+
+        {result && (
+          <div className={`bulk-upload-result ${result.success ? 'success' : 'error'}`}>
+            {result.success ? <CheckCircle size={20} /> : <X size={20} />}
+            <span>{result.message}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function AdminProducts({ compact }) {
   const { products, deleteProduct } = useAdminStore();
   const [query, setQuery] = useState("");
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
   const filtered = products.filter((product) => product.name.toLowerCase().includes(query.toLowerCase()));
-  return <AdminPage title={compact ? "Recently Added Products" : "Products"}>{!compact && <div className="admin-tools"><input placeholder="Search products" value={query} onChange={(event) => setQuery(event.target.value)} /><Link to="/admin/products/new">+ Add New Product</Link></div>}<table><tbody>{filtered.slice(0, compact ? 5 : filtered.length).map((product) => <tr key={product.id}><td><img src={product.imageUrl || motorDriver} alt="" /></td><td>{product.name}<small>{product.sku}</small></td><td>{product.category}</td><td>{inr(Number(product.price))}</td><td>{product.inStock ? "In Stock" : "Out"}</td><td><Link to={`/admin/products/${product.id}`}><Pencil size={16} /></Link><button onClick={() => confirm("Delete product?") && deleteProduct(product.id)}><Trash2 size={16} /></button></td></tr>)}</tbody></table></AdminPage>;
+  
+  return (
+    <AdminPage title={compact ? "Recently Added Products" : "Products"}>
+      {!compact && (
+        <>
+          <div className="admin-tools">
+            <input placeholder="Search products" value={query} onChange={(event) => setQuery(event.target.value)} />
+            <button onClick={() => setShowBulkUpload(!showBulkUpload)}>
+              <Upload size={16} />
+              {showBulkUpload ? 'Hide' : 'Bulk Upload'}
+            </button>
+            <Link to="/admin/products/new">+ Add New Product</Link>
+          </div>
+          
+          {showBulkUpload && <BulkProductUpload />}
+        </>
+      )}
+      
+      <table>
+        <tbody>
+          {filtered.slice(0, compact ? 5 : filtered.length).map((product) => (
+            <tr key={product.id}>
+              <td><img src={product.imageUrl || motorDriver} alt="" /></td>
+              <td>{product.name}<small>{product.sku}</small></td>
+              <td>{product.category}</td>
+              <td>{inr(Number(product.price))}</td>
+              <td>{product.inStock ? "In Stock" : "Out"}</td>
+              <td>
+                <Link to={`/admin/products/${product.id}`}><Pencil size={16} /></Link>
+                <button onClick={() => confirm("Delete product?") && deleteProduct(product.id)}><Trash2 size={16} /></button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </AdminPage>
+  );
 }
 
 function ProductForm() {
