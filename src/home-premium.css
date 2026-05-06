@@ -81,7 +81,7 @@
 .nav-v2-chevron { opacity: 0.6; transition: transform 0.3s; }
 .nav-v2-item:hover .nav-v2-chevron { transform: rotate(180deg); opacity: 1; }
 .nav-v2-dropdown {
-  position: absolute; top: calc(100% + 12px); left: 0; min-width: 200px;
+  position: absolute; top: calc(100% + 4px); left: 0; min-width: 200px;
   background: rgba(8, 12, 24, 0.98);
   border: 1px solid rgba(0, 245, 255, 0.15);
   border-radius: 16px; padding: 10px;
@@ -93,7 +93,8 @@
               0 0 40px rgba(0, 102, 255, 0.15);
   backdrop-filter: blur(24px); z-index: 1001;
 }
-.nav-v2-item:hover .nav-v2-dropdown { 
+.nav-v2-item:hover .nav-v2-dropdown,
+.nav-v2-dropdown:hover { 
   opacity: 1; pointer-events: all; transform: translateY(0); 
 }
 .nav-v2-dropdown-item {
