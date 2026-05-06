@@ -91,7 +91,7 @@
   box-shadow: 0 20px 60px rgba(0,0,0,0.7), 
               0 0 0 1px rgba(0,245,255,0.06),
               0 0 40px rgba(0, 102, 255, 0.15);
-  backdrop-filter: blur(24px); z-index: 100;
+  backdrop-filter: blur(24px); z-index: 1001;
 }
 .nav-v2-item:hover .nav-v2-dropdown { 
   opacity: 1; pointer-events: all; transform: translateY(0); 

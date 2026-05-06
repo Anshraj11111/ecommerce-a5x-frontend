@@ -177,7 +177,7 @@
 
 /* ═══ CUSTOM CURSOR ═══ */
 .custom-cursor-dot {
-  position: fixed; width: 12px; height: 12px; border-radius: 50%; pointer-events: none; z-index: 9999;
+  position: fixed; width: 12px; height: 12px; border-radius: 50%; pointer-events: none; z-index: 10000;
   background: var(--brand-cyan);
   box-shadow: 0 0 12px var(--brand-cyan), 0 0 24px rgba(0,245,255,.3);
   transition: width .2s, height .2s, opacity .2s;
@@ -185,7 +185,7 @@
   mix-blend-mode: screen;
 }
 .custom-cursor-ring {
-  position: fixed; width: 36px; height: 36px; border-radius: 50%; pointer-events: none; z-index: 9998;
+  position: fixed; width: 36px; height: 36px; border-radius: 50%; pointer-events: none; z-index: 10000;
   border: 1.5px solid rgba(0,245,255,.4);
   transition: width .35s var(--spring), height .35s var(--spring), border-color .3s;
   transform: translate(-50%, -50%);

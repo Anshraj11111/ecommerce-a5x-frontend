@@ -428,13 +428,14 @@ function Navbar() {
 function MainLayout() {
   const location = useLocation();
   const hideNavbar = location.pathname === '/login';
+  const showCursor = true; // Always show cursor
   
   return (
     <>
       <AuroraBackground />
       <TwinkleField />
       <FloatingOrbs />
-      <CustomCursor />
+      {showCursor && <CustomCursor />}
       {!hideNavbar && <Navbar />}
       <Outlet />
       {!hideNavbar && <Footer />}
@@ -2714,19 +2715,19 @@ function AuthModal() {
   if (!isOpen) return null;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={close}>
-      <div style={{ background: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0,212,255,0.3)', borderRadius: '24px', padding: '40px', maxWidth: '440px', width: '100%', position: 'relative', boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,212,255,0.2)' }} onClick={(e) => e.stopPropagation()}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', overflowY: 'auto' }} onClick={close}>
+      <div style={{ background: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0,212,255,0.3)', borderRadius: '24px', padding: '40px 36px', maxWidth: '460px', width: '100%', position: 'relative', boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,212,255,0.2)', maxHeight: '90vh', overflowY: 'auto', margin: 'auto' }} onClick={(e) => e.stopPropagation()}>
         {/* Close Button */}
-        <button onClick={close} style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00d4ff'} onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.5)'}>
+        <button onClick={close} style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center', transition: 'color 0.2s', zIndex: 1 }} onMouseEnter={(e) => e.target.style.color = '#00d4ff'} onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.5)'}>
           <X size={24} />
         </button>
 
         {/* Header */}
-        <div style={{ marginBottom: '32px', textAlign: 'center' }}>
-          <div style={{ marginBottom: '20px' }}>
+        <div style={{ marginBottom: '28px', textAlign: 'center' }}>
+          <div style={{ marginBottom: '16px' }}>
             <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '32px', fontWeight: 900, background: 'linear-gradient(135deg, #fff 0%, #00f5ff 50%, #0066FF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 16px rgba(0,245,255,0.5))', letterSpacing: '2px' }}>A5X</span>
           </div>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '28px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>
+          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '26px', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>
             {isLogin ? 'Welcome back' : 'Create account'}
           </h2>
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.6)' }}>
@@ -2735,7 +2736,7 @@ function AuthModal() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
           {!isLogin && (
             <div>
               <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Full Name</label>
@@ -2780,11 +2781,11 @@ function AuthModal() {
         </form>
 
         {/* Toggle */}
-        <div style={{ textAlign: 'center', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '10px' }}>
+        <div style={{ textAlign: 'center', marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginBottom: '10px' }}>
             {isLogin ? "Don't have an account?" : "Already have an account?"}
           </p>
-          <button onClick={() => { setIsLogin(!isLogin); setFormData({ name: '', email: '', password: '', confirmPassword: '' }); }} style={{ background: 'transparent', border: '1.5px solid rgba(0,212,255,0.35)', borderRadius: '10px', color: '#00d4ff', padding: '10px 24px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '14px', transition: 'all 0.3s ease' }} onMouseEnter={(e) => { e.target.style.background = 'rgba(0,212,255,0.12)'; e.target.style.borderColor = '#00d4ff'; }} onMouseLeave={(e) => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(0,212,255,0.35)'; }}>
+          <button onClick={() => { setIsLogin(!isLogin); setFormData({ name: '', email: '', password: '', confirmPassword: '' }); }} style={{ background: 'transparent', border: '1.5px solid rgba(0,212,255,0.35)', borderRadius: '10px', color: '#00d4ff', padding: '9px 22px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '13px', transition: 'all 0.3s ease' }} onMouseEnter={(e) => { e.target.style.background = 'rgba(0,212,255,0.12)'; e.target.style.borderColor = '#00d4ff'; }} onMouseLeave={(e) => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(0,212,255,0.35)'; }}>
             {isLogin ? 'Sign Up' : 'Sign In'}
           </button>
         </div>
@@ -3122,7 +3123,13 @@ function CartDrawer() {
     navigate('/checkout');
   };
   
-  return <AnimatePresence>{open && <motion.aside className="cart-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}><button className="icon-btn close" onClick={toggle}><X /></button><h2>Cart</h2><div className="cart-items">{items.length === 0 && <p className="empty-cart">Your cart is empty.</p>}{items.map((item) => <div className="cart-line" key={item.id}><img src={item.imageUrl || a5xCarKit} alt="" /><div><b>{item.name}</b><p>{inr(Number(item.price))}</p><div className="qty-control"><button onClick={() => dec(item.id)} aria-label={`Decrease ${item.name}`}>-</button><span>{item.qty}</span><button onClick={() => inc(item.id)} aria-label={`Increase ${item.name}`}>+</button></div></div><button className="icon-btn remove-btn" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} title="Remove from cart"><Trash2 size={18} /></button></div>)}</div><footer><p>Subtotal <strong>{inr(subtotal())}</strong></p><button className="btn" disabled={!items.length} onClick={handleCheckout}>Checkout</button></footer></motion.aside>}</AnimatePresence>;
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      toggle();
+    }
+  };
+  
+  return <AnimatePresence>{open && <><motion.div className="cart-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleOverlayClick} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 998, backdropFilter: 'blur(4px)' }} /><motion.aside className="cart-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} style={{ zIndex: 999 }}><button className="icon-btn close" onClick={toggle}><X /></button><h2>Cart</h2><div className="cart-items">{items.length === 0 && <p className="empty-cart">Your cart is empty.</p>}{items.map((item) => <div className="cart-line" key={item.id}><img src={item.imageUrl || a5xCarKit} alt="" /><div><b>{item.name}</b><p>{inr(Number(item.price))}</p><div className="qty-control"><button onClick={() => dec(item.id)} aria-label={`Decrease ${item.name}`}>-</button><span>{item.qty}</span><button onClick={() => inc(item.id)} aria-label={`Increase ${item.name}`}>+</button></div></div><button className="icon-btn remove-btn" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} title="Remove from cart"><Trash2 size={18} /></button></div>)}</div><footer><p>Subtotal <strong>{inr(subtotal())}</strong></p><button className="btn" disabled={!items.length} onClick={handleCheckout}>Checkout</button></footer></motion.aside></>}</AnimatePresence>;
 }
 
 // Checkout Page
