@@ -2420,48 +2420,48 @@ function LoginPage() {
   return (
     <main style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr', background: '#0a0e1a', fontFamily: 'Inter, sans-serif', position: 'relative', overflow: 'hidden' }}>
       {/* Left Side - Form */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', position: 'relative', zIndex: 2 }}>
-        <div style={{ width: '100%', maxWidth: '460px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 40px', position: 'relative', zIndex: 2 }}>
+        <div style={{ width: '100%', maxWidth: '480px' }}>
           {/* Logo */}
-          <div style={{ marginBottom: '48px' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '12px' }}>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '28px', fontWeight: 800, background: 'linear-gradient(135deg, #fff 0%, #00f5ff 50%, #0066FF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 16px rgba(0,245,255,0.4))' }}>A5X</span>
-              <small style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, color: 'rgba(0,245,255,0.7)', letterSpacing: '1.5px' }}>ROBOTICS</small>
-            </div>
+          <div style={{ marginBottom: '56px' }}>
+            <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '36px', fontWeight: 900, background: 'linear-gradient(135deg, #fff 0%, #00f5ff 50%, #0066FF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 20px rgba(0,245,255,0.5))', letterSpacing: '2px' }}>A5X</span>
+              <small style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 800, color: 'rgba(0,245,255,0.8)', letterSpacing: '2.5px', marginTop: '8px' }}>ROBOTICS</small>
+            </Link>
           </div>
 
           {/* Form Card */}
-          <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(0,212,255,0.15)', borderRadius: '20px', padding: '40px', backdropFilter: 'blur(20px)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+          <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '24px', padding: '48px 44px', backdropFilter: 'blur(20px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,255,0.1)' }}>
             {/* Header */}
-            <div style={{ marginBottom: '32px' }}>
-              <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: '32px', fontWeight: 700, color: '#fff', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+            <div style={{ marginBottom: '36px' }}>
+              <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: '34px', fontWeight: 800, color: '#fff', marginBottom: '10px', letterSpacing: '-0.02em' }}>
                 {isLogin ? 'Welcome back' : 'Create account'}
               </h1>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
                 {isLogin ? 'Enter your credentials to continue' : 'Sign up to get started with A5X'}
               </p>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
               {!isLogin && (
                 <div>
-                  <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Full Name</label>
+                  <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, color: '#00d4ff', marginBottom: '10px', display: 'block' }}>Full Name</label>
                   <input
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Enter your full name"
                     required={!isLogin}
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.08)'; }}
-                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.2)'; e.target.style.background = 'rgba(255,255,255,0.05)'; }}
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '14px', color: '#fff', padding: '15px 18px', fontSize: '15px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
+                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)'; }}
+                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; e.target.style.boxShadow = 'none'; }}
                   />
                 </div>
               )}
 
               <div>
-                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Email</label>
+                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, color: '#00d4ff', marginBottom: '10px', display: 'block' }}>Email</label>
                 <input
                   name="email"
                   type="email"
@@ -2469,14 +2469,14 @@ function LoginPage() {
                   onChange={handleChange}
                   placeholder="your@email.com"
                   required
-                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
-                  onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.08)'; }}
-                  onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.2)'; e.target.style.background = 'rgba(255,255,255,0.05)'; }}
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '14px', color: '#fff', padding: '15px 18px', fontSize: '15px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
+                  onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; e.target.style.boxShadow = 'none'; }}
                 />
               </div>
 
               <div>
-                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Password</label>
+                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, color: '#00d4ff', marginBottom: '10px', display: 'block' }}>Password</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     name="password"
@@ -2485,25 +2485,25 @@ function LoginPage() {
                     onChange={handleChange}
                     placeholder="••••••••"
                     required
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '12px', color: '#fff', padding: '14px 16px', paddingRight: '48px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.08)'; }}
-                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.2)'; e.target.style.background = 'rgba(255,255,255,0.05)'; }}
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '14px', color: '#fff', padding: '15px 18px', paddingRight: '50px', fontSize: '15px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
+                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)'; }}
+                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; e.target.style.boxShadow = 'none'; }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }}
+                    style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }}
                     onMouseEnter={(e) => e.target.style.color = '#00d4ff'}
-                    onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.4)'}
+                    onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.5)'}
                   >
-                    <Eye size={18} />
+                    <Eye size={19} />
                   </button>
                 </div>
               </div>
 
               {!isLogin && (
                 <div>
-                  <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Confirm Password</label>
+                  <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, color: '#00d4ff', marginBottom: '10px', display: 'block' }}>Confirm Password</label>
                   <input
                     name="confirmPassword"
                     type={showPassword ? 'text' : 'password'}
@@ -2511,9 +2511,9 @@ function LoginPage() {
                     onChange={handleChange}
                     placeholder="••••••••"
                     required={!isLogin}
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.08)'; }}
-                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.2)'; e.target.style.background = 'rgba(255,255,255,0.05)'; }}
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '14px', color: '#fff', padding: '15px 18px', fontSize: '15px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
+                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)'; }}
+                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; e.target.style.boxShadow = 'none'; }}
                   />
                 </div>
               )}
@@ -2521,26 +2521,26 @@ function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                style={{ width: '100%', background: loading ? 'rgba(0,212,255,0.3)' : 'linear-gradient(135deg, #00d4ff 0%, #0066FF 100%)', border: 'none', borderRadius: '12px', color: '#fff', padding: '16px', fontSize: '15px', fontWeight: 600, fontFamily: 'Inter, sans-serif', cursor: loading ? 'not-allowed' : 'pointer', marginTop: '8px', transition: 'all 0.3s ease', boxShadow: loading ? 'none' : '0 4px 20px rgba(0,212,255,0.4)' }}
-                onMouseEnter={(e) => !loading && (e.target.style.transform = 'translateY(-2px)', e.target.style.boxShadow = '0 6px 28px rgba(0,212,255,0.5)')}
-                onMouseLeave={(e) => !loading && (e.target.style.transform = 'translateY(0)', e.target.style.boxShadow = '0 4px 20px rgba(0,212,255,0.4)')}
+                style={{ width: '100%', background: loading ? 'rgba(0,212,255,0.3)' : 'linear-gradient(135deg, #00d4ff 0%, #0066FF 100%)', border: 'none', borderRadius: '14px', color: '#fff', padding: '17px', fontSize: '16px', fontWeight: 700, fontFamily: 'Inter, sans-serif', cursor: loading ? 'not-allowed' : 'pointer', marginTop: '12px', transition: 'all 0.3s ease', boxShadow: loading ? 'none' : '0 4px 24px rgba(0,212,255,0.5)' }}
+                onMouseEnter={(e) => !loading && (e.target.style.transform = 'translateY(-2px)', e.target.style.boxShadow = '0 6px 32px rgba(0,212,255,0.6)')}
+                onMouseLeave={(e) => !loading && (e.target.style.transform = 'translateY(0)', e.target.style.boxShadow = '0 4px 24px rgba(0,212,255,0.5)')}
               >
                 {loading ? (
                   <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                    <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                    <RefreshCw size={19} style={{ animation: 'spin 1s linear infinite' }} />
                     Processing...
                   </span>
                 ) : (
                   <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                    {isLogin ? <><User size={18} />Sign In</> : <><Rocket size={18} />Create Account</>}
+                    {isLogin ? <><User size={19} />Sign In</> : <><Rocket size={19} />Create Account</>}
                   </span>
                 )}
               </button>
             </form>
 
             {/* Toggle Login/Signup */}
-            <div style={{ textAlign: 'center', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.5)', marginBottom: '10px' }}>
+            <div style={{ textAlign: 'center', marginTop: '28px', paddingTop: '28px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '12px' }}>
                 {isLogin ? "Don't have an account?" : "Already have an account?"}
               </p>
               <button
@@ -2548,9 +2548,9 @@ function LoginPage() {
                   setIsLogin(!isLogin);
                   setFormData({ name: '', email: '', password: '', confirmPassword: '' });
                 }}
-                style={{ background: 'transparent', border: '1px solid rgba(0,212,255,0.3)', borderRadius: '10px', color: '#00d4ff', padding: '10px 24px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '14px', transition: 'all 0.3s ease' }}
-                onMouseEnter={(e) => { e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.borderColor = '#00d4ff'; }}
-                onMouseLeave={(e) => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(0,212,255,0.3)'; }}
+                style={{ background: 'transparent', border: '1.5px solid rgba(0,212,255,0.35)', borderRadius: '12px', color: '#00d4ff', padding: '11px 28px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '14px', transition: 'all 0.3s ease' }}
+                onMouseEnter={(e) => { e.target.style.background = 'rgba(0,212,255,0.12)'; e.target.style.borderColor = '#00d4ff'; }}
+                onMouseLeave={(e) => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(0,212,255,0.35)'; }}
               >
                 {isLogin ? 'Sign Up' : 'Sign In'}
               </button>
@@ -2558,31 +2558,50 @@ function LoginPage() {
           </div>
 
           {/* Footer Note */}
-          <div style={{ textAlign: 'center', marginTop: '24px' }}>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
-              By continuing, you agree to our Terms & Privacy Policy
+          <div style={{ textAlign: 'center', marginTop: '28px' }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
+              By continuing, you agree to our<br />Terms & Privacy Policy
             </p>
           </div>
         </div>
       </div>
 
-      {/* Right Side - Visual */}
+      {/* Right Side - Visual with Image */}
       <div className="login-visual-side" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+        {/* Background Image */}
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${robotUnit003})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.15, filter: 'blur(2px)' }} />
+        
         {/* Animated circles */}
-        <div style={{ position: 'absolute', top: '15%', left: '15%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(0,212,255,0.2) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite' }} />
-        <div style={{ position: 'absolute', bottom: '20%', right: '15%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(0,102,255,0.15) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite 2s' }} />
+        <div style={{ position: 'absolute', top: '10%', left: '10%', width: '350px', height: '350px', background: 'radial-gradient(circle, rgba(0,212,255,0.25) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', bottom: '15%', right: '10%', width: '450px', height: '450px', background: 'radial-gradient(circle, rgba(0,102,255,0.2) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite 2s' }} />
         
         {/* Content */}
-        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '40px' }}>
-          <div style={{ marginBottom: '32px' }}>
-            <Rocket size={80} style={{ color: '#00d4ff', filter: 'drop-shadow(0 0 24px rgba(0,212,255,0.6))' }} />
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '60px' }}>
+          <div style={{ marginBottom: '40px' }}>
+            <Rocket size={90} style={{ color: '#00d4ff', filter: 'drop-shadow(0 0 30px rgba(0,212,255,0.7))' }} />
           </div>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '36px', fontWeight: 700, color: '#fff', marginBottom: '16px', lineHeight: 1.2 }}>
+          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '42px', fontWeight: 800, color: '#fff', marginBottom: '20px', lineHeight: 1.2, letterSpacing: '-0.02em' }}>
             Build the Future<br />with Robotics
           </h2>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, maxWidth: '400px', margin: '0 auto' }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '17px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, maxWidth: '440px', margin: '0 auto' }}>
             Join thousands of makers and innovators creating amazing projects with A5X Robotics
           </p>
+          
+          {/* Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginTop: '48px', maxWidth: '500px', margin: '48px auto 0' }}>
+            <div style={{ background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '16px', padding: '20px 16px', backdropFilter: 'blur(10px)' }}>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '28px', fontWeight: 800, color: '#00d4ff', marginBottom: '4px' }}>500+</div>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Products</div>
+            </div>
+            <div style={{ background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '16px', padding: '20px 16px', backdropFilter: 'blur(10px)' }}>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '28px', fontWeight: 800, color: '#00d4ff', marginBottom: '4px' }}>10K+</div>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Makers</div>
+            </div>
+            <div style={{ background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '16px', padding: '20px 16px', backdropFilter: 'blur(10px)' }}>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '28px', fontWeight: 800, color: '#00d4ff', marginBottom: '4px' }}>24hr</div>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Delivery</div>
+            </div>
+          </div>
         </div>
       </div>
 
