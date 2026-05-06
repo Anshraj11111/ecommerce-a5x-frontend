@@ -470,10 +470,6 @@ function Navbar() {
             </div>
           ))}
         </nav>
-        <form className="nav-v2-search" onSubmit={handleSearch}>
-          <Search size={15} className="nav-v2-search-icon" />
-          <input type="text" placeholder="Search for products, kits..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} aria-label="Search" />
-        </form>
         <div className="nav-v2-actions">
           <button className="nav-v2-action-btn" onClick={() => navigate('/wishlist')} aria-label="Wishlist">
             <Heart size={18} /><span>Wishlist</span>
@@ -484,14 +480,9 @@ function Navbar() {
             {count > 0 && <b className="nav-v2-badge">{count}</b>}
           </button>
           {isAuthenticated ? (
-            <>
-              <button className="nav-v2-action-btn nav-v2-profile" onClick={() => navigate('/account')} aria-label="Account" title={user?.name}>
-                <User size={18} />
-              </button>
-              <button className="nav-v2-action-btn" onClick={handleLogout} aria-label="Logout" title="Logout">
-                <LogOut size={18} /><span>Logout</span>
-              </button>
-            </>
+            <button className="nav-v2-action-btn" onClick={handleLogout} aria-label="Logout" title="Logout">
+              <LogOut size={18} /><span>Logout</span>
+            </button>
           ) : (
             <button className="nav-v2-action-btn" onClick={() => navigate('/login')} aria-label="Login">
               <User size={18} /><span>Login</span>
@@ -584,6 +575,7 @@ function ProductCard({ product, compact, onQuickView }) {
   const compToggle = useCompareStore((s) => s.toggle);
   const compared = useCompareStore((s) => s.ids.includes(product.id));
   const discount = product.mrp ? Math.round((1 - product.price / product.mrp) * 100) : 0;
+  const navigate = useNavigate();
   return (
     <motion.article className={`product-card glass-card ${compact ? "compact" : ""}`} layout whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
       <div className="product-image">
@@ -591,7 +583,7 @@ function ProductCard({ product, compact, onQuickView }) {
         <span className="category-pill">{product.category}</span>
         <button className={`wishlist-btn ${wishlisted ? "active" : ""}`} onClick={(e) => { e.stopPropagation(); wishToggle(product.id); }} aria-label="Wishlist"><Heart size={18} /></button>
         {product.badges?.length > 0 && <span className="product-badge">{product.badges[0]}</span>}
-        <div className="quick-view-overlay"><button className="quick-view-btn" onClick={() => onQuickView?.(product)}><Eye size={16} /> Quick View</button></div>
+        <div className="quick-view-overlay"><button className="quick-view-btn" onClick={() => navigate(`/shop/${product.id}`)}><Eye size={16} /> Quick View</button></div>
       </div>
       <div className="product-body">
         <Link to={`/shop/${product.id}`} className="product-name-link"><h3>{product.name}</h3></Link>
@@ -2385,51 +2377,396 @@ function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [zoomed, setZoomed] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  
+  // Feedback state
+  const [feedbackRating, setFeedbackRating] = useState(0);
+  const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackName, setFeedbackName] = useState('');
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [reviews, setReviews] = useState([
+    { id: 1, name: "Rahul Kumar", rating: 5, comment: "Excellent product! Works perfectly with my Arduino projects.", date: "2 days ago" },
+    { id: 2, name: "Priya Sharma", rating: 4, comment: "Good quality, fast delivery. Recommended!", date: "1 week ago" },
+    { id: 3, name: "Amit Patel", rating: 5, comment: "Best price in the market. Very satisfied with the purchase.", date: "2 weeks ago" }
+  ]);
+
   useEffect(() => { if (id) addRecent(id); window.scrollTo(0, 0); }, [id]);
+  
   if (!product) return <main className="page"><section style={{ textAlign: "center", paddingTop: 120 }}><h1>Product Not Found</h1><button className="btn" onClick={() => navigate("/shop")}>Back to Shop</button></section></main>;
+  
   const discount = product.mrp ? Math.round((1 - product.price / product.mrp) * 100) : 0;
   const relatedProducts = (product.relatedIds || []).map((rid) => products.find((p) => p.id === rid)).filter(Boolean);
   const boughtTogether = (product.frequentlyBoughtWith || []).map((rid) => products.find((p) => p.id === rid)).filter(Boolean);
   const recentIds = useRecentlyViewedStore((s) => s.ids);
   const recentProducts = recentIds.filter((rid) => rid !== id).map((rid) => products.find((p) => p.id === rid)).filter(Boolean).slice(0, 6);
-  const tabs = ["Overview", "Specifications", "Compatibility"];
+  const tabs = ["Overview", "Specifications", "Compatibility", "Reviews"];
   const handleImgMouse = (e) => { const r = e.currentTarget.getBoundingClientRect(); setZoomPos({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 }); };
+  
+  const handleFeedbackSubmit = (e) => {
+    e.preventDefault();
+    if (feedbackRating === 0 || !feedbackText.trim() || !feedbackName.trim()) {
+      alert('Please fill all fields and select a rating');
+      return;
+    }
+    
+    const newReview = {
+      id: reviews.length + 1,
+      name: feedbackName,
+      rating: feedbackRating,
+      comment: feedbackText,
+      date: 'Just now'
+    };
+    
+    setReviews([newReview, ...reviews]);
+    setFeedbackSubmitted(true);
+    setFeedbackRating(0);
+    setFeedbackText('');
+    setFeedbackName('');
+    
+    setTimeout(() => setFeedbackSubmitted(false), 3000);
+  };
+
   return (
     <main className="page product-detail-page">
-      <nav className="breadcrumb"><Link to="/shop">Shop</Link><span>›</span><Link to={`/shop?cat=${product.category}`}>{product.category}</Link><span>›</span><span>{product.name}</span></nav>
+      <nav className="breadcrumb">
+        <Link to="/shop">Shop</Link>
+        <ChevronRight size={16} />
+        <Link to={`/shop?cat=${product.category}`}>{product.category}</Link>
+        <ChevronRight size={16} />
+        <span>{product.name}</span>
+      </nav>
+
       <section className="pd-hero">
         <div className="pd-gallery">
           <div className={`pd-main-image ${zoomed ? "zoomed" : ""}`} onMouseEnter={() => setZoomed(true)} onMouseLeave={() => setZoomed(false)} onMouseMove={handleImgMouse}>
             <img src={product.imageUrl || motorDriver} alt={product.name} style={zoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`, transform: "scale(2)" } : {}} />
           </div>
-        </div>
-        <div className="pd-info">
-          <h1>{product.name}</h1>
-          <p className="sku">{product.sku}</p>
-          <div className="rating-row"><StarRating rating={product.rating} size={18} /><span className="review-count">{product.reviewCount} ratings</span></div>
-          <div className="pd-badges">{product.badges?.map((b) => <span key={b} className="pd-badge">{b}</span>)}{product.compatibility?.map((c) => <span key={c} className="compat-tag">{c}</span>)}</div>
-          <div className="pd-price-block">
-            <div className="pd-price">{inr(product.price)} <small>/pcs</small></div>
-            {product.mrp && <div className="pd-mrp"><s>{inr(product.mrp)}</s><span className="discount-badge">{discount}% off</span></div>}
+          <div className="pd-image-badges">
+            {product.badges?.map((b) => <span key={b} className="image-badge">{b}</span>)}
           </div>
-          {product.bulkPricing && <table className="bulk-table"><thead><tr><th>Qty</th><th>Price/pc</th></tr></thead><tbody>{product.bulkPricing.map((bp) => <tr key={bp.min}><td>{bp.min}–{bp.max === 999 ? "∞" : bp.max}</td><td>{inr(bp.price)}</td></tr>)}</tbody></table>}
-          <div className="qty-row"><div className="qty-selector"><button onClick={() => setQty(Math.max(product.minQty || 1, qty - 1))}><Minus size={16} /></button><span>{qty}</span><button onClick={() => setQty(qty + 1)}><Plus size={16} /></button></div><small>Min order: {product.minQty || 1} pcs</small></div>
-          <button className="add-quote-btn full" onClick={() => { for (let i = 0; i < qty; i++) add(product); }}><ShoppingCart size={16} /> Add to Quote</button>
-          <div className="pd-secondary"><button onClick={() => wishToggle(product.id)} className={wishlisted ? "active" : ""}><Heart size={16} /> {wishlisted ? "Wishlisted" : "Add to Wishlist"}</button></div>
-          <div className="pd-delivery glass-card"><div><Truck size={16} /><div><strong>Estimated dispatch:</strong> 2–3 business days</div></div><div><Zap size={16} /><div><strong>Free shipping</strong> above ₹999</div></div><div><Shield size={16} /><div><strong>Sold by:</strong> A5X Robotics ✓</div></div></div>
+        </div>
+
+        <div className="pd-info">
+          <div className="pd-header">
+            <div>
+              <span className="pd-category">{product.category}</span>
+              <h1>{product.name}</h1>
+              <p className="sku">SKU: {product.sku}</p>
+            </div>
+          </div>
+
+          <div className="pd-rating-section">
+            <StarRating rating={product.rating} size={20} />
+            <span className="rating-text">{product.rating} out of 5</span>
+            <span className="review-count">({reviews.length} reviews)</span>
+          </div>
+
+          <div className="pd-price-section">
+            <div className="price-main">
+              <span className="current-price">{inr(product.price)}</span>
+              <span className="price-unit">/piece</span>
+            </div>
+            {product.mrp && (
+              <div className="price-secondary">
+                <s className="original-price">{inr(product.mrp)}</s>
+                <span className="discount-tag">{discount}% OFF</span>
+              </div>
+            )}
+          </div>
+
+          {product.bulkPricing && (
+            <div className="bulk-pricing-section">
+              <h4><Package size={16} /> Bulk Pricing</h4>
+              <table className="bulk-table">
+                <thead>
+                  <tr>
+                    <th>Quantity</th>
+                    <th>Price/pc</th>
+                    <th>You Save</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {product.bulkPricing.map((bp) => (
+                    <tr key={bp.min}>
+                      <td>{bp.min}–{bp.max === 999 ? "∞" : bp.max} pcs</td>
+                      <td>{inr(bp.price)}</td>
+                      <td className="save-amount">{inr(product.price - bp.price)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <div className="pd-stock-info">
+            {product.inStock ? (
+              <div className="stock-available">
+                <CheckCircle size={18} />
+                <span>In Stock ({product.stockCount} units available)</span>
+              </div>
+            ) : (
+              <div className="stock-unavailable">
+                <X size={18} />
+                <span>Out of Stock</span>
+              </div>
+            )}
+          </div>
+
+          <div className="qty-section">
+            <label>Quantity:</label>
+            <div className="qty-selector">
+              <button onClick={() => setQty(Math.max(product.minQty || 1, qty - 1))} disabled={!product.inStock}>
+                <Minus size={16} />
+              </button>
+              <span>{qty}</span>
+              <button onClick={() => setQty(qty + 1)} disabled={!product.inStock}>
+                <Plus size={16} />
+              </button>
+            </div>
+            <small>Min order: {product.minQty || 1} pcs</small>
+          </div>
+
+          <div className="pd-actions">
+            <button className="btn-add-cart" onClick={() => { for (let i = 0; i < qty; i++) add(product); }} disabled={!product.inStock}>
+              <ShoppingCart size={18} />
+              Add to Quote
+            </button>
+            <button className={`btn-wishlist ${wishlisted ? "active" : ""}`} onClick={() => wishToggle(product.id)}>
+              <Heart size={18} fill={wishlisted ? "currentColor" : "none"} />
+            </button>
+          </div>
+
+          <div className="pd-features-quick">
+            <div className="feature-item">
+              <Truck size={20} />
+              <div>
+                <strong>Fast Delivery</strong>
+                <span>Ships in 2-3 business days</span>
+              </div>
+            </div>
+            <div className="feature-item">
+              <Shield size={20} />
+              <div>
+                <strong>Genuine Product</strong>
+                <span>100% authentic from A5X Robotics</span>
+              </div>
+            </div>
+            <div className="feature-item">
+              <Zap size={20} />
+              <div>
+                <strong>Free Shipping</strong>
+                <span>On orders above ₹999</span>
+              </div>
+            </div>
+          </div>
+
+          {product.compatibility && product.compatibility.length > 0 && (
+            <div className="pd-compatibility">
+              <h4>Compatible With:</h4>
+              <div className="compat-tags">
+                {product.compatibility.map((c) => <span key={c} className="compat-tag">{c}</span>)}
+              </div>
+            </div>
+          )}
         </div>
       </section>
-      <section className="pd-tabs">
-        <div className="tab-headers">{tabs.map((t, i) => <button key={t} className={activeTab === i ? "active" : ""} onClick={() => setActiveTab(i)}>{t}</button>)}</div>
-        <div className="tab-content glass-card">
-          {activeTab === 0 && <div className="tab-overview"><p>{product.shortDescription}</p>{product.features && <><h4>Key Features</h4><ul>{product.features.map((f) => <li key={f}><Check size={14} /> {f}</li>)}</ul></>}</div>}
-          {activeTab === 1 && <div className="tab-specs"><table className="specs-table"><tbody>{product.specs && Object.entries(product.specs).map(([k, v]) => <tr key={k}><td>{k}</td><td>{v}</td></tr>)}</tbody></table></div>}
-          {activeTab === 2 && <div className="tab-compat">{product.compatibility?.map((c) => <span key={c} className="compat-tag lg">{c}</span>)}</div>}
+
+      <section className="pd-tabs-section">
+        <div className="tab-headers">
+          {tabs.map((t, i) => (
+            <button key={t} className={activeTab === i ? "active" : ""} onClick={() => setActiveTab(i)}>
+              {t}
+            </button>
+          ))}
+        </div>
+        <div className="tab-content">
+          {activeTab === 0 && (
+            <div className="tab-overview">
+              <h3>Product Description</h3>
+              <p>{product.shortDescription}</p>
+              {product.features && (
+                <>
+                  <h4>Key Features</h4>
+                  <ul className="features-list">
+                    {product.features.map((f) => (
+                      <li key={f}>
+                        <Check size={18} />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+          )}
+          {activeTab === 1 && (
+            <div className="tab-specs">
+              <h3>Technical Specifications</h3>
+              {product.specs && (
+                <table className="specs-table">
+                  <tbody>
+                    {Object.entries(product.specs).map(([k, v]) => (
+                      <tr key={k}>
+                        <td>{k}</td>
+                        <td>{v}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
+          {activeTab === 2 && (
+            <div className="tab-compat">
+              <h3>Compatibility Information</h3>
+              <div className="compat-grid">
+                {product.compatibility?.map((c) => (
+                  <div key={c} className="compat-card">
+                    <CheckCircle size={20} />
+                    <span>{c}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {activeTab === 3 && (
+            <div className="tab-reviews">
+              <h3>Customer Reviews ({reviews.length})</h3>
+              
+              <div className="reviews-summary">
+                <div className="summary-rating">
+                  <div className="big-rating">{product.rating}</div>
+                  <StarRating rating={product.rating} size={24} />
+                  <span>{reviews.length} reviews</span>
+                </div>
+              </div>
+
+              <div className="reviews-list">
+                {reviews.map((review) => (
+                  <div key={review.id} className="review-card">
+                    <div className="review-header">
+                      <div className="reviewer-info">
+                        <div className="reviewer-avatar">{review.name.charAt(0)}</div>
+                        <div>
+                          <strong>{review.name}</strong>
+                          <span className="review-date">{review.date}</span>
+                        </div>
+                      </div>
+                      <StarRating rating={review.rating} size={16} />
+                    </div>
+                    <p className="review-comment">{review.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
-      {boughtTogether.length > 0 && <section className="pd-recs"><h3>Frequently Bought Together</h3><div className="recs-row">{boughtTogether.map((p) => <Link key={p.id} to={`/shop/${p.id}`} className="rec-card glass-card"><img src={p.imageUrl || motorDriver} alt={p.name} /><span>{p.name}</span><strong>{inr(p.price)}</strong></Link>)}</div></section>}
-      {relatedProducts.length > 0 && <section className="pd-recs"><h3>Similar Products</h3><div className="recs-row">{relatedProducts.map((p) => <Link key={p.id} to={`/shop/${p.id}`} className="rec-card glass-card"><img src={p.imageUrl || motorDriver} alt={p.name} /><span>{p.name}</span><strong>{inr(p.price)}</strong></Link>)}</div></section>}
-      {recentProducts.length > 0 && <section className="pd-recs"><h3>Recently Viewed</h3><div className="recs-row">{recentProducts.map((p) => <Link key={p.id} to={`/shop/${p.id}`} className="rec-card glass-card"><img src={p.imageUrl || motorDriver} alt={p.name} /><span>{p.name}</span><strong>{inr(p.price)}</strong></Link>)}</div></section>}
+
+      {/* Feedback Section */}
+      <section className="pd-feedback-section">
+        <div className="feedback-container">
+          <h3>Share Your Experience</h3>
+          <p className="feedback-subtitle">Help others make informed decisions</p>
+          
+          {feedbackSubmitted && (
+            <div className="feedback-success">
+              <CheckCircle size={20} />
+              <span>Thank you for your feedback! Your review has been submitted.</span>
+            </div>
+          )}
+
+          <form className="feedback-form" onSubmit={handleFeedbackSubmit}>
+            <div className="form-group">
+              <label>Your Name</label>
+              <input
+                type="text"
+                placeholder="Enter your name"
+                value={feedbackName}
+                onChange={(e) => setFeedbackName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Your Rating</label>
+              <div className="rating-input">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={32}
+                    fill={star <= feedbackRating ? "#fbbf24" : "none"}
+                    stroke="#fbbf24"
+                    strokeWidth={2}
+                    onClick={() => setFeedbackRating(star)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Your Review</label>
+              <textarea
+                placeholder="Share your experience with this product..."
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+                rows={4}
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn-submit-feedback">
+              <MessageSquare size={18} />
+              Submit Review
+            </button>
+          </form>
+        </div>
+      </section>
+
+      {boughtTogether.length > 0 && (
+        <section className="pd-recs">
+          <h3>Frequently Bought Together</h3>
+          <div className="recs-row">
+            {boughtTogether.map((p) => (
+              <Link key={p.id} to={`/shop/${p.id}`} className="rec-card">
+                <img src={p.imageUrl || motorDriver} alt={p.name} />
+                <span>{p.name}</span>
+                <strong>{inr(p.price)}</strong>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {relatedProducts.length > 0 && (
+        <section className="pd-recs">
+          <h3>Similar Products</h3>
+          <div className="recs-row">
+            {relatedProducts.map((p) => (
+              <Link key={p.id} to={`/shop/${p.id}`} className="rec-card">
+                <img src={p.imageUrl || motorDriver} alt={p.name} />
+                <span>{p.name}</span>
+                <strong>{inr(p.price)}</strong>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {recentProducts.length > 0 && (
+        <section className="pd-recs">
+          <h3>Recently Viewed</h3>
+          <div className="recs-row">
+            {recentProducts.map((p) => (
+              <Link key={p.id} to={`/shop/${p.id}`} className="rec-card">
+                <img src={p.imageUrl || motorDriver} alt={p.name} />
+                <span>{p.name}</span>
+                <strong>{inr(p.price)}</strong>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
