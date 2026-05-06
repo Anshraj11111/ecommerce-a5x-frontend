@@ -4,17 +4,16 @@
   display: flex; align-items: center;
   padding: 0 40px; height: 68px;
   background: rgba(5, 5, 15, 0.85);
-  border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+  border-bottom: none;
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 0 rgba(0, 245, 255, 0.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 .nav-v2.is-scrolled {
   background: rgba(5, 5, 15, 0.98);
-  border-bottom-color: rgba(0, 102, 255, 0.25);
+  border-bottom: none;
   box-shadow: 0 4px 32px rgba(0, 0, 0, 0.6), 
-              0 1px 0 rgba(0, 245, 255, 0.08),
               0 0 40px rgba(0, 102, 255, 0.1);
 }
 .nav-v2-logo {

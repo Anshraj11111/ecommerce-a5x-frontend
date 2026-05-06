@@ -215,6 +215,14 @@ const useRecentlyViewedStore = create(persist((set) => ({
   add: (id) => set((s) => ({ ids: [id, ...s.ids.filter((x) => x !== id)].slice(0, 10) })),
 }), { name: "a5x-recent" }));
 
+const useAuthStore = create(persist((set, get) => ({
+  user: null,
+  isAuthenticated: false,
+  login: (userData) => set({ user: userData, isAuthenticated: true }),
+  logout: () => set({ user: null, isAuthenticated: false }),
+  signup: (userData) => set({ user: userData, isAuthenticated: true }),
+}), { name: "a5x-auth" }));
+
 const useAdminStore = create(persist((set) => ({
   products: productsSeed,
   kits: kitsSeed,
@@ -284,6 +292,7 @@ function Navbar() {
   const count = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
   const wishCount = useWishlistStore((state) => state.ids.length);
   const toggle = useCartStore((state) => state.toggle);
+  const { isAuthenticated, user, logout } = useAuthStore();
 
   const navItems = [
     { label: "Home", to: "/" },
@@ -302,6 +311,11 @@ function Navbar() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) { navigate(`/shop?q=${encodeURIComponent(searchQuery.trim())}`); setMobile(false); }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   return (
@@ -339,9 +353,20 @@ function Navbar() {
             <ShoppingCart size={18} /><span>Cart</span>
             {count > 0 && <b className="nav-v2-badge">{count}</b>}
           </button>
-          <button className="nav-v2-action-btn nav-v2-profile" onClick={() => navigate('/account')} aria-label="Account">
-            <User size={18} />
-          </button>
+          {isAuthenticated ? (
+            <>
+              <button className="nav-v2-action-btn nav-v2-profile" onClick={() => navigate('/account')} aria-label="Account" title={user?.name}>
+                <User size={18} />
+              </button>
+              <button className="nav-v2-action-btn" onClick={handleLogout} aria-label="Logout" title="Logout">
+                <LogOut size={18} /><span>Logout</span>
+              </button>
+            </>
+          ) : (
+            <button className="nav-v2-action-btn" onClick={() => navigate('/login')} aria-label="Login">
+              <User size={18} /><span>Login</span>
+            </button>
+          )}
           <button className="icon-btn mobile-only" onClick={() => setMobile(true)} aria-label="Open menu" aria-expanded={mobile}>
             <Menu size={20} />
           </button>
@@ -2333,6 +2358,252 @@ function WishlistPage() {
   );
 }
 
+function LoginPage() {
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const { login, signup, isAuthenticated } = useAuthStore();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match!');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      alert('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      const userData = {
+        name: formData.name || formData.email.split('@')[0],
+        email: formData.email,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      };
+
+      if (isLogin) {
+        login(userData);
+      } else {
+        signup(userData);
+      }
+
+      // Redirect to home page
+      navigate('/');
+    } catch (error) {
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <main style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr', background: '#0a0e1a', fontFamily: 'Inter, sans-serif', position: 'relative', overflow: 'hidden' }}>
+      {/* Left Side - Form */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', position: 'relative', zIndex: 2 }}>
+        <div style={{ width: '100%', maxWidth: '460px' }}>
+          {/* Logo */}
+          <div style={{ marginBottom: '48px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '12px' }}>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '28px', fontWeight: 800, background: 'linear-gradient(135deg, #fff 0%, #00f5ff 50%, #0066FF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 16px rgba(0,245,255,0.4))' }}>A5X</span>
+              <small style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, color: 'rgba(0,245,255,0.7)', letterSpacing: '1.5px' }}>ROBOTICS</small>
+            </div>
+          </div>
+
+          {/* Form Card */}
+          <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(0,212,255,0.15)', borderRadius: '20px', padding: '40px', backdropFilter: 'blur(20px)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+            {/* Header */}
+            <div style={{ marginBottom: '32px' }}>
+              <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: '32px', fontWeight: 700, color: '#fff', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+                {isLogin ? 'Welcome back' : 'Create account'}
+              </h1>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
+                {isLogin ? 'Enter your credentials to continue' : 'Sign up to get started with A5X'}
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {!isLogin && (
+                <div>
+                  <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Full Name</label>
+                  <input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Enter your full name"
+                    required={!isLogin}
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
+                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.08)'; }}
+                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.2)'; e.target.style.background = 'rgba(255,255,255,0.05)'; }}
+                  />
+                </div>
+              )}
+
+              <div>
+                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Email</label>
+                <input
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="your@email.com"
+                  required
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
+                  onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.08)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.2)'; e.target.style.background = 'rgba(255,255,255,0.05)'; }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '12px', color: '#fff', padding: '14px 16px', paddingRight: '48px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
+                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.08)'; }}
+                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.2)'; e.target.style.background = 'rgba(255,255,255,0.05)'; }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }}
+                    onMouseEnter={(e) => e.target.style.color = '#00d4ff'}
+                    onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.4)'}
+                  >
+                    <Eye size={18} />
+                  </button>
+                </div>
+              </div>
+
+              {!isLogin && (
+                <div>
+                  <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Confirm Password</label>
+                  <input
+                    name="confirmPassword"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required={!isLogin}
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
+                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.08)'; }}
+                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.2)'; e.target.style.background = 'rgba(255,255,255,0.05)'; }}
+                  />
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                style={{ width: '100%', background: loading ? 'rgba(0,212,255,0.3)' : 'linear-gradient(135deg, #00d4ff 0%, #0066FF 100%)', border: 'none', borderRadius: '12px', color: '#fff', padding: '16px', fontSize: '15px', fontWeight: 600, fontFamily: 'Inter, sans-serif', cursor: loading ? 'not-allowed' : 'pointer', marginTop: '8px', transition: 'all 0.3s ease', boxShadow: loading ? 'none' : '0 4px 20px rgba(0,212,255,0.4)' }}
+                onMouseEnter={(e) => !loading && (e.target.style.transform = 'translateY(-2px)', e.target.style.boxShadow = '0 6px 28px rgba(0,212,255,0.5)')}
+                onMouseLeave={(e) => !loading && (e.target.style.transform = 'translateY(0)', e.target.style.boxShadow = '0 4px 20px rgba(0,212,255,0.4)')}
+              >
+                {loading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                    <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                    Processing...
+                  </span>
+                ) : (
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                    {isLogin ? <><User size={18} />Sign In</> : <><Rocket size={18} />Create Account</>}
+                  </span>
+                )}
+              </button>
+            </form>
+
+            {/* Toggle Login/Signup */}
+            <div style={{ textAlign: 'center', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.5)', marginBottom: '10px' }}>
+                {isLogin ? "Don't have an account?" : "Already have an account?"}
+              </p>
+              <button
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+                }}
+                style={{ background: 'transparent', border: '1px solid rgba(0,212,255,0.3)', borderRadius: '10px', color: '#00d4ff', padding: '10px 24px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '14px', transition: 'all 0.3s ease' }}
+                onMouseEnter={(e) => { e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.borderColor = '#00d4ff'; }}
+                onMouseLeave={(e) => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(0,212,255,0.3)'; }}
+              >
+                {isLogin ? 'Sign Up' : 'Sign In'}
+              </button>
+            </div>
+          </div>
+
+          {/* Footer Note */}
+          <div style={{ textAlign: 'center', marginTop: '24px' }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
+              By continuing, you agree to our Terms & Privacy Policy
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side - Visual */}
+      <div className="login-visual-side" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+        {/* Animated circles */}
+        <div style={{ position: 'absolute', top: '15%', left: '15%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(0,212,255,0.2) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', bottom: '20%', right: '15%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(0,102,255,0.15) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite 2s' }} />
+        
+        {/* Content */}
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '40px' }}>
+          <div style={{ marginBottom: '32px' }}>
+            <Rocket size={80} style={{ color: '#00d4ff', filter: 'drop-shadow(0 0 24px rgba(0,212,255,0.6))' }} />
+          </div>
+          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '36px', fontWeight: 700, color: '#fff', marginBottom: '16px', lineHeight: 1.2 }}>
+            Build the Future<br />with Robotics
+          </h2>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, maxWidth: '400px', margin: '0 auto' }}>
+            Join thousands of makers and innovators creating amazing projects with A5X Robotics
+          </p>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+          50% { transform: translateY(-20px) scale(1.05); opacity: 1; }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @media (max-width: 1024px) {
+          main { grid-template-columns: 1fr !important; }
+          .login-visual-side { display: none !important; }
+        }
+      `}</style>
+    </main>
+  );
+}
+
 function ShopPage() { return <main className="shop-page-main"><ShopSection /></main>; }
 function KitsPage() { return <main className="kits-page-wrap"><KitsSection /></main>; }
 function PricingPage() { return <main><PricingSection /></main>; }
@@ -4136,6 +4407,7 @@ function App() {
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/shop/:id" element={<ProductDetailPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/kits" element={<KitsPage />} />
           <Route path="/kits/:id" element={<KitDetailPage />} />
           <Route path="/learn" element={<LearnPage />} />
