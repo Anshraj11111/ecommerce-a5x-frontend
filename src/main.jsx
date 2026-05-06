@@ -114,6 +114,7 @@ import "./home-premium.css";
 import "./hero-v4.css";
 import "./shop-amazon.css";
 import "./learn-watch.css";
+import "./admin-premium.css";
 
 const kitSpinFrames = [kitSpin035, kitSpin050, kitSpin065, kitSpin076, kitSpin080, kitSpin095, kitSpin110, kitSpin125, kitSpin140, kitSpin155, kitSpin170, kitSpin185, kitSpin200, kitSpin215, kitSpin230];
 
