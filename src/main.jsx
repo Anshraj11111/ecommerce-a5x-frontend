@@ -896,22 +896,36 @@ function HomePage() {
   );
 }
 function Hero() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Subtle parallax multipliers for smooth effect
+  const bgParallax = scrollY * 0.5;
+  const leftParallax = scrollY * -0.15;
+  const rightParallax = scrollY * -0.25;
+
   return (
     <section className="hero-v4" style={{
       backgroundImage: `linear-gradient(135deg, rgba(3,3,13,0.75) 0%, rgba(5,5,21,0.70) 50%, rgba(3,3,13,0.75) 100%), url(${bgImage})`,
       backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      backgroundAttachment: 'fixed'
+      backgroundPosition: `center ${bgParallax}px`,
+      backgroundRepeat: 'no-repeat'
     }}>
       {/* Animated background */}
-      <div className="hero-v4-bg">
+      <div className="hero-v4-bg" style={{ transform: `translateY(${scrollY * 0.3}px)`, willChange: 'transform' }}>
         <div className="hero-v4-grid" />
         <div className="hero-v4-orbs" />
       </div>
 
       {/* Left content */}
-      <div className="hero-v4-left">
+      <div className="hero-v4-left" style={{ transform: `translateY(${leftParallax}px)`, willChange: 'transform' }}>
         <div className="hero-v4-eyebrow">
           <span className="hero-v4-dot" />
           <span>A5X ROBOTICS — NEXT GEN</span>
@@ -957,15 +971,15 @@ function Hero() {
       </div>
 
       {/* Right — robot image with effects */}
-      <div className="hero-v4-right">
+      <div className="hero-v4-right" style={{ transform: `translateY(${rightParallax}px)`, willChange: 'transform' }}>
         <div className="hero-v4-img-glow" />
-        <div className="hero-v4-img-ring hero-v4-ring-1" />
-        <div className="hero-v4-img-ring hero-v4-ring-2" />
+        <div className="hero-v4-img-ring hero-v4-ring-1" style={{ transform: `translateY(${scrollY * -0.1}px) rotate(${scrollY * 0.05}deg)` }} />
+        <div className="hero-v4-img-ring hero-v4-ring-2" style={{ transform: `translateY(${scrollY * -0.15}px) rotate(${scrollY * -0.05}deg)` }} />
         <img src="/assets/robot-head.jpg" alt="A5X Robot" className="hero-v4-robot-img" />
         <div className="hero-v4-img-ground" />
 
         {/* Floating badge */}
-        <div className="hero-v4-badge">
+        <div className="hero-v4-badge" style={{ transform: `translateY(${scrollY * -0.2}px)` }}>
           <div className="hero-v4-badge-icon"><CircuitBoard size={18} /></div>
           <div>
             <strong>ESP32 + AI Ready</strong>
@@ -974,14 +988,14 @@ function Hero() {
         </div>
 
         {/* Floating stat chip */}
-        <div className="hero-v4-chip">
+        <div className="hero-v4-chip" style={{ transform: `translateY(${scrollY * -0.18}px)` }}>
           <Star size={14} className="hero-v4-chip-star" />
           <span>Rated #1 Robotics Store in India</span>
         </div>
       </div>
 
       {/* Scroll hint */}
-      <div className="hero-v4-scroll">
+      <div className="hero-v4-scroll" style={{ opacity: Math.max(0, 1 - scrollY / 200), transform: `translateY(${scrollY * 0.5}px)` }}>
         <div className="hero-v4-scroll-line" />
         <span>Scroll</span>
       </div>
@@ -2301,14 +2315,18 @@ function WishlistPage() {
 
   if (wishlistIds.length === 0) {
     return (
-      <main className="shop-page-redesign" style={{ minHeight: 'calc(100vh - 68px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="shop-no-results">
-          <Heart size={64} style={{ color: '#cbd5e0', marginBottom: '16px' }} />
-          <h3>Your Wishlist is Empty</h3>
-          <p>Add products you love to your wishlist and find them here later!</p>
-          <button onClick={() => navigate('/shop')}>
-            <ShoppingCart size={16} />
-            Start Shopping
+      <main className="wishlist-page-premium">
+        <div className="wishlist-empty-state">
+          <div className="wishlist-empty-icon">
+            <Heart size={80} strokeWidth={1.5} />
+          </div>
+          <h2 className="wishlist-empty-title">Your Wishlist is Empty</h2>
+          <p className="wishlist-empty-desc">
+            Discover amazing robotics products and save your favorites here
+          </p>
+          <button className="wishlist-empty-btn" onClick={() => navigate('/shop')}>
+            <ShoppingCart size={18} />
+            Explore Products
           </button>
         </div>
       </main>
@@ -2316,73 +2334,129 @@ function WishlistPage() {
   }
 
   return (
-    <main className="shop-page-redesign">
-      <div style={{ padding: '120px 48px 60px', maxWidth: '1400px', margin: '0 auto' }}>
-        <div style={{ marginBottom: '40px' }}>
-          <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: '42px', fontWeight: 900, color: '#1a1a1a', marginBottom: '12px' }}>
-            My Wishlist
-          </h1>
-          <p style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '16px', color: '#718096' }}>
-            {wishlistProducts.length} {wishlistProducts.length === 1 ? 'item' : 'items'} saved for later
-          </p>
+    <main className="wishlist-page-premium">
+      {/* Hero Header */}
+      <div className="wishlist-hero">
+        <div className="wishlist-hero-content">
+          <div className="wishlist-hero-icon">
+            <Heart size={32} fill="currentColor" />
+          </div>
+          <div>
+            <h1 className="wishlist-hero-title">My Wishlist</h1>
+            <p className="wishlist-hero-subtitle">
+              {wishlistProducts.length} {wishlistProducts.length === 1 ? 'item' : 'items'} saved for later
+            </p>
+          </div>
         </div>
+        <button className="wishlist-hero-shop-btn" onClick={() => navigate('/shop')}>
+          <Plus size={18} />
+          Add More
+        </button>
+      </div>
 
-        <div className="shop-amazon-grid">
-          {wishlistProducts.map((product) => (
-            <div key={product.id} className="product-card">
-              <div className="product-image" style={{ backgroundImage: `url(${product.imageUrl || motorDriver})` }}>
-                {product.badges?.map((badge) => <span key={badge} className="product-badge">{badge}</span>)}
-                <button
-                  className="product-wishlist-btn active"
-                  onClick={() => toggleWishlist(product.id)}
-                  aria-label="Remove from wishlist"
+      {/* Products Grid */}
+      <div className="wishlist-container">
+        <div className="wishlist-grid">
+          {wishlistProducts.map((product, index) => (
+            <motion.div
+              key={product.id}
+              className="wishlist-card"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              {/* Product Image */}
+              <div className="wishlist-card-image-wrapper">
+                <div 
+                  className="wishlist-card-image" 
+                  style={{ backgroundImage: `url(${product.imageUrl || motorDriver})` }}
                 >
-                  <Heart size={16} fill="#ff4444" stroke="#ff4444" />
-                </button>
+                  {product.badges?.map((badge) => (
+                    <span key={badge} className="wishlist-card-badge">{badge}</span>
+                  ))}
+                  <button
+                    className="wishlist-card-remove"
+                    onClick={() => toggleWishlist(product.id)}
+                    aria-label="Remove from wishlist"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
               </div>
-              <div className="product-body">
-                <h3 className="product-name">{product.name}</h3>
-                <div className="product-rating">
-                  <div className="product-stars">
+
+              {/* Product Info */}
+              <div className="wishlist-card-body">
+                <div className="wishlist-card-category">{product.category}</div>
+                <h3 className="wishlist-card-name">{product.name}</h3>
+                
+                {/* Rating */}
+                <div className="wishlist-card-rating">
+                  <div className="wishlist-card-stars">
                     {Array.from({ length: 5 }, (_, i) => (
-                      <Star key={i} size={12} fill={i < Math.floor(product.rating) ? "#f59e0b" : "none"} stroke="#f59e0b" />
+                      <Star 
+                        key={i} 
+                        size={14} 
+                        fill={i < Math.floor(product.rating) ? "#fbbf24" : "none"} 
+                        stroke="#fbbf24"
+                        strokeWidth={1.5}
+                      />
                     ))}
                   </div>
-                  <span className="product-rating-text">{product.rating}</span>
+                  <span className="wishlist-card-rating-text">
+                    {product.rating} ({product.reviewCount})
+                  </span>
                 </div>
-                <div className="product-price-row">
-                  <span className="product-price">{inr(product.price)}</span>
-                  {product.mrp && <span className="product-mrp">{inr(product.mrp)}</span>}
+
+                {/* Price */}
+                <div className="wishlist-card-price-row">
+                  <div className="wishlist-card-price-group">
+                    <span className="wishlist-card-price">{inr(product.price)}</span>
+                    {product.mrp && (
+                      <>
+                        <span className="wishlist-card-mrp">{inr(product.mrp)}</span>
+                        <span className="wishlist-card-discount">
+                          {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% OFF
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+
+                {/* Stock Status */}
+                {product.inStock ? (
+                  <div className="wishlist-card-stock in-stock">
+                    <CheckCircle size={14} />
+                    In Stock
+                  </div>
+                ) : (
+                  <div className="wishlist-card-stock out-of-stock">
+                    <X size={14} />
+                    Out of Stock
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="wishlist-card-actions">
                   <button
-                    className="product-cart-btn"
+                    className="wishlist-card-btn-primary"
                     onClick={() => {
                       addToCart(product);
                       toggleWishlist(product.id);
                     }}
-                    style={{ flex: 1 }}
+                    disabled={!product.inStock}
                   >
-                    <ShoppingCart size={14} />
+                    <ShoppingCart size={16} />
                     Add to Cart
                   </button>
                   <button
+                    className="wishlist-card-btn-secondary"
                     onClick={() => navigate(`/shop/${product.id}`)}
-                    style={{
-                      padding: '8px 12px',
-                      background: '#f8f9fa',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      color: '#4a5568',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
                   >
-                    <Eye size={14} />
+                    <Eye size={16} />
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
