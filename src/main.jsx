@@ -224,6 +224,13 @@ const useAuthStore = create(persist((set, get) => ({
   signup: (userData) => set({ user: userData, isAuthenticated: true }),
 }), { name: "a5x-auth" }));
 
+const useAuthModalStore = create((set) => ({
+  isOpen: false,
+  redirectPath: null,
+  open: (redirectPath = null) => set({ isOpen: true, redirectPath }),
+  close: () => set({ isOpen: false, redirectPath: null }),
+}));
+
 const useAdminStore = create(persist((set) => ({
   products: productsSeed,
   kits: kitsSeed,
@@ -294,6 +301,7 @@ function Navbar() {
   const wishCount = useWishlistStore((state) => state.ids.length);
   const toggle = useCartStore((state) => state.toggle);
   const { isAuthenticated, user, logout } = useAuthStore();
+  const { open: openAuthModal } = useAuthModalStore();
 
   const navItems = [
     { label: "Home", to: "/" },
@@ -319,6 +327,13 @@ function Navbar() {
     navigate('/');
   };
 
+  const handleNavClick = (e, to) => {
+    if (to !== '/' && !isAuthenticated) {
+      e.preventDefault();
+      openAuthModal(to);
+    }
+  };
+
   return (
     <>
       <header className={`nav-v2 ${scrolled ? "is-scrolled" : ""}`}>
@@ -328,13 +343,13 @@ function Navbar() {
         <nav className="nav-v2-links">
           {navItems.map(({ label, to, dropdown }) => (
             <div key={label} className={`nav-v2-item ${dropdown ? "has-dropdown" : ""}`}>
-              <NavLink className={({ isActive }) => `nav-v2-link ${isActive ? "active" : ""}`} to={to}>
+              <NavLink className={({ isActive }) => `nav-v2-link ${isActive ? "active" : ""}`} to={to} onClick={(e) => handleNavClick(e, to)}>
                 {label}{dropdown && <ChevronDown size={13} className="nav-v2-chevron" />}
               </NavLink>
               {dropdown && (
                 <div className="nav-v2-dropdown">
                   {dropdown.map((item) => (
-                    <Link key={item} className="nav-v2-dropdown-item" to={to}>{item}</Link>
+                    <Link key={item} className="nav-v2-dropdown-item" to={to} onClick={(e) => handleNavClick(e, to)}>{item}</Link>
                   ))}
                 </div>
               )}
@@ -424,6 +439,7 @@ function MainLayout() {
       <Outlet />
       {!hideNavbar && <Footer />}
       <CartDrawer />
+      <AuthModal />
     </>
   );
 }
@@ -2641,7 +2657,162 @@ function LoginPage() {
   );
 }
 
+function AuthModal() {
+  const { isOpen, close, redirectPath } = useAuthModalStore();
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const { login, signup } = useAuthStore();
+
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match!');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      alert('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const userData = {
+        name: formData.name || formData.email.split('@')[0],
+        email: formData.email,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      };
+
+      if (isLogin) {
+        login(userData);
+      } else {
+        signup(userData);
+      }
+
+      close();
+      if (redirectPath) {
+        navigate(redirectPath);
+      }
+    } catch (error) {
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={close}>
+      <div style={{ background: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0,212,255,0.3)', borderRadius: '24px', padding: '40px', maxWidth: '440px', width: '100%', position: 'relative', boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,212,255,0.2)' }} onClick={(e) => e.stopPropagation()}>
+        {/* Close Button */}
+        <button onClick={close} style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00d4ff'} onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.5)'}>
+          <X size={24} />
+        </button>
+
+        {/* Header */}
+        <div style={{ marginBottom: '32px', textAlign: 'center' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '32px', fontWeight: 900, background: 'linear-gradient(135deg, #fff 0%, #00f5ff 50%, #0066FF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 16px rgba(0,245,255,0.5))', letterSpacing: '2px' }}>A5X</span>
+          </div>
+          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '28px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>
+            {isLogin ? 'Welcome back' : 'Create account'}
+          </h2>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.6)' }}>
+            {isLogin ? 'Login to continue shopping' : 'Sign up to get started'}
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {!isLogin && (
+            <div>
+              <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Full Name</label>
+              <input name="name" value={formData.name} onChange={handleChange} placeholder="Enter your full name" required={!isLogin} style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
+            </div>
+          )}
+
+          <div>
+            <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Email</label>
+            <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" required style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
+          </div>
+
+          <div>
+            <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Password</label>
+            <div style={{ position: 'relative' }}>
+              <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} placeholder="••••••••" required style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', paddingRight: '48px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00d4ff'} onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.5)'}>
+                <Eye size={18} />
+              </button>
+            </div>
+          </div>
+
+          {!isLogin && (
+            <div>
+              <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Confirm Password</label>
+              <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} placeholder="••••••••" required={!isLogin} style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
+            </div>
+          )}
+
+          <button type="submit" disabled={loading} style={{ width: '100%', background: loading ? 'rgba(0,212,255,0.3)' : 'linear-gradient(135deg, #00d4ff 0%, #0066FF 100%)', border: 'none', borderRadius: '12px', color: '#fff', padding: '16px', fontSize: '15px', fontWeight: 700, fontFamily: 'Inter, sans-serif', cursor: loading ? 'not-allowed' : 'pointer', marginTop: '8px', transition: 'all 0.3s ease', boxShadow: loading ? 'none' : '0 4px 24px rgba(0,212,255,0.5)' }} onMouseEnter={(e) => !loading && (e.target.style.transform = 'translateY(-2px)', e.target.style.boxShadow = '0 6px 32px rgba(0,212,255,0.6)')} onMouseLeave={(e) => !loading && (e.target.style.transform = 'translateY(0)', e.target.style.boxShadow = '0 4px 24px rgba(0,212,255,0.5)')}>
+            {loading ? (
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                Processing...
+              </span>
+            ) : (
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                {isLogin ? <><User size={18} />Sign In</> : <><Rocket size={18} />Create Account</>}
+              </span>
+            )}
+          </button>
+        </form>
+
+        {/* Toggle */}
+        <div style={{ textAlign: 'center', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '10px' }}>
+            {isLogin ? "Don't have an account?" : "Already have an account?"}
+          </p>
+          <button onClick={() => { setIsLogin(!isLogin); setFormData({ name: '', email: '', password: '', confirmPassword: '' }); }} style={{ background: 'transparent', border: '1.5px solid rgba(0,212,255,0.35)', borderRadius: '10px', color: '#00d4ff', padding: '10px 24px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '14px', transition: 'all 0.3s ease' }} onMouseEnter={(e) => { e.target.style.background = 'rgba(0,212,255,0.12)'; e.target.style.borderColor = '#00d4ff'; }} onMouseLeave={(e) => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(0,212,255,0.35)'; }}>
+            {isLogin ? 'Sign Up' : 'Sign In'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ShopPage() { return <main className="shop-page-main"><ShopSection /></main>; }
+
+function ProtectedRoute({ children }) {
+  const { isAuthenticated } = useAuthStore();
+  const { open } = useAuthModalStore();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!isAuthenticated && location.pathname !== '/') {
+      open(location.pathname);
+    }
+  }, [isAuthenticated, location.pathname, open]);
+
+  if (!isAuthenticated && location.pathname !== '/') {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
+
 function KitsPage() { return <main className="kits-page-wrap"><KitsSection /></main>; }
 function PricingPage() { return <main><PricingSection /></main>; }
 function AboutPage() {
@@ -4441,20 +4612,20 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/shop" element={<ShopPage />} />
-          <Route path="/shop/:id" element={<ProductDetailPage />} />
-          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/shop" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
+          <Route path="/shop/:id" element={<ProtectedRoute><ProductDetailPage /></ProtectedRoute>} />
+          <Route path="/wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/kits" element={<KitsPage />} />
-          <Route path="/kits/:id" element={<KitDetailPage />} />
-          <Route path="/learn" element={<LearnPage />} />
-          <Route path="/learn/:courseId" element={<LearnPage />} />
-          <Route path="/learn/:courseId/:videoId" element={<VideoPlayerPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/quote" element={<QuotePage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/kits" element={<ProtectedRoute><KitsPage /></ProtectedRoute>} />
+          <Route path="/kits/:id" element={<ProtectedRoute><KitDetailPage /></ProtectedRoute>} />
+          <Route path="/learn" element={<ProtectedRoute><LearnPage /></ProtectedRoute>} />
+          <Route path="/learn/:courseId" element={<ProtectedRoute><LearnPage /></ProtectedRoute>} />
+          <Route path="/learn/:courseId/:videoId" element={<ProtectedRoute><VideoPlayerPage /></ProtectedRoute>} />
+          <Route path="/pricing" element={<ProtectedRoute><PricingPage /></ProtectedRoute>} />
+          <Route path="/about" element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
+          <Route path="/contact" element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
+          <Route path="/quote" element={<ProtectedRoute><QuotePage /></ProtectedRoute>} />
+          <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
