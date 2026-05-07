@@ -4866,12 +4866,28 @@ function AdminOrders() {
     setLoading(true);
     try {
       const token = localStorage.getItem('a5x-admin-token');
+      if (!token) {
+        console.error('No admin token found');
+        setOrders([]);
+        setLoading(false);
+        return;
+      }
       const url = filter === 'all'
         ? `${API_BASE}/api/orders`
         : `${API_BASE}/api/orders?status=${filter}`;
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        console.error('Orders fetch failed:', response.status, errData);
+        // If 401/403, token is invalid - clear it
+        if (response.status === 401 || response.status === 403) {
+          console.warn('Admin token invalid/expired. Please log in again.');
+        }
+        setOrders([]);
+        return;
+      }
       const data = await response.json();
       setOrders(data.orders || []);
     } catch (error) {
@@ -6413,7 +6429,12 @@ function AdminContacts() {
     const loadContacts = async () => {
       try {
         const token = localStorage.getItem('a5x-admin-token');
-        const res = await fetch('http://localhost:3001/api/contacts', {
+        if (!token) {
+          const local = JSON.parse(localStorage.getItem('a5x-contacts') || '[]');
+          setContacts(local);
+          return;
+        }
+        const res = await fetch(`${API_BASE}/api/contacts`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -6421,7 +6442,10 @@ function AdminContacts() {
           setContacts(data.contacts || []);
           return;
         }
-      } catch {}
+        console.error('Contacts fetch failed:', res.status);
+      } catch (err) {
+        console.error('Contacts fetch error:', err);
+      }
       // Fallback to localStorage
       const local = JSON.parse(localStorage.getItem('a5x-contacts') || '[]');
       setContacts(local);
