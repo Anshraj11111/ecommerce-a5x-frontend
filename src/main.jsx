@@ -364,9 +364,89 @@ const useAdminStore = create(persist((set, get) => ({
     }
   },
   
-  addProduct: (product) => set((state) => ({ products: [{ ...product, id: product.id || uid() }, ...state.products] })),
-  updateProduct: (id, product) => set((state) => ({ products: state.products.map((item) => item.id === id ? { ...item, ...product } : item) })),
-  deleteProduct: (id) => set((state) => ({ products: state.products.filter((item) => item.id !== id) })),
+  // Add product to API and update local state
+  addProduct: async (product) => {
+    try {
+      const token = localStorage.getItem('a5x-admin-token');
+      const response = await fetch(`${API_BASE}/api/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(product)
+      });
+      
+      if (response.ok) {
+        const created = await response.json();
+        set((state) => ({ products: [created, ...state.products] }));
+        return created;
+      } else {
+        console.error('Failed to add product:', await response.text());
+        // Fallback to local storage
+        set((state) => ({ products: [{ ...product, id: product.id || uid() }, ...state.products] }));
+      }
+    } catch (error) {
+      console.error('Error adding product:', error);
+      // Fallback to local storage
+      set((state) => ({ products: [{ ...product, id: product.id || uid() }, ...state.products] }));
+    }
+  },
+  
+  // Update product in API and local state
+  updateProduct: async (id, product) => {
+    try {
+      const token = localStorage.getItem('a5x-admin-token');
+      const response = await fetch(`${API_BASE}/api/products/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(product)
+      });
+      
+      if (response.ok) {
+        const updated = await response.json();
+        set((state) => ({ products: state.products.map((item) => item.id === id ? updated : item) }));
+        return updated;
+      } else {
+        console.error('Failed to update product:', await response.text());
+        // Fallback to local storage
+        set((state) => ({ products: state.products.map((item) => item.id === id ? { ...item, ...product } : item) }));
+      }
+    } catch (error) {
+      console.error('Error updating product:', error);
+      // Fallback to local storage
+      set((state) => ({ products: state.products.map((item) => item.id === id ? { ...item, ...product } : item) }));
+    }
+  },
+  
+  // Delete product from API and local state
+  deleteProduct: async (id) => {
+    try {
+      const token = localStorage.getItem('a5x-admin-token');
+      const response = await fetch(`${API_BASE}/api/products/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        set((state) => ({ products: state.products.filter((item) => item.id !== id) }));
+      } else {
+        console.error('Failed to delete product:', await response.text());
+        // Fallback to local storage
+        set((state) => ({ products: state.products.filter((item) => item.id !== id) }));
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      // Fallback to local storage
+      set((state) => ({ products: state.products.filter((item) => item.id !== id) }));
+    }
+  },
+  
   addKit: (kit) => set((state) => ({ kits: [{ ...kit, id: kit.id || uid() }, ...state.kits] })),
   updateKit: (id, kit) => set((state) => ({ kits: state.kits.map((item) => item.id === id ? { ...item, ...kit } : item) })),
   deleteKit: (id) => set((state) => ({ kits: state.kits.filter((item) => item.id !== id) })),
@@ -4967,17 +5047,26 @@ function ProductForm() {
   const product = products.find((item) => item.id === id);
   const upload = useFileUpload({ types: ["image"], maxMb: 5 });
   const [deliveryType, setDeliveryType] = useState(product?.quickDelivery === true ? 'quick' : product?.quickDelivery === false ? 'scheduled' : 'all');
+  const [saving, setSaving] = useState(false);
   
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
+    setSaving(true);
     const data = Object.fromEntries(new FormData(event.currentTarget));
     const quickDeliveryValue = data.deliveryType === 'all' ? undefined : data.deliveryType === 'quick';
     const payload = { ...product, ...data, price: Number(data.price), minQty: Number(data.minQty || 1), rating: Number(data.rating || 4.7), inStock: data.inStock === "on", quickDelivery: quickDeliveryValue, imageUrl: upload.previewUrl || product?.imageUrl };
-    product ? updateProduct(product.id, payload) : addProduct(payload);
+    
+    if (product) {
+      await updateProduct(product.id, payload);
+    } else {
+      await addProduct(payload);
+    }
+    
+    setSaving(false);
     navigate("/admin/products");
   }
   
-  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}><input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || "A5X-XX-000"} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" /><input name="tags" placeholder="Tags, comma-separated" /><input name="rating" type="number" step=".1" defaultValue={product?.rating || 4.7} /><FileDrop upload={upload} accept="image/*" /><button>Save Product</button><Link to="/admin/products">Cancel</Link></form></AdminPage>;
+  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}><input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || "A5X-XX-000"} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" /><input name="tags" placeholder="Tags, comma-separated" /><input name="rating" type="number" step=".1" defaultValue={product?.rating || 4.7} /><FileDrop upload={upload} accept="image/*" /><button disabled={saving}>{saving ? 'Saving...' : 'Save Product'}</button><Link to="/admin/products">Cancel</Link></form></AdminPage>;
 }
 
 function FileDrop({ upload, accept = "image/*,video/*" }) {
