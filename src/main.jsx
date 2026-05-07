@@ -656,6 +656,55 @@ const useAdminStore = create(persist((set, get) => ({
     }
   },
 
+  // Bulk upload products to API
+  bulkUploadProducts: async (products) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    if (!token) {
+      const errorMsg = 'Authentication required. Please log in again.';
+      set({ error: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    try {
+      console.log(`[Bulk Upload] Uploading ${products.length} products to API...`);
+      
+      const response = await fetch(`${API_BASE}/api/products/bulk`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ products })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(`[Bulk Upload] Success:`, result);
+        
+        // Reload products from API to get the updated list
+        await get().loadProducts();
+        
+        set({ error: null });
+        return result;
+      } else {
+        // API call failed - show error
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to bulk upload products:', errorText);
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      // Network error - show error
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error bulk uploading products:', error);
+      }
+      throw error;
+    }
+  },
+
   // Load kits from API
   loadKits: async () => {
     try {
@@ -4893,7 +4942,7 @@ function AdminDashboard() {
 function AdminPage({ title, children }) { return <section className="admin-page"><p>Admin / {title}</p><h1>{title}</h1>{children}</section>; }
 
 function BulkProductUpload() {
-  const { addProduct } = useAdminStore();
+  const { bulkUploadProducts } = useAdminStore();
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
   const fileInputRef = useRef(null);
@@ -5028,7 +5077,21 @@ function BulkProductUpload() {
         return;
       }
 
-      products.forEach(product => addProduct(product));
+      // Upload to MongoDB via API
+      const result = await bulkUploadProducts(products);
+      
+      setResult({ 
+        success: true, 
+        message: result.message || `Successfully added ${products.length} products to MongoDB!`,
+        count: products.length 
+      });
+    } catch (error) {
+      setResult({ success: false, message: `Error: ${error.message}` });
+    }
+
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
       
       setResult({ 
         success: true, 
@@ -5087,15 +5150,18 @@ function BulkProductUpload() {
         
         <button 
           className="bulk-upload-btn" 
-          onClick={() => {
-            // Load your 37 products directly
-            const sampleProducts = [
-              {name:"5V Relay Module single ch",price:43,qty:6},{name:"5V Dual Channel Relay Module with Optocoupler",price:85,qty:6},{name:"Soil Moisture Sensor Module for Humidity Detection",price:45,qty:10},{name:"Metal touch sensor module KY-036 Human Body Touch Sensor",price:46,qty:4},{name:"Raindrops Detection Sensor Module",price:51,qty:6},{name:"Flex Sensor 2.2",price:260,qty:2},{name:"LM35D Analog Temperature Sensor Module",price:87,qty:3},{name:"DHT-11 Temperature And Humidity Sensor Module",price:69,qty:10},{name:"BMP280 Barometric Pressure and Altitude Sensor I2C/SPI Module",price:55,qty:6},{name:"TCS3200 Color Recognition Sensor Module",price:370,qty:3},{name:"Sound Detection Sensor Module",price:45,qty:5},{name:"2.4GHz NRF24L01+PA+LNA SMA Wireless Transceiver Antenna",price:155,qty:10},{name:"RFID Reader/Writer RC522 SPI S50 with RFID Card and Tag",price:115,qty:8},{name:"Digital Multi Servo Tester ESC RC Consistency CCPM Master Speed Control",price:135,qty:6},{name:"Anti-Static Tweezers tools set of 5 PCs with bag",price:170,qty:3},{name:"Taparia 9 Pieces Black Finish Allen Key Set in Box",price:255,qty:3},{name:"60W Hot Melt Glue Gun",price:180,qty:4},{name:"SOLDERING KIT",price:450,qty:2},{name:"ImaxRC B3 Compact Charger for 2~3 series LiPo battery",price:320,qty:4},{name:"Li-ion 2 Cell Battery Charger Universal AC Wall For 18650",price:180,qty:4},{name:"DT830D LCD Digital Multimeter AC DC Tester With Probes",price:168,qty:3},{name:"Generic 11 MM Glue Stick",price:9.5,qty:40},{name:"CABLE TIE 100pcs",price:130,qty:5},{name:"3S 11.1V 10A LI-ION Battery Protection Board BMS",price:140,qty:10},{name:"Sim800l gsm gprs micro sim card ttl module",price:270,qty:5},{name:"ublox neo 6m gps module (3.3v 5v interface,with eeprom,flash)",price:245,qty:2},{name:"Flame/Fire Sensor Module",price:35,qty:12},{name:"PCB Mount 5V Passive Buzzer",price:12,qty:10},{name:"2 pin pcb mount screw terminal connector 5mm Pitch",price:4,qty:20},{name:"Li-ion 2 Cell Battery holder",price:25,qty:12},{name:"10k potentiometer with knob",price:22,qty:4},{name:"dc jack male + female pair",price:18,qty:20},{name:"140 Pieces Heat Shrink Tubes kits",price:219,qty:2},{name:"strong Round Magnet 15x3mm",price:6,qty:20},{name:"Magnetic Reed Switch 12mm",price:11,qty:20},{name:"High Power Cold White LED",price:35,qty:20},{name:"Desoldering Pump, Solder Sucker - Desoldering Vacuum Pump",price:110,qty:5}
-            ];
+          disabled={uploading}
+          onClick={async () => {
+            setUploading(true);
+            setResult(null);
             
-            let added = 0;
-            sampleProducts.forEach(item => {
-              addProduct({
+            try {
+              // Load your 37 products directly
+              const sampleProducts = [
+                {name:"5V Relay Module single ch",price:43,qty:6},{name:"5V Dual Channel Relay Module with Optocoupler",price:85,qty:6},{name:"Soil Moisture Sensor Module for Humidity Detection",price:45,qty:10},{name:"Metal touch sensor module KY-036 Human Body Touch Sensor",price:46,qty:4},{name:"Raindrops Detection Sensor Module",price:51,qty:6},{name:"Flex Sensor 2.2",price:260,qty:2},{name:"LM35D Analog Temperature Sensor Module",price:87,qty:3},{name:"DHT-11 Temperature And Humidity Sensor Module",price:69,qty:10},{name:"BMP280 Barometric Pressure and Altitude Sensor I2C/SPI Module",price:55,qty:6},{name:"TCS3200 Color Recognition Sensor Module",price:370,qty:3},{name:"Sound Detection Sensor Module",price:45,qty:5},{name:"2.4GHz NRF24L01+PA+LNA SMA Wireless Transceiver Antenna",price:155,qty:10},{name:"RFID Reader/Writer RC522 SPI S50 with RFID Card and Tag",price:115,qty:8},{name:"Digital Multi Servo Tester ESC RC Consistency CCPM Master Speed Control",price:135,qty:6},{name:"Anti-Static Tweezers tools set of 5 PCs with bag",price:170,qty:3},{name:"Taparia 9 Pieces Black Finish Allen Key Set in Box",price:255,qty:3},{name:"60W Hot Melt Glue Gun",price:180,qty:4},{name:"SOLDERING KIT",price:450,qty:2},{name:"ImaxRC B3 Compact Charger for 2~3 series LiPo battery",price:320,qty:4},{name:"Li-ion 2 Cell Battery Charger Universal AC Wall For 18650",price:180,qty:4},{name:"DT830D LCD Digital Multimeter AC DC Tester With Probes",price:168,qty:3},{name:"Generic 11 MM Glue Stick",price:9.5,qty:40},{name:"CABLE TIE 100pcs",price:130,qty:5},{name:"3S 11.1V 10A LI-ION Battery Protection Board BMS",price:140,qty:10},{name:"Sim800l gsm gprs micro sim card ttl module",price:270,qty:5},{name:"ublox neo 6m gps module (3.3v 5v interface,with eeprom,flash)",price:245,qty:2},{name:"Flame/Fire Sensor Module",price:35,qty:12},{name:"PCB Mount 5V Passive Buzzer",price:12,qty:10},{name:"2 pin pcb mount screw terminal connector 5mm Pitch",price:4,qty:20},{name:"Li-ion 2 Cell Battery holder",price:25,qty:12},{name:"10k potentiometer with knob",price:22,qty:4},{name:"dc jack male + female pair",price:18,qty:20},{name:"140 Pieces Heat Shrink Tubes kits",price:219,qty:2},{name:"strong Round Magnet 15x3mm",price:6,qty:20},{name:"Magnetic Reed Switch 12mm",price:11,qty:20},{name:"High Power Cold White LED",price:35,qty:20},{name:"Desoldering Pump, Solder Sucker - Desoldering Vacuum Pump",price:110,qty:5}
+              ];
+              
+              const products = sampleProducts.map(item => ({
                 id: uid(),
                 name: item.name,
                 price: item.price,
@@ -5109,19 +5175,25 @@ function BulkProductUpload() {
                 minQty: 1,
                 reviewCount: 0,
                 quickDelivery: false
+              }));
+              
+              // Upload to MongoDB via API
+              const result = await bulkUploadProducts(products);
+              
+              setResult({ 
+                success: true, 
+                message: result.message || `Successfully added ${products.length} products to MongoDB!`,
+                count: products.length 
               });
-              added++;
-            });
+            } catch (error) {
+              setResult({ success: false, message: `Error: ${error.message}` });
+            }
             
-            setResult({ 
-              success: true, 
-              message: `Successfully added ${added} products from your invoice!`,
-              count: added 
-            });
+            setUploading(false);
           }}
           style={{marginTop: '12px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'}}
         >
-          <CheckCircle size={18} />
+          {uploading ? <RefreshCw size={18} className="spin" /> : <CheckCircle size={18} />}
           Load My 37 Products
         </button>
 
