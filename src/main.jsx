@@ -826,12 +826,17 @@ function Navbar() {
   const [mobile, setMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const count = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
   const wishCount = useWishlistStore((state) => state.ids.length);
   const toggle = useCartStore((state) => state.toggle);
   const cartOpen = useCartStore((state) => state.open);
   const { isAuthenticated, user, logout } = useAuthStore();
   const { open: openAuthModal } = useAuthModalStore();
+  
+  // Check if current page is wishlist or shop
+  const isWishlistPage = location.pathname === '/wishlist';
+  const isShopPage = location.pathname === '/shop';
 
   const navItems = [
     { label: "Home", to: "/" },
@@ -866,7 +871,7 @@ function Navbar() {
 
   return (
     <>
-      <header className={`nav-v2 ${scrolled ? "is-scrolled" : ""} ${cartOpen ? "hide-on-mobile" : ""}`}>
+      <header className={`nav-v2 ${scrolled ? "is-scrolled" : ""} ${cartOpen ? "hide-on-mobile" : ""} ${isWishlistPage || isShopPage ? "wishlist-nav-dark" : ""}`}>
         <Link className="nav-v2-logo" to="/" onClick={() => setMobile(false)}>
           <span>A5X</span><small>ROBOTICS</small>
         </Link>

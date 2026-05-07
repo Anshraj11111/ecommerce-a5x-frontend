@@ -28,6 +28,18 @@
   box-shadow: 0 4px 32px rgba(0, 0, 0, 0.6), 
               0 0 40px rgba(0, 102, 255, 0.1);
 }
+
+/* Wishlist page navbar - Always dark background */
+.nav-v2.wishlist-nav-dark {
+  background: rgba(5, 5, 15, 0.95);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.6), 
+              0 0 40px rgba(0, 102, 255, 0.15),
+              0 1px 0 rgba(0, 245, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+}
+
 .nav-v2-logo {
   display: flex; align-items: baseline; gap: 7px;
   text-decoration: none;
