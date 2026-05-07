@@ -345,10 +345,25 @@ const useAuthModalStore = create((set) => ({
   close: () => set({ isOpen: false, redirectPath: null }),
 }));
 
-const useAdminStore = create(persist((set) => ({
+const useAdminStore = create(persist((set, get) => ({
   products: productsSeed,
   kits: kitsSeed,
   courses: coursesSeed,
+  productsLoaded: false,
+  
+  // Fetch products from API
+  loadProducts: async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/products?limit=1000`);
+      const data = await response.json();
+      if (data.data && Array.isArray(data.data)) {
+        set({ products: data.data, productsLoaded: true });
+      }
+    } catch (error) {
+      console.error('Failed to load products:', error);
+    }
+  },
+  
   addProduct: (product) => set((state) => ({ products: [{ ...product, id: product.id || uid() }, ...state.products] })),
   updateProduct: (id, product) => set((state) => ({ products: state.products.map((item) => item.id === id ? { ...item, ...product } : item) })),
   deleteProduct: (id) => set((state) => ({ products: state.products.filter((item) => item.id !== id) })),
@@ -1389,6 +1404,8 @@ function FilterSidebar({ filters, setFilters, onClear, categories: cats }) {
 
 function ShopSection() {
   const products = useAdminStore((s) => s.products);
+  const loadProducts = useAdminStore((s) => s.loadProducts);
+  const productsLoaded = useAdminStore((s) => s.productsLoaded);
   const defaultFilters = { category: "All", priceMin: "", priceMax: "", minRating: 0, compat: [], inStockOnly: false, deliveryType: "all" };
   const [filters, setFilters] = useState(defaultFilters);
   const [sort, setSort] = useState("popular");
@@ -1399,12 +1416,19 @@ function ShopSection() {
   const [showMobileFilter, setShowMobileFilter] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
+  // Load products from API on mount
+  useEffect(() => {
+    if (!productsLoaded) {
+      loadProducts();
+    }
+  }, [loadProducts, productsLoaded]);
+  
   // Hero Carousel State
   const [currentSlide, setCurrentSlide] = useState(0);
   const heroSlides = [
     { image: carousel1, title: "A5X ROBOTICS KIT", subtitle: "Complete Kit with Servo, Sensors & Motors", tag: "FEATURED KIT" },
-    { image: kitInnovation, title: "PREMIUM COMPONENTS", subtitle: "High-Quality Microcontrollers & Modules", tag: "BEST SELLERS" },
-    { image: gridInnovation, title: "BUILD & INNOVATE", subtitle: "Everything You Need for Your Next Project", tag: "NEW ARRIVALS" }
+    { image: robotUnit003, title: "PREMIUM COMPONENTS", subtitle: "High-Quality Microcontrollers & Modules", tag: "BEST SELLERS" },
+    { image: cyberAndroid, title: "BUILD & INNOVATE", subtitle: "Everything You Need for Your Next Project", tag: "NEW ARRIVALS" }
   ];
   
   // Auto-play hero carousel
@@ -4882,10 +4906,17 @@ function BulkProductUpload() {
 }
 
 function AdminProducts({ compact }) {
-  const { products, deleteProduct } = useAdminStore();
+  const { products, deleteProduct, loadProducts, productsLoaded } = useAdminStore();
   const [query, setQuery] = useState("");
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const filtered = products.filter((product) => product.name.toLowerCase().includes(query.toLowerCase()));
+  
+  // Load products from API on mount
+  useEffect(() => {
+    if (!productsLoaded) {
+      loadProducts();
+    }
+  }, [loadProducts, productsLoaded]);
   
   return (
     <AdminPage title={compact ? "Recently Added Products" : "Products"}>
@@ -4898,6 +4929,10 @@ function AdminProducts({ compact }) {
               {showBulkUpload ? 'Hide' : 'Bulk Upload'}
             </button>
             <Link to="/admin/products/new">+ Add New Product</Link>
+            <button onClick={() => loadProducts()} title="Refresh products from database">
+              <RefreshCw size={16} />
+              Refresh
+            </button>
           </div>
           
           {showBulkUpload && <BulkProductUpload />}
