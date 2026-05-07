@@ -556,8 +556,14 @@
   background: #00f5ff;
 }
 .popular-cats-title {
-  font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800;
-  color: #fff; margin: 0; letter-spacing: -0.02em;
+  font-family: 'Orbitron', 'Rajdhani', 'Exo 2', sans-serif; 
+  font-size: 42px; 
+  font-weight: 900;
+  color: #fff; 
+  margin: 0; 
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-stretch: expanded;
 }
 .popular-cats-title::after {
   content: ''; display: block; width: 48px; height: 2px;
