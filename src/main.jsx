@@ -386,7 +386,7 @@ const useAdminStore = create(persist((set, get) => ({
   // Load products from API - always fetch fresh
   loadProducts: async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/products?limit=20`);
+      const response = await fetch(`${API_BASE}/api/products?limit=1000`);
       const data = await response.json();
       if (data.data && Array.isArray(data.data)) {
         set({ products: data.data, productsLoaded: true });
@@ -708,7 +708,7 @@ const useAdminStore = create(persist((set, get) => ({
   // Load kits from API
   loadKits: async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/kits?limit=20`);
+      const response = await fetch(`${API_BASE}/api/kits?limit=1000`);
       const data = await response.json();
       if (data.data && Array.isArray(data.data)) {
         set({ kits: data.data, kitsLoaded: true });
@@ -5185,16 +5185,19 @@ function BulkProductUpload() {
         </button>
 
         <button 
-          className="bulk-upload-btn" 
-          onClick={() => {
-            // Load your 62 products from second invoice
-            const invoice2Products = [
-              {name:"LEDs 5 color each 120pcs",price:0.90,qty:600},{name:"RGB LED",price:4.00,qty:150},{name:"GL-12 830 Points Solderless Breadboard",price:65.00,qty:15},{name:"Solderless Breadboard Half Size 400 Point",price:47.00,qty:18},{name:"Purf Board(6x4 Inch)",price:35.00,qty:24},{name:"11.1V 2200mAh 3S 80C Lithium-Polymer Rechargeable Battery",price:1589.00,qty:4},{name:"18650 3.7V 2000mAh Li-ion Battery",price:52.00,qty:36},{name:"9v Battery with connector",price:24.00,qty:20},{name:"RESISTOR Kit 30 values 600 pcs",price:420.00,qty:2},{name:"CAPACITOR Kit 20 values 400 pcs with electrolite capacitor",price:530.00,qty:2},{name:"200 RPM 12v DC Center Shaft metal Gear Motor",price:155.00,qty:33},{name:"TowerPro SG90 9g Micro Servo Motor – 180 Degree Rotation",price:97.00,qty:20},{name:"N20 12V 400 Rpm Micro Metal Gear Motor",price:240.00,qty:10},{name:"300 RPM Dual Shaft BO Motor + Wheel",price:72.00,qty:28},{name:"diode kits 10 values each 10",price:3.00,qty:100},{name:"transistor kits 5 values each 10 pcs",price:7.00,qty:50},{name:"Test Leads Alligator Clip 1 pair",price:10.00,qty:24},{name:"9v Battery Connector + DC Jack(Battery Connector Cap)",price:14.00,qty:20},{name:"HOOKUP WIRES ( MULTI COLOUR ROLL) 10m each 5 color",price:30.00,qty:50},{name:"MALE TO MALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"MALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"FEMALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"BERG STRIP (PIN HEADER) MALE",price:8.00,qty:50},{name:"BERG STRIP (PIN HEADER) FEMALE",price:12.00,qty:50},{name:"Arduino Nano R3 Board Soldered",price:210.00,qty:6},{name:"Arduino Uno R3 SMD CH340G ATmega328p Development Board",price:240.00,qty:14},{name:"Arduino Mega 2560 R3",price:1250.00,qty:2},{name:"ESP32 Wifi & Bluetooth Development Board 38 Pin",price:350.00,qty:18},{name:"NodeMcu ESP8266 V3 Lua CH340 Wifi Dev. Board",price:220.00,qty:10},{name:"ESP32 CAM WiFi Module with OV3660 Camera Module 3MP",price:610.00,qty:3},{name:"Cable for Arduino UNO/MEGA (USB A to B)-30cm",price:40.00,qty:5},{name:"Nano USB Cable - 1 Meter ( USB To MiniUSB)",price:60.00,qty:5},{name:"Micro USB Cable for ESP32/NodeMCU -1 Meter",price:60.00,qty:5},{name:"Type C to USB Cable 2.0 (1 m)",price:60.00,qty:5},{name:"1602 (16x2) LCD Display with I2C/IIC interface",price:170.00,qty:6},{name:"DC-DC ADJUSTABLE VOLT. REGULATOR LM2596 3A",price:65.00,qty:6},{name:"DC to DC Step Up Boost Converter 4A XL6009",price:69.00,qty:6},{name:"3-6V Mini Submersible Water Pump",price:60.00,qty:6},{name:"35mm Piezoelectric Sensor WITH WIRE",price:30.00,qty:15},{name:"MAX7219 8x8 LED Dot Matrix Display Module",price:155.00,qty:4},{name:"HC-05 6pin Bluetooth Module with Button ORIGINAL",price:270.00,qty:3},{name:"TM1637 4-Digit LED Display Red",price:68.00,qty:3},{name:"Laser Diode Module",price:35.00,qty:12},{name:"Photo-resistor LDR Light Sensor Module 3 Pin",price:36.00,qty:15},{name:"4x4 Matrix Membrane Keypad 16 Key Switch Module",price:60.00,qty:4},{name:"DUAL AXIS XY / PS2 JOYSTICK MODULE",price:45.00,qty:6},{name:"Active Buzzer Module 3.3-5V for Arduino",price:21.00,qty:8},{name:"2A Dual L298N Motor Driver Module",price:122.00,qty:20},{name:"Motor Driver TB6612FNG Module",price:160.00,qty:14},{name:"L293D Motor Driver Shield For Arduino",price:150.00,qty:2},{name:"Dual DC Motor Driver bts7960 43A H bridge PWM",price:360.00,qty:8},{name:"ISD1820 Sound Board Recording Recorder Playback Module",price:160.00,qty:3},{name:"TIMER IC LM 555",price:15.00,qty:3},{name:"BUTTON SWITCH SET 5 tpye each 10",price:8.00,qty:50},{name:"TTP223B Capacitive Single Touch Sensor Module",price:38.00,qty:12},{name:"IR OBSTICLE SENSOR MODULE",price:45.00,qty:29},{name:"GY-521 MPU6050 Module – Triple Axis Accelerometer And Gyro Module",price:180.00,qty:3},{name:"MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2",price:130.00,qty:12},{name:"TCRT5000 IR Sensor Module",price:52.00,qty:10},{name:"Ultrasonic distance Ranging module detector sensor HC-SR04",price:65.00,qty:12},{name:"PIR Motion Sensor",price:67.00,qty:6},{name:"Pulse Sensor - Heart Rate Detector",price:150.00,qty:4}
-            ];
+          className="bulk-upload-btn"
+          disabled={uploading}
+          onClick={async () => {
+            setUploading(true);
+            setResult(null);
             
-            let added = 0;
-            invoice2Products.forEach(item => {
-              addProduct({
+            try {
+              // Load your 62 products from second invoice
+              const invoice2Products = [
+                {name:"LEDs 5 color each 120pcs",price:0.90,qty:600},{name:"RGB LED",price:4.00,qty:150},{name:"GL-12 830 Points Solderless Breadboard",price:65.00,qty:15},{name:"Solderless Breadboard Half Size 400 Point",price:47.00,qty:18},{name:"Purf Board(6x4 Inch)",price:35.00,qty:24},{name:"11.1V 2200mAh 3S 80C Lithium-Polymer Rechargeable Battery",price:1589.00,qty:4},{name:"18650 3.7V 2000mAh Li-ion Battery",price:52.00,qty:36},{name:"9v Battery with connector",price:24.00,qty:20},{name:"RESISTOR Kit 30 values 600 pcs",price:420.00,qty:2},{name:"CAPACITOR Kit 20 values 400 pcs with electrolite capacitor",price:530.00,qty:2},{name:"200 RPM 12v DC Center Shaft metal Gear Motor",price:155.00,qty:33},{name:"TowerPro SG90 9g Micro Servo Motor – 180 Degree Rotation",price:97.00,qty:20},{name:"N20 12V 400 Rpm Micro Metal Gear Motor",price:240.00,qty:10},{name:"300 RPM Dual Shaft BO Motor + Wheel",price:72.00,qty:28},{name:"diode kits 10 values each 10",price:3.00,qty:100},{name:"transistor kits 5 values each 10 pcs",price:7.00,qty:50},{name:"Test Leads Alligator Clip 1 pair",price:10.00,qty:24},{name:"9v Battery Connector + DC Jack(Battery Connector Cap)",price:14.00,qty:20},{name:"HOOKUP WIRES ( MULTI COLOUR ROLL) 10m each 5 color",price:30.00,qty:50},{name:"MALE TO MALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"MALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"FEMALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"BERG STRIP (PIN HEADER) MALE",price:8.00,qty:50},{name:"BERG STRIP (PIN HEADER) FEMALE",price:12.00,qty:50},{name:"Arduino Nano R3 Board Soldered",price:210.00,qty:6},{name:"Arduino Uno R3 SMD CH340G ATmega328p Development Board",price:240.00,qty:14},{name:"Arduino Mega 2560 R3",price:1250.00,qty:2},{name:"ESP32 Wifi & Bluetooth Development Board 38 Pin",price:350.00,qty:18},{name:"NodeMcu ESP8266 V3 Lua CH340 Wifi Dev. Board",price:220.00,qty:10},{name:"ESP32 CAM WiFi Module with OV3660 Camera Module 3MP",price:610.00,qty:3},{name:"Cable for Arduino UNO/MEGA (USB A to B)-30cm",price:40.00,qty:5},{name:"Nano USB Cable - 1 Meter ( USB To MiniUSB)",price:60.00,qty:5},{name:"Micro USB Cable for ESP32/NodeMCU -1 Meter",price:60.00,qty:5},{name:"Type C to USB Cable 2.0 (1 m)",price:60.00,qty:5},{name:"1602 (16x2) LCD Display with I2C/IIC interface",price:170.00,qty:6},{name:"DC-DC ADJUSTABLE VOLT. REGULATOR LM2596 3A",price:65.00,qty:6},{name:"DC to DC Step Up Boost Converter 4A XL6009",price:69.00,qty:6},{name:"3-6V Mini Submersible Water Pump",price:60.00,qty:6},{name:"35mm Piezoelectric Sensor WITH WIRE",price:30.00,qty:15},{name:"MAX7219 8x8 LED Dot Matrix Display Module",price:155.00,qty:4},{name:"HC-05 6pin Bluetooth Module with Button ORIGINAL",price:270.00,qty:3},{name:"TM1637 4-Digit LED Display Red",price:68.00,qty:3},{name:"Laser Diode Module",price:35.00,qty:12},{name:"Photo-resistor LDR Light Sensor Module 3 Pin",price:36.00,qty:15},{name:"4x4 Matrix Membrane Keypad 16 Key Switch Module",price:60.00,qty:4},{name:"DUAL AXIS XY / PS2 JOYSTICK MODULE",price:45.00,qty:6},{name:"Active Buzzer Module 3.3-5V for Arduino",price:21.00,qty:8},{name:"2A Dual L298N Motor Driver Module",price:122.00,qty:20},{name:"Motor Driver TB6612FNG Module",price:160.00,qty:14},{name:"L293D Motor Driver Shield For Arduino",price:150.00,qty:2},{name:"Dual DC Motor Driver bts7960 43A H bridge PWM",price:360.00,qty:8},{name:"ISD1820 Sound Board Recording Recorder Playback Module",price:160.00,qty:3},{name:"TIMER IC LM 555",price:15.00,qty:3},{name:"BUTTON SWITCH SET 5 tpye each 10",price:8.00,qty:50},{name:"TTP223B Capacitive Single Touch Sensor Module",price:38.00,qty:12},{name:"IR OBSTICLE SENSOR MODULE",price:45.00,qty:29},{name:"GY-521 MPU6050 Module – Triple Axis Accelerometer And Gyro Module",price:180.00,qty:3},{name:"MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2",price:130.00,qty:12},{name:"TCRT5000 IR Sensor Module",price:52.00,qty:10},{name:"Ultrasonic distance Ranging module detector sensor HC-SR04",price:65.00,qty:12},{name:"PIR Motion Sensor",price:67.00,qty:6},{name:"Pulse Sensor - Heart Rate Detector",price:150.00,qty:4}
+              ];
+              
+              const products = invoice2Products.map(item => ({
                 id: uid(),
                 name: item.name,
                 price: item.price,
@@ -5208,33 +5211,42 @@ function BulkProductUpload() {
                 minQty: 1,
                 reviewCount: 0,
                 quickDelivery: false
+              }));
+              
+              // Upload to MongoDB via API
+              const result = await bulkUploadProducts(products);
+              
+              setResult({ 
+                success: true, 
+                message: result.message || `Successfully added ${products.length} products to MongoDB!`,
+                count: products.length 
               });
-              added++;
-            });
+            } catch (error) {
+              setResult({ success: false, message: `Error: ${error.message}` });
+            }
             
-            setResult({ 
-              success: true, 
-              message: `Successfully added ${added} products from your second invoice!`,
-              count: added 
-            });
+            setUploading(false);
           }}
           style={{marginTop: '12px', background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'}}
         >
-          <CheckCircle size={18} />
+          {uploading ? <RefreshCw size={18} className="spin" /> : <CheckCircle size={18} />}
           Load My 62 Products
         </button>
 
         <button 
-          className="bulk-upload-btn" 
-          onClick={() => {
-            // Load your 9 products from third invoice
-            const invoice3Products = [
-              {name:"SX1308 DC-DC Step Up Adjustable Power Booster Module",price:40.00,qty:9},{name:"1.3 Inch I2C/IIC OLED Display Module 4pin",price:290.00,qty:4},{name:"Electrical Insulation Tape",price:10.00,qty:10},{name:"Double Side Tape",price:40.00,qty:10},{name:"metal gear Motor Mount Bracket",price:30.00,qty:20},{name:"Toy Motor 3.7 volt with Propeller",price:45.00,qty:20},{name:"N20 Motor Wheel",price:45.00,qty:4},{name:"XT60 Connector male and female",price:32.00,qty:20},{name:"Pro-Range 3.7V 850mAh 25C 1S Lithium Polymer Battery Pack",price:720.00,qty:2}
-            ];
+          className="bulk-upload-btn"
+          disabled={uploading}
+          onClick={async () => {
+            setUploading(true);
+            setResult(null);
             
-            let added = 0;
-            invoice3Products.forEach(item => {
-              addProduct({
+            try {
+              // Load your 9 products from third invoice
+              const invoice3Products = [
+                {name:"SX1308 DC-DC Step Up Adjustable Power Booster Module",price:40.00,qty:9},{name:"1.3 Inch I2C/IIC OLED Display Module 4pin",price:290.00,qty:4},{name:"Electrical Insulation Tape",price:10.00,qty:10},{name:"Double Side Tape",price:40.00,qty:10},{name:"metal gear Motor Mount Bracket",price:30.00,qty:20},{name:"Toy Motor 3.7 volt with Propeller",price:45.00,qty:20},{name:"N20 Motor Wheel",price:45.00,qty:4},{name:"XT60 Connector male and female",price:32.00,qty:20},{name:"Pro-Range 3.7V 850mAh 25C 1S Lithium Polymer Battery Pack",price:720.00,qty:2}
+              ];
+              
+              const products = invoice3Products.map(item => ({
                 id: uid(),
                 name: item.name,
                 price: item.price,
@@ -5248,19 +5260,25 @@ function BulkProductUpload() {
                 minQty: 1,
                 reviewCount: 0,
                 quickDelivery: false
+              }));
+              
+              // Upload to MongoDB via API
+              const result = await bulkUploadProducts(products);
+              
+              setResult({ 
+                success: true, 
+                message: result.message || `Successfully added ${products.length} products to MongoDB!`,
+                count: products.length 
               });
-              added++;
-            });
+            } catch (error) {
+              setResult({ success: false, message: `Error: ${error.message}` });
+            }
             
-            setResult({ 
-              success: true, 
-              message: `Successfully added ${added} products from your third invoice!`,
-              count: added 
-            });
+            setUploading(false);
           }}
           style={{marginTop: '12px', background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'}}
         >
-          <CheckCircle size={18} />
+          {uploading ? <RefreshCw size={18} className="spin" /> : <CheckCircle size={18} />}
           Load My 9 Products
         </button>
 
