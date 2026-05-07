@@ -4075,7 +4075,11 @@ function CartDrawer() {
     }
   };
   
-  return <AnimatePresence>{open && <><motion.div className="cart-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleOverlayClick} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 998, backdropFilter: 'blur(4px)' }} /><motion.aside className="cart-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} style={{ zIndex: 999 }}><button className="icon-btn close" onClick={toggle}><X /></button><h2>Cart</h2><div className="cart-items">{items.length === 0 && <p className="empty-cart">Your cart is empty.</p>}{items.map((item) => <div className="cart-line" key={item.id}><img src={item.imageUrl || a5xCarKit} alt="" /><div><b>{item.name}</b><p>{inr(Number(item.price))}</p><div className="qty-control"><button onClick={() => dec(item.id)} aria-label={`Decrease ${item.name}`}>-</button><span>{item.qty}</span><button onClick={() => inc(item.id)} aria-label={`Increase ${item.name}`}>+</button></div></div><button className="icon-btn remove-btn" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} title="Remove from cart"><Trash2 size={18} /></button></div>)}</div><footer><p>Subtotal <strong>{inr(subtotal())}</strong></p><button className="btn" disabled={!items.length} onClick={handleCheckout}>Checkout</button></footer></motion.aside></>}</AnimatePresence>;
+  const handleBack = () => {
+    toggle();
+  };
+  
+  return <AnimatePresence>{open && <><motion.div className="cart-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleOverlayClick} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 998, backdropFilter: 'blur(4px)' }} /><motion.aside className="cart-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} style={{ zIndex: 999 }}><div className="cart-header"><button className="icon-btn back-btn" onClick={handleBack} aria-label="Go back"><ArrowLeft size={20} /></button><h2>Cart</h2><button className="icon-btn close" onClick={toggle}><X /></button></div><div className="cart-items">{items.length === 0 && <p className="empty-cart">Your cart is empty.</p>}{items.map((item) => <div className="cart-line" key={item.id}><img src={item.imageUrl || a5xCarKit} alt="" /><div className="cart-item-details"><b>{item.name}</b><p>{inr(Number(item.price))}</p><div className="qty-control"><button onClick={() => dec(item.id)} aria-label={`Decrease ${item.name}`}>-</button><span>{item.qty}</span><button onClick={() => inc(item.id)} aria-label={`Increase ${item.name}`}>+</button></div></div><button className="icon-btn remove-btn" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} title="Remove from cart"><Trash2 size={18} /></button></div>)}</div><footer><p>Subtotal <strong>{inr(subtotal())}</strong></p><button className="btn" disabled={!items.length} onClick={handleCheckout}>Checkout</button></footer></motion.aside></>}</AnimatePresence>;
 }
 
 // Checkout Page
@@ -4726,18 +4730,16 @@ function Footer() {
             Premium robotics components, kits, and courses for engineers, students, and makers. Building the future, one circuit at a time.
           </p>
           <div className="footer-social-row">
-            <Link to="/contact" className="footer-social-btn" aria-label="Instagram">
+            {/* <Link to="https://www.instagram.com/a5x.in/" className="footer-social-btn" aria-label="Instagram">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-            </Link>
-            <Link to="/contact" className="footer-social-btn" aria-label="YouTube">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>
-            </Link>
-            <Link to="/contact" className="footer-social-btn" aria-label="Twitter/X">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            </Link>
-            <Link to="/contact" className="footer-social-btn" aria-label="LinkedIn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-            </Link>
+            </Link> */}
+            <a href="https://www.instagram.com/a5x.in/" target="_blank" rel="noopener noreferrer" className="footer-social-btn" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+            </a>
+            <a href="https://www.youtube.com/@A5x_in" target="_blank" rel="noopener noreferrer" className="footer-social-btn" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg></a>
+            
+           <a href="https://www.linkedin.com/company/a5x-industries/?viewAsMember=true" target="_blank" rel="noopener noreferrer" className="footer-social-btn" aria-label="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
           </div>
           <div className="footer-badge-row">
             <span className="footer-badge"><Check size={12} /> Secure Payments</span>
@@ -4795,11 +4797,12 @@ function Footer() {
           <div className="footer-contact-info">
             <div className="footer-contact-item">
               <span className="footer-contact-icon">📧</span>
-              <span>support@a5xindustries.com</span>
+              <span>a5x.industries@gmail.com</span>
             </div>
             <div className="footer-contact-item">
               <span className="footer-contact-icon">📱</span>
               <span>+91 82698 58259</span>
+              
             </div>
             <div className="footer-contact-item">
               <span className="footer-contact-icon">📍</span>
