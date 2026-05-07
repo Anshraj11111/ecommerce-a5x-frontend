@@ -586,6 +586,12 @@ const useAdminStore = create(persist((set, get) => ({
       throw new Error(errorMsg);
     }
     
+    console.log('=== UPDATE KIT - REQUEST PAYLOAD ===');
+    console.log('Kit ID:', id);
+    console.log('Payload images:', kit.images);
+    console.log('Payload images length:', kit.images?.length);
+    console.log('=== END REQUEST PAYLOAD ===');
+    
     try {
       const response = await fetch(`${API_BASE}/api/kits/${id}`, {
         method: 'PUT',
@@ -598,7 +604,23 @@ const useAdminStore = create(persist((set, get) => ({
       
       if (response.ok) {
         const updated = await response.json();
-        set((state) => ({ kits: state.kits.map((item) => item.id === id ? updated : item), error: null }));
+        console.log('=== UPDATE KIT - API RESPONSE ===');
+        console.log('Updated kit ID:', updated.id);
+        console.log('Updated kit images:', updated.images);
+        console.log('Updated kit images length:', updated.images?.length);
+        console.log('Full updated kit:', updated);
+        console.log('=== END API RESPONSE ===');
+        
+        set((state) => {
+          const updatedKits = state.kits.map((item) => item.id === id ? updated : item);
+          const kitInStore = updatedKits.find(k => k.id === id);
+          console.log('=== UPDATE KIT - STORE UPDATE ===');
+          console.log('Kit in store after update:', kitInStore?.id);
+          console.log('Kit images in store:', kitInStore?.images);
+          console.log('Kit images length in store:', kitInStore?.images?.length);
+          console.log('=== END STORE UPDATE ===');
+          return { kits: updatedKits, error: null };
+        });
         return updated;
       } else {
         // API call failed - show error, do NOT fall back to localStorage
@@ -2153,11 +2175,75 @@ function KitDetailPage() {
   const add = useCartStore((state) => state.add);
   const [activeSlide, setActiveSlide] = useState(0);
   const [showVideo, setShowVideo] = useState(false);
-  const galleryImages = [kit?.imageUrl || a5xCarKit, kitInnovation, ...kitSpinFrames.filter((_, i) => i % 3 === 0)];
+  const [dragStart, setDragStart] = useState(null);
+  
+  // Use uploaded images from kit.images array, fallback to imageUrl or default
+  const galleryImages = kit?.images && kit.images.length > 0 
+    ? kit.images 
+    : kit?.imageUrl 
+      ? [kit.imageUrl] 
+      : [a5xCarKit];
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('=== KIT DETAIL PAGE DEBUG ===');
+    console.log('Kit ID:', id);
+    console.log('Kit object:', kit);
+    console.log('Kit images array:', kit?.images);
+    console.log('Kit images length:', kit?.images?.length);
+    console.log('Kit imageUrl:', kit?.imageUrl);
+    console.log('Gallery images:', galleryImages);
+    console.log('Gallery images length:', galleryImages.length);
+    console.log('=== END DEBUG ===');
+  }, [kit, galleryImages]);
+  
   useEffect(() => {
     const t = setInterval(() => setActiveSlide((s) => (s + 1) % galleryImages.length), 3000);
     return () => clearInterval(t);
   }, [galleryImages.length]);
+  
+  const nextSlide = () => {
+    setActiveSlide((s) => (s + 1) % galleryImages.length);
+  };
+  
+  const prevSlide = () => {
+    setActiveSlide((s) => (s - 1 + galleryImages.length) % galleryImages.length);
+  };
+  
+  const handleMouseDown = (e) => {
+    setDragStart(e.clientX);
+  };
+  
+  const handleMouseUp = (e) => {
+    if (dragStart === null) return;
+    const diff = e.clientX - dragStart;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        prevSlide();
+      } else {
+        nextSlide();
+      }
+    }
+    setDragStart(null);
+  };
+  
+  const handleTouchStart = (e) => {
+    setDragStart(e.touches[0].clientX);
+  };
+  
+  const handleTouchEnd = (e) => {
+    if (dragStart === null) return;
+    const diff = e.changedTouches[0].clientX - dragStart;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        prevSlide();
+      } else {
+        nextSlide();
+      }
+    }
+    setDragStart(null);
+  };
+  
   if (!kit) return <main className="page"><section style={{textAlign:'center',paddingTop:'120px'}}><h1>Kit Not Found</h1><button className="btn" onClick={() => navigate('/kits')}>Back to Kits</button></section></main>;
   
   const hasVideo = kit.videoUrl && kit.videoUrl.trim() !== '';
@@ -2165,10 +2251,72 @@ function KitDetailPage() {
   return (
     <main className="page kit-detail-page">
       <section className="kit-detail-hero">
-        <div className="kit-detail-gallery">
+        <div 
+          className="kit-detail-gallery"
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          style={{cursor: dragStart !== null ? 'grabbing' : 'grab', userSelect: 'none'}}
+        >
           <AnimatePresence mode="wait">
-            <motion.img key={activeSlide} src={galleryImages[activeSlide]} alt={kit.name} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5 }} />
+            <motion.img key={activeSlide} src={galleryImages[activeSlide]} alt={kit.name} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5 }} draggable={false} />
           </AnimatePresence>
+          
+          {/* Previous Button */}
+          <button
+            onClick={prevSlide}
+            style={{
+              position: 'absolute',
+              left: '20px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'rgba(0, 229, 255, 0.9)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '50px',
+              height: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              zIndex: 10,
+              transition: 'all 0.3s ease',
+              color: '#000'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0, 229, 255, 1)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0, 229, 255, 0.9)'}
+          >
+            <ChevronLeft size={28} />
+          </button>
+          
+          {/* Next Button */}
+          <button
+            onClick={nextSlide}
+            style={{
+              position: 'absolute',
+              right: '20px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'rgba(0, 229, 255, 0.9)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '50px',
+              height: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              zIndex: 10,
+              transition: 'all 0.3s ease',
+              color: '#000'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0, 229, 255, 1)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0, 229, 255, 0.9)'}
+          >
+            <ChevronRight size={28} />
+          </button>
+          
           <div className="kit-gallery-dots">
             {galleryImages.slice(0, 8).map((_, i) => <button key={i} className={i === activeSlide % 8 ? 'active' : ''} onClick={() => setActiveSlide(i)} />)}
           </div>
@@ -2216,10 +2364,51 @@ function KitDetailPage() {
           )}
           <h3>What's Included</h3>
           <div className="kit-detail-includes">{kit.includes.map((item) => <div key={item} className="glass-card"><CheckCircle size={16} />{item}</div>)}</div>
-          <button className="btn" onClick={() => add({ ...kit, category: 'Kits', sku: kit.tier })}>Add to Cart — {inr(Number(kit.price))}</button>
+          <button className="btn" onClick={() => add({ ...kit, category: 'Kits', sku: kit.tier })} style={{marginBottom: '1rem'}}>Add to Cart — {inr(Number(kit.price))}</button>
           <ButtonLink to="/contact" ghost>Request Custom Version</ButtonLink>
         </div>
       </section>
+      
+      {/* Video Section - Below Image Gallery */}
+      {hasVideo && (
+        <section style={{
+          maxWidth: '1200px',
+          margin: '4rem auto',
+          padding: '0 2rem'
+        }}>
+          <h2 style={{
+            fontSize: '2rem',
+            fontWeight: '700',
+            marginBottom: '2rem',
+            textAlign: 'center',
+            color: '#00e5ff'
+          }}>Kit Demo Video</h2>
+          <div style={{
+            position: 'relative',
+            width: '100%',
+            paddingBottom: '56.25%', // 16:9 aspect ratio
+            background: '#000',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            boxShadow: '0 8px 32px rgba(0, 229, 255, 0.3)'
+          }}>
+            <video 
+              controls 
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain'
+              }}
+            >
+              <source src={kit.videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </section>
+      )}
       
       {/* Video Modal */}
       <AnimatePresence>
@@ -2291,11 +2480,6 @@ function KitDetailPage() {
           </motion.div>
         )}
       </AnimatePresence>
-      
-      <section className="kit-detail-spin-section">
-        <h2>360° View</h2>
-        <Kit3DSpin size={560} />
-      </section>
     </main>
   );
 }
@@ -5643,6 +5827,12 @@ function KitForm() {
     setSaving(true);
     clearError();
     const data = Object.fromEntries(new FormData(event.currentTarget));
+    
+    console.log('=== KIT FORM SUBMIT DEBUG ===');
+    console.log('Images state:', images);
+    console.log('Images length:', images.length);
+    console.log('First image:', images[0]?.substring(0, 50));
+    
     const payload = { 
       ...kit, 
       ...data, 
@@ -5654,6 +5844,10 @@ function KitForm() {
       videoUrl: videoUpload.previewUrl || kit?.videoUrl || "",
       videoDuration: videoUpload.duration || kit?.videoDuration || 0
     };
+    
+    console.log('Payload images:', payload.images);
+    console.log('Payload images length:', payload.images.length);
+    console.log('=== END DEBUG ===');
     
     try {
       if (kit) {
