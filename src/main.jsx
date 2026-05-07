@@ -350,8 +350,9 @@ const useAdminStore = create(persist((set, get) => ({
   kits: kitsSeed,
   courses: coursesSeed,
   productsLoaded: false,
+  kitsLoaded: false,
   
-  // Fetch products from API
+  // Load products from API - always fetch fresh
   loadProducts: async () => {
     try {
       const response = await fetch(`${API_BASE}/api/products?limit=1000`);
@@ -447,9 +448,87 @@ const useAdminStore = create(persist((set, get) => ({
     }
   },
   
-  addKit: (kit) => set((state) => ({ kits: [{ ...kit, id: kit.id || uid() }, ...state.kits] })),
-  updateKit: (id, kit) => set((state) => ({ kits: state.kits.map((item) => item.id === id ? { ...item, ...kit } : item) })),
-  deleteKit: (id) => set((state) => ({ kits: state.kits.filter((item) => item.id !== id) })),
+  // Add kit to API and update local state
+  addKit: async (kit) => {
+    try {
+      const token = localStorage.getItem('a5x-admin-token');
+      const response = await fetch(`${API_BASE}/api/kits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(kit)
+      });
+      if (response.ok) {
+        const created = await response.json();
+        set((state) => ({ kits: [created, ...state.kits] }));
+        return created;
+      } else {
+        const err = await response.text();
+        console.error('Failed to add kit:', err);
+        set((state) => ({ kits: [{ ...kit, id: kit.id || uid() }, ...state.kits] }));
+      }
+    } catch (error) {
+      console.error('Error adding kit:', error);
+      set((state) => ({ kits: [{ ...kit, id: kit.id || uid() }, ...state.kits] }));
+    }
+  },
+
+  // Update kit in API and local state
+  updateKit: async (id, kit) => {
+    try {
+      const token = localStorage.getItem('a5x-admin-token');
+      const response = await fetch(`${API_BASE}/api/kits/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(kit)
+      });
+      if (response.ok) {
+        const updated = await response.json();
+        set((state) => ({ kits: state.kits.map((item) => item.id === id ? updated : item) }));
+        return updated;
+      } else {
+        set((state) => ({ kits: state.kits.map((item) => item.id === id ? { ...item, ...kit } : item) }));
+      }
+    } catch (error) {
+      set((state) => ({ kits: state.kits.map((item) => item.id === id ? { ...item, ...kit } : item) }));
+    }
+  },
+
+  // Delete kit from API and local state
+  deleteKit: async (id) => {
+    try {
+      const token = localStorage.getItem('a5x-admin-token');
+      const response = await fetch(`${API_BASE}/api/kits/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        set((state) => ({ kits: state.kits.filter((item) => item.id !== id) }));
+      } else {
+        set((state) => ({ kits: state.kits.filter((item) => item.id !== id) }));
+      }
+    } catch (error) {
+      set((state) => ({ kits: state.kits.filter((item) => item.id !== id) }));
+    }
+  },
+
+  // Load kits from API
+  loadKits: async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/kits?limit=1000`);
+      const data = await response.json();
+      if (data.data && Array.isArray(data.data)) {
+        set({ kits: data.data, kitsLoaded: true });
+      }
+    } catch (error) {
+      console.error('Failed to load kits:', error);
+    }
+  },
   addCourse: (course) => set((state) => ({ courses: [{ ...course, id: course.id || uid(), videos: course.videos || [] }, ...state.courses] })),
   updateCourse: (id, course) => set((state) => ({ courses: state.courses.map((item) => item.id === id ? { ...item, ...course } : item) })),
   deleteCourse: (id) => set((state) => ({ courses: state.courses.filter((item) => item.id !== id) })),
@@ -1496,12 +1575,10 @@ function ShopSection() {
   const [showMobileFilter, setShowMobileFilter] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
-  // Load products from API on mount
+  // Always load fresh products from API on mount
   useEffect(() => {
-    if (!productsLoaded) {
-      loadProducts();
-    }
-  }, [loadProducts, productsLoaded]);
+    loadProducts();
+  }, []);
   
   // Hero Carousel State
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -1839,6 +1916,13 @@ function ShopSection() {
 
 function KitsSection() {
   const kits = useAdminStore((state) => state.kits);
+  const loadKits = useAdminStore((state) => state.loadKits);
+
+  // Always load fresh kits from API on mount
+  useEffect(() => {
+    loadKits();
+  }, []);
+
   return (
     <section className="kits-section neon-kits" id="kits">
       <div className="kits-premium-hero">
@@ -4991,12 +5075,10 @@ function AdminProducts({ compact }) {
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const filtered = products.filter((product) => product.name.toLowerCase().includes(query.toLowerCase()));
   
-  // Load products from API on mount
+  // Always load fresh products from API on mount
   useEffect(() => {
-    if (!productsLoaded) {
-      loadProducts();
-    }
-  }, [loadProducts, productsLoaded]);
+    loadProducts();
+  }, []);
   
   return (
     <AdminPage title={compact ? "Recently Added Products" : "Products"}>
@@ -5074,8 +5156,13 @@ function FileDrop({ upload, accept = "image/*,video/*" }) {
 }
 
 function AdminKits() {
-  const { kits, deleteKit } = useAdminStore();
-  return <AdminPage title="Kits"><div className="admin-tools"><Link to="/admin/kits/new">+ Add New Kit</Link></div><table><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Items</th><th>Video</th><th>Actions</th></tr></thead><tbody>{kits.map((kit) => <tr key={kit.id}><td><img src={kit.imageUrl || a5xCarKit} alt="" /></td><td>{kit.name}<small>{kit.tier}</small></td><td>{inr(Number(kit.price))}</td><td>{kit.includes.length} items</td><td>{kit.videoUrl ? <span style={{color: '#0f0', display: 'flex', alignItems: 'center', gap: '4px'}}><PlayCircle size={14} /> Yes</span> : <span style={{opacity: 0.5}}>No</span>}</td><td><Link to={`/admin/kits/${kit.id}`}><Pencil size={16} /></Link><button onClick={() => confirm("Delete kit?") && deleteKit(kit.id)}><Trash2 size={16} /></button></td></tr>)}</tbody></table></AdminPage>;
+  const { kits, deleteKit, loadKits } = useAdminStore();
+
+  useEffect(() => {
+    loadKits();
+  }, []);
+
+  return <AdminPage title="Kits"><div className="admin-tools"><Link to="/admin/kits/new">+ Add New Kit</Link><button onClick={() => loadKits()} title="Refresh kits from database"><RefreshCw size={16} /> Refresh</button></div><table><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Items</th><th>Video</th><th>Actions</th></tr></thead><tbody>{kits.map((kit) => <tr key={kit.id}><td><img src={kit.imageUrl || a5xCarKit} alt="" /></td><td>{kit.name}<small>{kit.tier}</small></td><td>{inr(Number(kit.price))}</td><td>{kit.includes?.length || 0} items</td><td>{kit.videoUrl ? <span style={{color: '#0f0', display: 'flex', alignItems: 'center', gap: '4px'}}><PlayCircle size={14} /> Yes</span> : <span style={{opacity: 0.5}}>No</span>}</td><td><Link to={`/admin/kits/${kit.id}`}><Pencil size={16} /></Link><button onClick={() => confirm("Delete kit?") && deleteKit(kit.id)}><Trash2 size={16} /></button></td></tr>)}</tbody></table></AdminPage>;
 }
 
 function KitForm() {
@@ -5085,21 +5172,28 @@ function KitForm() {
   const kit = kits.find((item) => item.id === id);
   const videoUpload = useFileUpload({ types: ["video"], maxMb: 500 });
   const imageUpload = useFileUpload({ types: ["image"], maxMb: 5 });
+  const [saving, setSaving] = useState(false);
   
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
+    setSaving(true);
     const data = Object.fromEntries(new FormData(event.currentTarget));
     const payload = { 
       ...kit, 
       ...data, 
       price: Number(data.price), 
       rating: Number(data.rating || 4.8), 
-      includes: data.includes.split(",").map((item) => item.trim()).filter(Boolean),
-      imageUrl: imageUpload.previewUrl || kit?.imageUrl || data.imageUrl,
+      includes: data.includes ? data.includes.split(",").map((item) => item.trim()).filter(Boolean) : [],
+      imageUrl: imageUpload.previewUrl || kit?.imageUrl || data.imageUrl || "",
       videoUrl: videoUpload.previewUrl || kit?.videoUrl || "",
       videoDuration: videoUpload.duration || kit?.videoDuration || 0
     };
-    kit ? updateKit(kit.id, payload) : addKit(payload);
+    if (kit) {
+      await updateKit(kit.id, payload);
+    } else {
+      await addKit(payload);
+    }
+    setSaving(false);
     navigate("/admin/kits");
   }
   
@@ -5122,7 +5216,7 @@ function KitForm() {
     <h4 style={{marginTop: '2rem', marginBottom: '1rem'}}>Premium Kit Video (Optional)</h4>
     <FileDrop upload={videoUpload} accept="video/mp4,video/webm,video/quicktime" />
     
-    <button>Save Kit</button>
+    <button disabled={saving}>{saving ? 'Saving...' : 'Save Kit'}</button>
   </form></AdminPage>;
 }
 
