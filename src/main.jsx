@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
+  ArrowLeft,
   BadgeIndianRupee,
   Brain,
   Check,
@@ -117,6 +118,7 @@ import "./hero-v4.css";
 import "./shop-amazon.css";
 import "./learn-watch.css";
 import "./admin-premium.css";
+import "./cart-modern.css";
 
 const kitSpinFrames = [kitSpin035, kitSpin050, kitSpin065, kitSpin076, kitSpin080, kitSpin095, kitSpin110, kitSpin125, kitSpin140, kitSpin155, kitSpin170, kitSpin185, kitSpin200, kitSpin215, kitSpin230];
 
@@ -805,6 +807,7 @@ function Navbar() {
   const count = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
   const wishCount = useWishlistStore((state) => state.ids.length);
   const toggle = useCartStore((state) => state.toggle);
+  const cartOpen = useCartStore((state) => state.open);
   const { isAuthenticated, user, logout } = useAuthStore();
   const { open: openAuthModal } = useAuthModalStore();
 
@@ -841,7 +844,7 @@ function Navbar() {
 
   return (
     <>
-      <header className={`nav-v2 ${scrolled ? "is-scrolled" : ""}`}>
+      <header className={`nav-v2 ${scrolled ? "is-scrolled" : ""} ${cartOpen ? "hide-on-mobile" : ""}`}>
         <Link className="nav-v2-logo" to="/" onClick={() => setMobile(false)}>
           <span>A5X</span><small>ROBOTICS</small>
         </Link>
@@ -3363,21 +3366,37 @@ function LoginPage() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      alert('Password must be at least 6 characters long');
+    if (formData.password.length < 8) {
+      alert('Password must be at least 8 characters long');
       setLoading(false);
       return;
     }
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+      const payload = isLogin 
+        ? { email: formData.email, password: formData.password }
+        : { username: formData.name || formData.email.split('@')[0], email: formData.email, password: formData.password };
+
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Authentication failed');
+      }
+
+      // Save user data and token
       const userData = {
-        name: formData.name || formData.email.split('@')[0],
-        email: formData.email,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString()
+        id: data.user.id,
+        name: data.user.username,
+        email: data.user.email,
+        role: data.user.role,
+        token: data.token
       };
 
       if (isLogin) {
@@ -3386,10 +3405,13 @@ function LoginPage() {
         signup(userData);
       }
 
+      // Save token to localStorage
+      localStorage.setItem('a5x-token', data.token);
+
       // Redirect to home page
       navigate('/');
     } catch (error) {
-      alert('Something went wrong. Please try again.');
+      alert(error.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -3625,20 +3647,37 @@ function AuthModal() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      alert('Password must be at least 6 characters long');
+    if (formData.password.length < 8) {
+      alert('Password must be at least 8 characters long');
       setLoading(false);
       return;
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+      const payload = isLogin 
+        ? { email: formData.email, password: formData.password }
+        : { username: formData.name || formData.email.split('@')[0], email: formData.email, password: formData.password };
+
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Authentication failed');
+      }
+
+      // Save user data and token
       const userData = {
-        name: formData.name || formData.email.split('@')[0],
-        email: formData.email,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString()
+        id: data.user.id,
+        name: data.user.username,
+        email: data.user.email,
+        role: data.user.role,
+        token: data.token
       };
 
       if (isLogin) {
@@ -3647,12 +3686,15 @@ function AuthModal() {
         signup(userData);
       }
 
+      // Save token to localStorage
+      localStorage.setItem('a5x-token', data.token);
+
       close();
       if (redirectPath) {
         navigate(redirectPath);
       }
     } catch (error) {
-      alert('Something went wrong. Please try again.');
+      alert(error.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -4079,7 +4121,47 @@ function CartDrawer() {
     toggle();
   };
   
-  return <AnimatePresence>{open && <><motion.div className="cart-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleOverlayClick} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 998, backdropFilter: 'blur(4px)' }} /><motion.aside className="cart-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} style={{ zIndex: 999 }}><div className="cart-header"><button className="icon-btn back-btn" onClick={handleBack} aria-label="Go back"><ArrowLeft size={20} /></button><h2>Cart</h2><button className="icon-btn close" onClick={toggle}><X /></button></div><div className="cart-items">{items.length === 0 && <p className="empty-cart">Your cart is empty.</p>}{items.map((item) => <div className="cart-line" key={item.id}><img src={item.imageUrl || a5xCarKit} alt="" /><div className="cart-item-details"><b>{item.name}</b><p>{inr(Number(item.price))}</p><div className="qty-control"><button onClick={() => dec(item.id)} aria-label={`Decrease ${item.name}`}>-</button><span>{item.qty}</span><button onClick={() => inc(item.id)} aria-label={`Increase ${item.name}`}>+</button></div></div><button className="icon-btn remove-btn" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} title="Remove from cart"><Trash2 size={18} /></button></div>)}</div><footer><p>Subtotal <strong>{inr(subtotal())}</strong></p><button className="btn" disabled={!items.length} onClick={handleCheckout}>Checkout</button></footer></motion.aside></>}</AnimatePresence>;
+  return <AnimatePresence>{open && <><motion.div className="cart-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleOverlayClick} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 998 }} /><motion.aside className="cart-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} style={{ zIndex: 999 }}>
+  <div className="cart-header">
+    <button className="icon-btn back-btn" onClick={handleBack} aria-label="Go back">
+      <ArrowLeft size={20} />
+    </button>
+    <h2>Cart</h2>
+    <button className="icon-btn close" onClick={toggle}>
+      <X />
+    </button>
+  </div>
+  <div className="cart-items">
+    {items.length === 0 && <p className="empty-cart">Your cart is empty.</p>}
+    {items.map((item) => (
+      <div className="cart-line" key={item.id}>
+        <img src={item.imageUrl || a5xCarKit} alt={item.name} />
+        <div className="cart-item-details">
+          <div className="cart-item-info">
+            <b>{item.name}</b>
+            <p className="cart-item-price">{inr(Number(item.price))}</p>
+          </div>
+          <div className="qty-control">
+            <button onClick={() => dec(item.id)} aria-label={`Decrease ${item.name}`}>
+              <Minus size={16} />
+            </button>
+            <span>{item.qty}</span>
+            <button onClick={() => inc(item.id)} aria-label={`Increase ${item.name}`}>
+              <Plus size={16} />
+            </button>
+          </div>
+        </div>
+        <button className="icon-btn remove-btn" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} title="Remove from cart">
+          <Trash2 size={18} />
+        </button>
+      </div>
+    ))}
+  </div>
+  <footer>
+    <p>Subtotal <strong>{inr(subtotal())}</strong></p>
+    <button className="btn" disabled={!items.length} onClick={handleCheckout}>Checkout</button>
+  </footer>
+</motion.aside></>}</AnimatePresence>;
 }
 
 // Checkout Page
