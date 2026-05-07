@@ -2103,7 +2103,18 @@ function ShopSection() {
             </div>
           </div>
 
-          {paged.length === 0 ? (
+          {!productsLoaded && products.length === 0 ? (
+            <div className="shop-loading-grid">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="shop-skeleton-card">
+                  <div className="skeleton-img" />
+                  <div className="skeleton-line" style={{width:'70%'}} />
+                  <div className="skeleton-line" style={{width:'40%'}} />
+                  <div className="skeleton-line" style={{width:'55%'}} />
+                </div>
+              ))}
+            </div>
+          ) : paged.length === 0 ? (
             <div className="shop-empty">
               <Search size={48} style={{ opacity: 0.3, marginBottom: 16 }} />
               <h3>No products found</h3>
@@ -4397,7 +4408,7 @@ function CartDrawer() {
     toggle();
   };
   
-  return <AnimatePresence>{open && <><motion.div className="cart-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleOverlayClick} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 998 }} /><motion.aside className="cart-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} style={{ zIndex: 999 }}>
+  return <AnimatePresence>{open && <><motion.div className="cart-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleOverlayClick} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 9998, backdropFilter: 'none', WebkitBackdropFilter: 'none' }} /><motion.aside className="cart-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: 'tween', duration: 0.3 }} style={{ zIndex: 9999, background: '#0d1621', opacity: 1 }}>
   <div className="cart-header">
     <button className="icon-btn back-btn" onClick={handleBack} aria-label="Go back">
       <ArrowLeft size={20} />
@@ -4411,25 +4422,27 @@ function CartDrawer() {
     {items.length === 0 && <p className="empty-cart">Your cart is empty.</p>}
     {items.map((item) => (
       <div className="cart-line" key={item.id}>
-        <img src={item.imageUrl || a5xCarKit} alt={item.name} />
-        <div className="cart-item-details">
-          <div className="cart-item-info">
+        <div className="cart-line-top">
+          <img src={item.imageUrl || a5xCarKit} alt={item.name} />
+          <div className="cart-item-details">
             <b>{item.name}</b>
             <p className="cart-item-price">{inr(Number(item.price))}</p>
           </div>
+          <button className="icon-btn remove-btn" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} title="Remove from cart">
+            <Trash2 size={15} />
+          </button>
+        </div>
+        <div className="cart-line-bottom">
           <div className="qty-control">
             <button onClick={() => dec(item.id)} aria-label={`Decrease ${item.name}`}>
-              <Minus size={16} />
+              <Minus size={14} />
             </button>
             <span>{item.qty}</span>
             <button onClick={() => inc(item.id)} aria-label={`Increase ${item.name}`}>
-              <Plus size={16} />
+              <Plus size={14} />
             </button>
           </div>
         </div>
-        <button className="icon-btn remove-btn" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} title="Remove from cart">
-          <Trash2 size={18} />
-        </button>
       </div>
     ))}
   </div>
@@ -5109,12 +5122,12 @@ function Footer() {
         <div className="footer-links-col">
           <h4 className="footer-col-title">Products</h4>
           <ul className="footer-link-list">
-            <li><Link to="/shop">Microcontrollers</Link></li>
-            <li><Link to="/shop">Sensors</Link></li>
-            <li><Link to="/shop">Motors</Link></li>
-            <li><Link to="/shop">Motor Drivers</Link></li>
-            <li><Link to="/shop">Displays</Link></li>
-            <li><Link to="/shop">Batteries</Link></li>
+            <li><Link to="/shop?cat=MicroController">Microcontrollers</Link></li>
+            <li><Link to="/shop?cat=Sensor">Sensors</Link></li>
+            <li><Link to="/shop?cat=Motors">Motors</Link></li>
+            <li><Link to="/shop?cat=Motor+Driver">Motor Drivers</Link></li>
+            <li><Link to="/shop?cat=Display">Displays</Link></li>
+            <li><Link to="/shop?cat=Battery">Batteries</Link></li>
             <li><Link to="/kits">Robotics Kits</Link></li>
           </ul>
         </div>
@@ -5155,12 +5168,15 @@ function Footer() {
           <div className="footer-contact-info">
             <div className="footer-contact-item">
               <span className="footer-contact-icon">📧</span>
-              <span>a5x.industries@gmail.com</span>
+              <a href="mailto:a5x.industries@gmail.com" style={{color:'inherit',textDecoration:'none'}}>a5x.industries@gmail.com</a>
             </div>
             <div className="footer-contact-item">
               <span className="footer-contact-icon">📱</span>
-              <span>+91 82698 58259</span>
-              
+              <a href="tel:+918269858259" style={{color:'inherit',textDecoration:'none'}}>+91 82698 58259</a>
+            </div>
+            <div className="footer-contact-item">
+              <span className="footer-contact-icon">📱</span>
+              <a href="tel:+919340212224" style={{color:'inherit',textDecoration:'none'}}>+91 93402 12224</a>
             </div>
             <div className="footer-contact-item">
               <span className="footer-contact-icon">📍</span>
@@ -6600,6 +6616,19 @@ function ScrollToTop() {
 }
 
 function App() {
+  const loadProducts = useAdminStore((s) => s.loadProducts);
+  const loadKits = useAdminStore((s) => s.loadKits);
+
+  // Preload products & kits immediately when app starts
+  // Also ping backend to wake up Render free tier
+  useEffect(() => {
+    // Ping backend health first to wake up Render
+    fetch(`${API_BASE}/api/health`).catch(() => {});
+    // Then load data in parallel
+    loadProducts();
+    loadKits();
+  }, []);
+
   return (
     <BrowserRouter>
       <ScrollToTop />
