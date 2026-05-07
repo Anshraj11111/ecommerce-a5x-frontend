@@ -125,8 +125,8 @@ const inr = (value) => new Intl.NumberFormat("en-IN", { style: "currency", curre
 const seconds = (value) => `${Math.floor(value / 60)}:${String(value % 60).padStart(2, "0")}`;
 const uid = () => Math.random().toString(36).slice(2, 9);
 
-// Global API URL - uses env variable in production, localhost in development
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// Global API URL - Always use production backend (MongoDB Atlas)
+const API_BASE = import.meta.env.VITE_API_URL || 'https://ecommerce-a5x-backend.onrender.com';
 
 const categories = ["All", "MicroController", "Sensor", "Motors", "Display", "Connectors", "Motor Driver", "Battery", "Charger", "Cables", "Kits", "Remote", "Custom 3D Prints"];
 const courseCategories = ["All", "Beginner", "Intermediate", "Advanced", "Arduino", "ESP32", "Robotics", "IoT", "3D Printing"];
