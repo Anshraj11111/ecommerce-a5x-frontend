@@ -3558,9 +3558,17 @@ function LoginPage() {
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+      
+      // Sanitize username for signup - remove special characters except hyphens and underscores
+      const sanitizedUsername = formData.name 
+        ? formData.name.replace(/[^a-zA-Z0-9_-]/g, '') 
+        : formData.email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
+      
       const payload = isLogin 
         ? { email: formData.email, password: formData.password }
-        : { username: formData.name || formData.email.split('@')[0], email: formData.email, password: formData.password };
+        : { username: sanitizedUsername, email: formData.email, password: formData.password };
+
+      console.log('LoginPage - Auth request payload:', payload);
 
       const response = await fetch(`${API_BASE}${endpoint}`, {
         method: 'POST',
@@ -3569,9 +3577,10 @@ function LoginPage() {
       });
 
       const data = await response.json();
+      console.log('LoginPage - Auth response:', data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Authentication failed');
+        throw new Error(data.error || data.details?.[0]?.message || 'Authentication failed');
       }
 
       // Save user data and token
@@ -3839,9 +3848,17 @@ function AuthModal() {
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+      
+      // Sanitize username for signup - remove special characters except hyphens and underscores
+      const sanitizedUsername = formData.name 
+        ? formData.name.replace(/[^a-zA-Z0-9_-]/g, '') 
+        : formData.email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
+      
       const payload = isLogin 
         ? { email: formData.email, password: formData.password }
-        : { username: formData.name || formData.email.split('@')[0], email: formData.email, password: formData.password };
+        : { username: sanitizedUsername, email: formData.email, password: formData.password };
+
+      console.log('AuthModal - Auth request payload:', payload);
 
       const response = await fetch(`${API_BASE}${endpoint}`, {
         method: 'POST',
@@ -3850,9 +3867,10 @@ function AuthModal() {
       });
 
       const data = await response.json();
+      console.log('AuthModal - Auth response:', data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Authentication failed');
+        throw new Error(data.error || data.details?.[0]?.message || 'Authentication failed');
       }
 
       // Save user data and token
