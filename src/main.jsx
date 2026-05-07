@@ -5092,19 +5092,6 @@ function BulkProductUpload() {
     setUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
-      
-      setResult({ 
-        success: true, 
-        message: `Successfully added ${products.length} products!`,
-        count: products.length 
-      });
-    } catch (error) {
-      setResult({ success: false, message: `Error: ${error.message}` });
-    }
-
-    setUploading(false);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
 
   return (
     <div className="bulk-upload-section">
