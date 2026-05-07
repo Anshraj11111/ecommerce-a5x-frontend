@@ -346,16 +346,47 @@ const useAuthModalStore = create((set) => ({
 }));
 
 const useAdminStore = create(persist((set, get) => ({
-  products: productsSeed,
-  kits: kitsSeed,
+  products: [],  // Start with empty array, will be loaded from API
+  kits: [],      // Start with empty array, will be loaded from API
   courses: coursesSeed,
   productsLoaded: false,
   kitsLoaded: false,
+  error: null,
+  
+  // Error management
+  setError: (error) => set({ error }),
+  clearError: () => set({ error: null }),
+  
+  // Helper to get user-friendly error message
+  getErrorMessage: (response, error) => {
+    if (!response) {
+      // Network error
+      return "Network error. Please check your connection and try again.";
+    }
+    
+    if (response.status === 401) {
+      return "Authentication required. Please log in again.";
+    }
+    
+    if (response.status === 403) {
+      return "Insufficient permissions. Admin access required.";
+    }
+    
+    if (response.status === 404) {
+      return "Resource not found.";
+    }
+    
+    if (response.status >= 500) {
+      return "Server error. Please try again later.";
+    }
+    
+    return error || "Operation failed. Please try again.";
+  },
   
   // Load products from API - always fetch fresh
   loadProducts: async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/products?limit=1000`);
+      const response = await fetch(`${API_BASE}/api/products?limit=20`);
       const data = await response.json();
       if (data.data && Array.isArray(data.data)) {
         set({ products: data.data, productsLoaded: true });
@@ -367,8 +398,17 @@ const useAdminStore = create(persist((set, get) => ({
   
   // Add product to API and update local state
   addProduct: async (product) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
     try {
-      const token = localStorage.getItem('a5x-admin-token');
       const response = await fetch(`${API_BASE}/api/products`, {
         method: 'POST',
         headers: {
@@ -380,24 +420,40 @@ const useAdminStore = create(persist((set, get) => ({
       
       if (response.ok) {
         const created = await response.json();
-        set((state) => ({ products: [created, ...state.products] }));
+        set((state) => ({ products: [created, ...state.products], error: null }));
         return created;
       } else {
-        console.error('Failed to add product:', await response.text());
-        // Fallback to local storage
-        set((state) => ({ products: [{ ...product, id: product.id || uid() }, ...state.products] }));
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to add product:', errorText);
+        throw new Error(errorMsg);
       }
     } catch (error) {
-      console.error('Error adding product:', error);
-      // Fallback to local storage
-      set((state) => ({ products: [{ ...product, id: product.id || uid() }, ...state.products] }));
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error adding product:', error);
+      }
+      throw error;
     }
   },
   
   // Update product in API and local state
   updateProduct: async (id, product) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
     try {
-      const token = localStorage.getItem('a5x-admin-token');
       const response = await fetch(`${API_BASE}/api/products/${id}`, {
         method: 'PUT',
         headers: {
@@ -409,24 +465,40 @@ const useAdminStore = create(persist((set, get) => ({
       
       if (response.ok) {
         const updated = await response.json();
-        set((state) => ({ products: state.products.map((item) => item.id === id ? updated : item) }));
+        set((state) => ({ products: state.products.map((item) => item.id === id ? updated : item), error: null }));
         return updated;
       } else {
-        console.error('Failed to update product:', await response.text());
-        // Fallback to local storage
-        set((state) => ({ products: state.products.map((item) => item.id === id ? { ...item, ...product } : item) }));
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to update product:', errorText);
+        throw new Error(errorMsg);
       }
     } catch (error) {
-      console.error('Error updating product:', error);
-      // Fallback to local storage
-      set((state) => ({ products: state.products.map((item) => item.id === id ? { ...item, ...product } : item) }));
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error updating product:', error);
+      }
+      throw error;
     }
   },
   
   // Delete product from API and local state
   deleteProduct: async (id) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
     try {
-      const token = localStorage.getItem('a5x-admin-token');
       const response = await fetch(`${API_BASE}/api/products/${id}`, {
         method: 'DELETE',
         headers: {
@@ -435,23 +507,39 @@ const useAdminStore = create(persist((set, get) => ({
       });
       
       if (response.ok) {
-        set((state) => ({ products: state.products.filter((item) => item.id !== id) }));
+        set((state) => ({ products: state.products.filter((item) => item.id !== id), error: null }));
       } else {
-        console.error('Failed to delete product:', await response.text());
-        // Fallback to local storage
-        set((state) => ({ products: state.products.filter((item) => item.id !== id) }));
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to delete product:', errorText);
+        throw new Error(errorMsg);
       }
     } catch (error) {
-      console.error('Error deleting product:', error);
-      // Fallback to local storage
-      set((state) => ({ products: state.products.filter((item) => item.id !== id) }));
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error deleting product:', error);
+      }
+      throw error;
     }
   },
   
   // Add kit to API and update local state
   addKit: async (kit) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
     try {
-      const token = localStorage.getItem('a5x-admin-token');
       const response = await fetch(`${API_BASE}/api/kits`, {
         method: 'POST',
         headers: {
@@ -460,25 +548,43 @@ const useAdminStore = create(persist((set, get) => ({
         },
         body: JSON.stringify(kit)
       });
+      
       if (response.ok) {
         const created = await response.json();
-        set((state) => ({ kits: [created, ...state.kits] }));
+        set((state) => ({ kits: [created, ...state.kits], error: null }));
         return created;
       } else {
-        const err = await response.text();
-        console.error('Failed to add kit:', err);
-        set((state) => ({ kits: [{ ...kit, id: kit.id || uid() }, ...state.kits] }));
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to add kit:', errorText);
+        throw new Error(errorMsg);
       }
     } catch (error) {
-      console.error('Error adding kit:', error);
-      set((state) => ({ kits: [{ ...kit, id: kit.id || uid() }, ...state.kits] }));
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error adding kit:', error);
+      }
+      throw error;
     }
   },
 
   // Update kit in API and local state
   updateKit: async (id, kit) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
     try {
-      const token = localStorage.getItem('a5x-admin-token');
       const response = await fetch(`${API_BASE}/api/kits/${id}`, {
         method: 'PUT',
         headers: {
@@ -487,40 +593,73 @@ const useAdminStore = create(persist((set, get) => ({
         },
         body: JSON.stringify(kit)
       });
+      
       if (response.ok) {
         const updated = await response.json();
-        set((state) => ({ kits: state.kits.map((item) => item.id === id ? updated : item) }));
+        set((state) => ({ kits: state.kits.map((item) => item.id === id ? updated : item), error: null }));
         return updated;
       } else {
-        set((state) => ({ kits: state.kits.map((item) => item.id === id ? { ...item, ...kit } : item) }));
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to update kit:', errorText);
+        throw new Error(errorMsg);
       }
     } catch (error) {
-      set((state) => ({ kits: state.kits.map((item) => item.id === id ? { ...item, ...kit } : item) }));
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error updating kit:', error);
+      }
+      throw error;
     }
   },
 
   // Delete kit from API and local state
   deleteKit: async (id) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
     try {
-      const token = localStorage.getItem('a5x-admin-token');
       const response = await fetch(`${API_BASE}/api/kits/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
       if (response.ok) {
-        set((state) => ({ kits: state.kits.filter((item) => item.id !== id) }));
+        set((state) => ({ kits: state.kits.filter((item) => item.id !== id), error: null }));
       } else {
-        set((state) => ({ kits: state.kits.filter((item) => item.id !== id) }));
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to delete kit:', errorText);
+        throw new Error(errorMsg);
       }
     } catch (error) {
-      set((state) => ({ kits: state.kits.filter((item) => item.id !== id) }));
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error deleting kit:', error);
+      }
+      throw error;
     }
   },
 
   // Load kits from API
   loadKits: async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/kits?limit=1000`);
+      const response = await fetch(`${API_BASE}/api/kits?limit=20`);
       const data = await response.json();
       if (data.data && Array.isArray(data.data)) {
         set({ kits: data.data, kitsLoaded: true });
@@ -533,7 +672,15 @@ const useAdminStore = create(persist((set, get) => ({
   updateCourse: (id, course) => set((state) => ({ courses: state.courses.map((item) => item.id === id ? { ...item, ...course } : item) })),
   deleteCourse: (id) => set((state) => ({ courses: state.courses.filter((item) => item.id !== id) })),
   addVideo: (courseId, video) => set((state) => ({ courses: state.courses.map((course) => course.id === courseId ? { ...course, videos: [...course.videos, { ...video, id: video.id || uid() }] } : course) }))
-}), { name: "a5x-admin-data" }));
+}), { 
+  name: "a5x-admin-data",
+  partialPersist: true,
+  partialize: (state) => ({
+    // Only persist courses, NOT products or kits
+    // Products and kits should always be loaded from API
+    courses: state.courses
+  })
+}));
 
 function useScrolled() {
   const [scrolled, setScrolled] = useState(false);
@@ -5125,7 +5272,7 @@ function AdminProducts({ compact }) {
 function ProductForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { products, addProduct, updateProduct } = useAdminStore();
+  const { products, addProduct, updateProduct, error, clearError } = useAdminStore();
   const product = products.find((item) => item.id === id);
   const upload = useFileUpload({ types: ["image"], maxMb: 5 });
   const [deliveryType, setDeliveryType] = useState(product?.quickDelivery === true ? 'quick' : product?.quickDelivery === false ? 'scheduled' : 'all');
@@ -5134,21 +5281,37 @@ function ProductForm() {
   async function submit(event) {
     event.preventDefault();
     setSaving(true);
+    clearError();
     const data = Object.fromEntries(new FormData(event.currentTarget));
     const quickDeliveryValue = data.deliveryType === 'all' ? undefined : data.deliveryType === 'quick';
-    const payload = { ...product, ...data, price: Number(data.price), minQty: Number(data.minQty || 1), rating: Number(data.rating || 4.7), inStock: data.inStock === "on", quickDelivery: quickDeliveryValue, imageUrl: upload.previewUrl || product?.imageUrl };
+    const payload = { 
+      ...product, 
+      ...data, 
+      price: Number(data.price), 
+      mrp: Number(data.mrp || data.price), 
+      minQty: Number(data.minQty || 1), 
+      rating: Number(data.rating || 4.7), 
+      inStock: data.inStock === "on", 
+      quickDelivery: quickDeliveryValue, 
+      imageUrl: upload.previewUrl || product?.imageUrl 
+    };
     
-    if (product) {
-      await updateProduct(product.id, payload);
-    } else {
-      await addProduct(payload);
+    try {
+      if (product) {
+        await updateProduct(product.id, payload);
+      } else {
+        await addProduct(payload);
+      }
+      navigate("/admin/products");
+    } catch (err) {
+      // Error is already set in store, just stop saving state
+      console.error('Failed to save product:', err);
+    } finally {
+      setSaving(false);
     }
-    
-    setSaving(false);
-    navigate("/admin/products");
   }
   
-  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}><input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || "A5X-XX-000"} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" /><input name="tags" placeholder="Tags, comma-separated" /><input name="rating" type="number" step=".1" defaultValue={product?.rating || 4.7} /><FileDrop upload={upload} accept="image/*" /><button disabled={saving}>{saving ? 'Saving...' : 'Save Product'}</button><Link to="/admin/products">Cancel</Link></form></AdminPage>;
+  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}>{error && <div style={{padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px'}}>{error}</div>}<input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || `A5X-${Date.now().toString(36).toUpperCase()}`} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price (₹)*" required /><input name="mrp" type="number" defaultValue={product?.mrp} placeholder="MRP (₹)*" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} placeholder="Min Quantity" /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" /><input name="tags" placeholder="Tags, comma-separated" /><input name="rating" type="number" step=".1" defaultValue={product?.rating || 4.7} placeholder="Rating (1-5)" /><FileDrop upload={upload} accept="image/*" /><button disabled={saving}>{saving ? 'Saving...' : 'Save Product'}</button><Link to="/admin/products">Cancel</Link></form></AdminPage>;
 }
 
 function FileDrop({ upload, accept = "image/*,video/*" }) {
@@ -5168,7 +5331,7 @@ function AdminKits() {
 function KitForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { kits, addKit, updateKit } = useAdminStore();
+  const { kits, addKit, updateKit, error, clearError } = useAdminStore();
   const kit = kits.find((item) => item.id === id);
   const videoUpload = useFileUpload({ types: ["video"], maxMb: 500 });
   const imageUpload = useFileUpload({ types: ["image"], maxMb: 5 });
@@ -5177,6 +5340,7 @@ function KitForm() {
   async function submit(event) {
     event.preventDefault();
     setSaving(true);
+    clearError();
     const data = Object.fromEntries(new FormData(event.currentTarget));
     const payload = { 
       ...kit, 
@@ -5188,16 +5352,24 @@ function KitForm() {
       videoUrl: videoUpload.previewUrl || kit?.videoUrl || "",
       videoDuration: videoUpload.duration || kit?.videoDuration || 0
     };
-    if (kit) {
-      await updateKit(kit.id, payload);
-    } else {
-      await addKit(payload);
+    
+    try {
+      if (kit) {
+        await updateKit(kit.id, payload);
+      } else {
+        await addKit(payload);
+      }
+      navigate("/admin/kits");
+    } catch (err) {
+      // Error is already set in store, just stop saving state
+      console.error('Failed to save kit:', err);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    navigate("/admin/kits");
   }
   
   return <AdminPage title={kit ? "Edit Kit" : "Add Kit"}><form className="admin-form" onSubmit={submit}>
+    {error && <div style={{padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px'}}>{error}</div>}
     <input name="name" defaultValue={kit?.name} placeholder="Kit Name" required />
     <select name="tier" defaultValue={kit?.tier || "STARTER KIT"}>
       <option>STARTER KIT</option>
