@@ -5439,6 +5439,30 @@ function ProductForm() {
   const upload = useFileUpload({ types: ["image"], maxMb: 5 });
   const [deliveryType, setDeliveryType] = useState(product?.quickDelivery === true ? 'quick' : product?.quickDelivery === false ? 'scheduled' : 'all');
   const [saving, setSaving] = useState(false);
+  const [images, setImages] = useState(product?.images || []);
+  const [imagePreviews, setImagePreviews] = useState(product?.images || []);
+  
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files).slice(0, 5); // Max 5 images
+    
+    const readers = files.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => resolve(ev.target.result);
+        reader.readAsDataURL(file);
+      });
+    });
+    
+    Promise.all(readers).then(results => {
+      setImagePreviews(results);
+      setImages(results);
+    });
+  };
+  
+  const removeImage = (index) => {
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
   
   async function submit(event) {
     event.preventDefault();
@@ -5455,7 +5479,8 @@ function ProductForm() {
       rating: Number(data.rating || 4.7), 
       inStock: data.inStock === "on", 
       quickDelivery: quickDeliveryValue, 
-      imageUrl: upload.previewUrl || product?.imageUrl 
+      imageUrl: images[0] || product?.imageUrl || upload.previewUrl || "",
+      images: images.length > 0 ? images : (product?.images || [])
     };
     
     try {
@@ -5473,7 +5498,98 @@ function ProductForm() {
     }
   }
   
-  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}>{error && <div style={{padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px'}}>{error}</div>}<input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || `A5X-${Date.now().toString(36).toUpperCase()}`} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price (₹)*" required /><input name="mrp" type="number" defaultValue={product?.mrp} placeholder="MRP (₹)*" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} placeholder="Min Quantity" /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" /><input name="tags" placeholder="Tags, comma-separated" /><input name="rating" type="number" step=".1" defaultValue={product?.rating || 4.7} placeholder="Rating (1-5)" /><FileDrop upload={upload} accept="image/*" /><button disabled={saving}>{saving ? 'Saving...' : 'Save Product'}</button><Link to="/admin/products">Cancel</Link></form></AdminPage>;
+  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}>{error && <div style={{padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px'}}>{error}</div>}<input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || `A5X-${Date.now().toString(36).toUpperCase()}`} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price (₹)*" required /><input name="mrp" type="number" defaultValue={product?.mrp} placeholder="MRP (₹)*" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} placeholder="Min Quantity" /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" />
+    
+    <h4 style={{marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff'}}>Product Images (Max 5)</h4>
+    <div style={{marginBottom: '1rem'}}>
+      <input 
+        type="file" 
+        accept="image/*" 
+        multiple 
+        onChange={handleImageChange}
+        style={{
+          padding: '12px',
+          border: '2px dashed rgba(0, 229, 255, 0.3)',
+          borderRadius: '8px',
+          background: 'rgba(0, 229, 255, 0.05)',
+          color: '#fff',
+          cursor: 'pointer',
+          width: '100%'
+        }}
+      />
+      <p style={{fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: '8px'}}>
+        Select up to 5 images. First image will be the main thumbnail.
+      </p>
+    </div>
+    
+    {imagePreviews.length > 0 && (
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+        gap: '12px',
+        marginBottom: '1rem'
+      }}>
+        {imagePreviews.map((preview, index) => (
+          <div key={index} style={{
+            position: 'relative',
+            aspectRatio: '1',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            border: index === 0 ? '2px solid #00e5ff' : '1px solid rgba(255,255,255,0.2)'
+          }}>
+            <img 
+              src={preview} 
+              alt={`Preview ${index + 1}`}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+            {index === 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '4px',
+                left: '4px',
+                background: '#00e5ff',
+                color: '#000',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontSize: '10px',
+                fontWeight: '700'
+              }}>
+                MAIN
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => removeImage(index)}
+              style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                background: 'rgba(255, 0, 0, 0.8)',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#fff',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '700'
+              }}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+    
+    <input name="tags" placeholder="Tags, comma-separated" /><input name="rating" type="number" step=".1" defaultValue={product?.rating || 4.7} placeholder="Rating (1-5)" /><button disabled={saving}>{saving ? 'Saving...' : 'Save Product'}</button><Link to="/admin/products">Cancel</Link></form></AdminPage>;
 }
 
 function FileDrop({ upload, accept = "image/*,video/*" }) {
@@ -5496,8 +5612,31 @@ function KitForm() {
   const { kits, addKit, updateKit, error, clearError } = useAdminStore();
   const kit = kits.find((item) => item.id === id);
   const videoUpload = useFileUpload({ types: ["video"], maxMb: 500 });
-  const imageUpload = useFileUpload({ types: ["image"], maxMb: 5 });
   const [saving, setSaving] = useState(false);
+  const [images, setImages] = useState(kit?.images || []);
+  const [imagePreviews, setImagePreviews] = useState(kit?.images || []);
+  
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files).slice(0, 5); // Max 5 images
+    
+    const readers = files.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => resolve(ev.target.result);
+        reader.readAsDataURL(file);
+      });
+    });
+    
+    Promise.all(readers).then(results => {
+      setImagePreviews(results);
+      setImages(results);
+    });
+  };
+  
+  const removeImage = (index) => {
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
   
   async function submit(event) {
     event.preventDefault();
@@ -5510,7 +5649,8 @@ function KitForm() {
       price: Number(data.price), 
       rating: Number(data.rating || 4.8), 
       includes: data.includes ? data.includes.split(",").map((item) => item.trim()).filter(Boolean) : [],
-      imageUrl: imageUpload.previewUrl || kit?.imageUrl || data.imageUrl || "",
+      imageUrl: images[0] || kit?.imageUrl || data.imageUrl || "",
+      images: images.length > 0 ? images : (kit?.images || []),
       videoUrl: videoUpload.previewUrl || kit?.videoUrl || "",
       videoDuration: videoUpload.duration || kit?.videoDuration || 0
     };
@@ -5523,7 +5663,6 @@ function KitForm() {
       }
       navigate("/admin/kits");
     } catch (err) {
-      // Error is already set in store, just stop saving state
       console.error('Failed to save kit:', err);
     } finally {
       setSaving(false);
@@ -5543,9 +5682,96 @@ function KitForm() {
     <input name="includes" defaultValue={kit?.includes?.join(", ")} placeholder="What's included (comma separated)" />
     <input name="rating" type="number" step=".1" defaultValue={kit?.rating || 4.8} />
     
-    <h4 style={{marginTop: '2rem', marginBottom: '1rem'}}>Kit Image</h4>
-    <FileDrop upload={imageUpload} accept="image/*" />
-    <input name="imageUrl" defaultValue={kit?.imageUrl} placeholder="Or image URL" />
+    <h4 style={{marginTop: '2rem', marginBottom: '1rem'}}>Kit Images (Max 5)</h4>
+    <div style={{marginBottom: '1rem'}}>
+      <input 
+        type="file" 
+        accept="image/*" 
+        multiple 
+        onChange={handleImageChange}
+        style={{
+          padding: '12px',
+          border: '2px dashed rgba(0, 229, 255, 0.3)',
+          borderRadius: '8px',
+          background: 'rgba(0, 229, 255, 0.05)',
+          color: '#fff',
+          cursor: 'pointer',
+          width: '100%'
+        }}
+      />
+      <p style={{fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: '8px'}}>
+        Select up to 5 images. First image will be the main thumbnail.
+      </p>
+    </div>
+    
+    {imagePreviews.length > 0 && (
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+        gap: '12px',
+        marginBottom: '1rem'
+      }}>
+        {imagePreviews.map((preview, index) => (
+          <div key={index} style={{
+            position: 'relative',
+            aspectRatio: '1',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            border: index === 0 ? '2px solid #00e5ff' : '1px solid rgba(255,255,255,0.2)'
+          }}>
+            <img 
+              src={preview} 
+              alt={`Preview ${index + 1}`}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+            {index === 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '4px',
+                left: '4px',
+                background: '#00e5ff',
+                color: '#000',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontSize: '10px',
+                fontWeight: '700'
+              }}>
+                MAIN
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => removeImage(index)}
+              style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                background: 'rgba(255, 0, 0, 0.8)',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#fff',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '700'
+              }}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+    
+    <input name="imageUrl" defaultValue={kit?.imageUrl} placeholder="Or single image URL (fallback)" />
     
     <h4 style={{marginTop: '2rem', marginBottom: '1rem'}}>Premium Kit Video (Optional)</h4>
     <FileDrop upload={videoUpload} accept="video/mp4,video/webm,video/quicktime" />
