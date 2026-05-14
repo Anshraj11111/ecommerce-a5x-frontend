@@ -1,0 +1,745 @@
+﻿function HomePage() {
+  return (
+    <main>
+      <Hero />
+      <TrustBar />
+      <PopularCategories />
+      <ImageShowcase />
+      <GatewayCards />
+      <WhyRobotics />
+      <HomeAboutA5X />
+      <HomeStatsBar />
+      <Testimonials />
+    </main>
+  );
+}
+function Hero() {
+  const heroRef = useRef(null);
+  const [parallax, setParallax] = useState({
+    modelX: 0,
+    modelY: 0,
+    textX: 0,
+    textY: 0,
+    bgX: 50,
+    bgY: 50
+  });
+
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (prefersReducedMotion.matches || window.innerWidth < 760) return;
+
+    let target = { modelX: 0, modelY: 0, textX: 0, textY: 0, bgX: 50, bgY: 50 };
+    let current = { ...target };
+    let rafId;
+
+    const render = () => {
+      current.modelX += (target.modelX - current.modelX) * 0.08;
+      current.modelY += (target.modelY - current.modelY) * 0.08;
+      current.textX += (target.textX - current.textX) * 0.07;
+      current.textY += (target.textY - current.textY) * 0.07;
+      current.bgX += (target.bgX - current.bgX) * 0.05;
+      current.bgY += (target.bgY - current.bgY) * 0.05;
+
+      setParallax({ ...current });
+      rafId = requestAnimationFrame(render);
+    };
+
+    const handleMouseMove = (event) => {
+      const rect = hero.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+      target = {
+        modelX: x * 22,
+        modelY: y * 16,
+        textX: x * -18,
+        textY: y * -10,
+        bgX: 50 + x * 2.2,
+        bgY: 50 + y * 1.8
+      };
+    };
+
+    const handleMouseLeave = () => {
+      target = { modelX: 0, modelY: 0, textX: 0, textY: 0, bgX: 50, bgY: 50 };
+    };
+
+    hero.addEventListener('pointermove', handleMouseMove);
+    hero.addEventListener('pointerleave', handleMouseLeave);
+    rafId = requestAnimationFrame(render);
+
+    return () => {
+      hero.removeEventListener('pointermove', handleMouseMove);
+      hero.removeEventListener('pointerleave', handleMouseLeave);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  return (
+    <section 
+      ref={heroRef}
+      className="hero-v4" 
+      data-parallax-scene
+      style={{
+        '--hero-bg': `url(${futureBg})`,
+        '--model-x': `${parallax.modelX}px`,
+        '--model-y': `${parallax.modelY}px`,
+        '--text-x': `${parallax.textX}px`,
+        '--text-y': `${parallax.textY}px`,
+        '--bg-x': `${parallax.bgX}%`,
+        '--bg-y': `${parallax.bgY}%`
+      }}
+    >
+      <div className="hero-copy-v4" aria-hidden="true">
+        <span className="future-text">FUTURE</span>
+        <span className="vision-text">VISION</span>
+      </div>
+
+      <section className="shop-panel-v4" aria-label="A5X Robotics shopping actions">
+        <p>Premium robotics kits, components, and courses for builders who want to create something real.</p>
+        <div className="shop-actions-v4">
+          <Link to="/shop" className="shop-primary-v4">Shop Now</Link>
+          <Link to="/kits" className="shop-secondary-v4">Explore Kits</Link>
+        </div>
+      </section>
+
+      <figure className="model-wrap-v4">
+        <img src={robotModel} alt="Futuristic black robotic model with glowing blue lenses" />
+      </figure>
+
+      <aside className="callout-v4 callout-left-v4" aria-label="Robotics kit note">
+        <div className="thumb-v4">
+          <img src={robotModel} alt="" />
+        </div>
+        <p>PREMIUM<br />ROBOTICS<br />KITS</p>
+      </aside>
+
+      <aside className="callout-v4 callout-right-v4" aria-label="Future vision note">
+        <p>NEXT GEN<br />FUTURE<br />VISION</p>
+        <div className="thumb-v4">
+          <img src={robotModel} alt="" />
+        </div>
+      </aside>
+
+      <aside className="rating-badge-v4" aria-label="Rated number one robotics store in India">
+        <span>Rated #1 Robotics Store in India</span>
+      </aside>
+
+      <span className="node-v4 node-left-v4" aria-hidden="true"></span>
+      <span className="node-v4 node-right-v4" aria-hidden="true"></span>
+      <div className="line-v4 line-left-v4" aria-hidden="true"></div>
+      <div className="line-v4 line-right-v4" aria-hidden="true"></div>
+
+      <Link to="/shop" className="buy-v4">Shop Now</Link>
+    </section>
+  );
+}
+
+function TrustBar() {
+  const items = [
+    { icon: <Truck size={22} />, title: "Free Shipping", sub: "On all orders above â‚¹999" },
+    { icon: <Shield size={22} />, title: "Secure Payments", sub: "100% secure & trusted" },
+    { icon: <RefreshCw size={22} />, title: "7 Days Return", sub: "Hassle free returns" },
+    { icon: <MessageSquare size={22} />, title: "24/7 Support", sub: "We're here to help" },
+  ];
+  return (
+    <section className="trust-bar-v2">
+      {items.map(({ icon, title, sub }) => (
+        <div key={title} className="trust-bar-v2-item">
+          <span className="trust-bar-v2-icon">{icon}</span>
+          <div>
+            <strong>{title}</strong>
+            <span>{sub}</span>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function PopularCategories() {
+  const categories = [
+    { label: "Robotics Kits", sub: "Build. Experiment. Innovate.", img: heroCarRobot, to: "/kits" },
+    { label: "Microcontrollers", sub: "Power your ideas.", img: motorDriver, to: "/shop" },
+    { label: "Sensors", sub: "Sense. Measure. Act.", img: motorDriver, to: "/shop" },
+    { label: "Motors & Drivers", sub: "Move your projects.", img: motorDriver, to: "/shop" },
+    { label: "Tools & Accessories", sub: "Everything you need.", img: motorDriver, to: "/shop" },
+  ];
+  return (
+    <section className="popular-cats">
+      <div className="popular-cats-header">
+        <div>
+          <p className="popular-cats-eyebrow">BROWSE CATEGORIES</p>
+          <h2 className="popular-cats-title">Popular Categories</h2>
+        </div>
+        <Link className="popular-cats-viewall" to="/shop">View All Categories â†’</Link>
+      </div>
+      <div className="popular-cats-grid">
+        {categories.map(({ label, sub, img, to }) => (
+          <Link key={label} className="popular-cat-card" to={to}>
+            <div className="popular-cat-img">
+              <img src={img} alt={label} />
+            </div>
+            <div className="popular-cat-body">
+              <strong>{label}</strong>
+              <span>{sub}</span>
+              <span className="popular-cat-link">Shop Now â†’</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ImageShowcase() {
+  const showcaseItems = [
+    { img: unit003Hero, label: "UNIT 003", sublabel: "Next-Gen Humanoid" },
+    { img: holoPrism, label: "NEURAL", sublabel: "AI Core Processing" },
+    { img: silhouetteFigure, label: "CYBER", sublabel: "Autonomous Systems" },
+  ];
+  return (
+    <motion.section className="image-showcase" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer}>
+      {showcaseItems.map((item, i) => (
+        <motion.div key={item.label} className="showcase-item holo-shimmer scan-lines corner-brackets float-sine" variants={scrollReveal} whileHover={{ scale: 1.02 }} style={{ animationDelay: `${i * 0.4}s` }}>
+          <motion.img src={item.img} alt={item.label} initial={{ scale: 1.15 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 1.2, ease: [.22,1,.36,1] }} />
+          <div className="showcase-overlay" />
+          <div className="showcase-content">
+            <span className="showcase-num">{String(i + 1).padStart(2, "0")}</span>
+            <h3 className="showcase-label">{item.label}</h3>
+            <p className="showcase-sublabel">{item.sublabel}</p>
+          </div>
+        </motion.div>
+      ))}
+    </motion.section>
+  );
+}
+const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } } };
+const scrollReveal = { hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [.22,1,.36,1] } } };
+const staggerContainer = { hidden: {}, visible: { transition: { staggerChildren: 0.15 } } };
+
+function GatewayCards() {
+  const cards = [
+    ["01", "Shop", "Precision components, modules, sensors, and electronics for serious robotics builds.", "/shop"],
+    ["02", "Kits", "Complete matched robotics kits for classrooms, clubs, and competition teams.", "/kits"],
+    ["03", "Learn", "Free A5X Academy courses that turn curiosity into practical build skills.", "/learn"]
+  ];
+  return (
+    <motion.section className="gateway-section" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }}>
+      {cards.map(([num, title, text, to], i) => (
+        <motion.div key={title} variants={scrollReveal} custom={i}>
+          <Link className="gateway-card glass-panel holo-shimmer" to={to}>
+            <div className="gw-corner" />
+            <div className="gw-shine" />
+            <span className="gw-num">{num}</span>
+            <h2>{title}</h2>
+            <p>{text}</p>
+            <span className="gw-link">Explore <span>â†’</span></span>
+          </Link>
+        </motion.div>
+      ))}
+    </motion.section>
+  );
+}
+
+function WhyRobotics() {
+  const cards = [
+    [Cpu, "The Future is Autonomous", "By 2030, over 20 million robots will be deployed globally. Robotics is reshaping every industry."],
+    [Brain, "AI Is the New Literacy", "Students who learn AI and robotics today will lead tomorrow's world in medicine, engineering, and beyond."],
+    [Rocket, "Build. Learn. Innovate.", "Our kits and workshops are designed to turn curiosity into capability through hands-on building."]
+  ];
+  return (
+    <section className="why-robotics">
+      <motion.div className="why-content" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+        <motion.p className="eyebrow" variants={scrollReveal}>WHY ROBOTICS & AI?</motion.p>
+        <motion.h2 variants={scrollReveal}>Technology students can <em>touch</em>.</motion.h2>
+        <div className="why-cards">
+          {cards.map(([Icon, title, text], i) => (
+            <motion.article key={title} variants={scrollReveal} whileHover={{ x: 8, transition: { duration: 0.25 } }}>
+              <div className="why-icon"><Icon size={22} /></div>
+              <div><h3>{title}</h3><p>{text}</p></div>
+            </motion.article>
+          ))}
+        </div>
+      </motion.div>
+      <motion.div className="why-visual" initial={{ opacity: 0, scale: 0.85, rotate: -3 }} whileInView={{ opacity: 1, scale: 1, rotate: 0 }} viewport={{ once: true }} transition={{ duration: 1, ease: [.22,1,.36,1] }}>
+        <img src={cyberAndroid} alt="Cyberpunk robot" />
+        <div className="why-visual-glow" />
+        <span className="why-unit-tag">[ UNIT.NEURAL ]</span>
+      </motion.div>
+    </section>
+  );
+}
+
+function HomeAboutA5X() {
+  const points = ["4-day intensive hands-on workshops", "Lab setup and curriculum support", "Trusted by schools across Jabalpur", "Components + complete kits available", "Learn online or offline"];
+  return (
+    <section className="home-about-a5x">
+      <motion.div className="about-content" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+        <motion.p className="eyebrow" variants={scrollReveal}>ABOUT A5X</motion.p>
+        <motion.h2 variants={scrollReveal}>Jabalpur's Hub for Robotics & AI Education</motion.h2>
+        <motion.p className="about-body" variants={scrollReveal}>A5X Industries conducts hands-on AI and Robotics workshops for school students across Tier 2 India. We offer 4-day programs, lab setup support, and curriculum integration.</motion.p>
+        <motion.div className="about-checklist" variants={staggerContainer}>
+          {points.map((point) => <motion.p key={point} variants={scrollReveal}><span>{"\u25b8"}</span>{point}</motion.p>)}
+        </motion.div>
+        <motion.div variants={scrollReveal}>
+          <ButtonLink to="/contact">Partner With Us {"\u2192"}</ButtonLink>
+        </motion.div>
+      </motion.div>
+      <motion.div className="about-image-panel" initial={{ opacity: 0, y: 60, rotate: 2 }} whileInView={{ opacity: 1, y: 0, rotate: 0 }} viewport={{ once: true }} transition={{ duration: 0.9, ease: [.22,1,.36,1] }} whileHover={{ scale: 1.02, transition: { duration: 0.4 } }}>
+        <img src={silhouetteFigure} alt="Silhouette figure" />
+        <span className="about-unit-label">[ UNIT 001 ]</span>
+      </motion.div>
+    </section>
+  );
+}
+
+function HomeStatsBar() {
+  const stat1 = useCountUp(20, 2000);
+  const stat2 = useCountUp(4, 1500);
+  const stat3 = useCountUp(500, 2500);
+  const statsData = [
+    { ref: stat1.ref, display: `${stat1.count}M+`, label: "ROBOTS PROJECTED BY 2030" },
+    { ref: stat2.ref, display: `${stat2.count} Days`, label: "HANDS-ON WORKSHOP FORMAT" },
+    { ref: stat3.ref, display: `${stat3.count}+`, label: "COMPONENTS AVAILABLE" },
+  ];
+  return (
+    <motion.section className="home-stats-bar" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: "easeOut" }}>
+      {statsData.map((stat, i) => (
+        <React.Fragment key={stat.label}>
+          {i > 0 && <div className="stat-divider" />}
+          <motion.div className="stat-item" ref={stat.ref} initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.15, duration: 0.5 }}>
+            <strong>{stat.display}</strong><span>{stat.label}</span>
+          </motion.div>
+        </React.Fragment>
+      ))}
+    </motion.section>
+  );
+}
+
+function QuickViewModal({ product, onClose }) {
+  const add = useCartStore((s) => s.add);
+  const [qty, setQty] = useState(1);
+  if (!product) return null;
+  return (
+    <AnimatePresence>
+      <motion.div className="qv-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+        <motion.div className="qv-modal glass-card" initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }} onClick={(e) => e.stopPropagation()}>
+          <button className="qv-close" onClick={onClose}><X size={20} /></button>
+          <div className="qv-body">
+            <div className="qv-image"><img src={product.imageUrl || motorDriver} alt={product.name} /></div>
+            <div className="qv-info">
+              <h2>{product.name}</h2>
+              <p className="sku">{product.sku}</p>
+              <div className="rating-row"><StarRating rating={product.rating} /><span>({product.reviewCount})</span></div>
+              <div className="price-row"><strong>{inr(product.price)}</strong>{product.mrp && <s className="mrp">{inr(product.mrp)}</s>}</div>
+              <p className="qv-desc">{product.shortDescription}</p>
+              <div className="qty-selector"><button onClick={() => setQty(Math.max(1, qty - 1))}><Minus size={16} /></button><span>{qty}</span><button onClick={() => setQty(qty + 1)}><Plus size={16} /></button></div>
+              <button className="add-quote-btn full" onClick={() => { for (let i = 0; i < qty; i++) add(product); onClose(); }}>Add to Quote</button>
+              <Link to={`/shop/${product.id}`} className="qv-detail-link" onClick={onClose}>View Full Details â†’</Link>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function CompareBar({ products }) {
+  const { ids, clear } = useCompareStore();
+  const navigate = useNavigate();
+  const items = ids.map((id) => products.find((p) => p.id === id)).filter(Boolean);
+  if (items.length < 2) return null;
+  return (
+    <motion.div className="compare-bar glass-card" initial={{ y: 80 }} animate={{ y: 0 }}>
+      <div className="compare-items">{items.map((p) => <div key={p.id} className="compare-item"><img src={p.imageUrl || motorDriver} alt={p.name} /><span>{p.name}</span></div>)}</div>
+      <div className="compare-actions"><button className="btn" onClick={() => navigate("/shop/compare")}>Compare Now</button><button className="btn ghost" onClick={clear}>Clear</button></div>
+    </motion.div>
+  );
+}
+
+function FilterSidebar({ filters, setFilters, onClear, categories: cats }) {
+  const [open, setOpen] = useState(false);
+  const compatOptions = ["Arduino", "ESP32", "Raspberry Pi", "MicroPython", "PlatformIO"];
+  return (
+    <>
+      <button className="filter-toggle-mobile" onClick={() => setOpen(!open)}><Filter size={16} /> Filters</button>
+      <aside className={`filter-sidebar glass-card ${open ? "open" : ""}`}>
+        <div className="filter-header"><h3><SlidersHorizontal size={16} /> Filters</h3><button onClick={onClear}>Clear All</button></div>
+        <div className="filter-group"><h4>Category</h4>{cats.map((c) => <label key={c}><input type="radio" name="cat" checked={filters.category === c} onChange={() => setFilters((f) => ({ ...f, category: c }))} />{c}</label>)}</div>
+        <div className="filter-group"><h4>Price Range</h4><div className="price-inputs"><input type="number" placeholder="Min â‚¹" value={filters.priceMin} onChange={(e) => setFilters((f) => ({ ...f, priceMin: e.target.value }))} /><span>â€“</span><input type="number" placeholder="Max â‚¹" value={filters.priceMax} onChange={(e) => setFilters((f) => ({ ...f, priceMax: e.target.value }))} /></div></div>
+        <div className="filter-group"><h4>Rating</h4>{[4, 3, 2].map((r) => <label key={r}><input type="radio" name="rating" checked={filters.minRating === r} onChange={() => setFilters((f) => ({ ...f, minRating: r }))} />â˜… {r}.0+</label>)}</div>
+        <div className="filter-group"><h4>Compatibility</h4>{compatOptions.map((c) => <label key={c}><input type="checkbox" checked={filters.compat.includes(c)} onChange={() => setFilters((f) => ({ ...f, compat: f.compat.includes(c) ? f.compat.filter((x) => x !== c) : [...f.compat, c] }))} />{c}</label>)}</div>
+        <div className="filter-group"><label className="stock-toggle"><input type="checkbox" checked={filters.inStockOnly} onChange={() => setFilters((f) => ({ ...f, inStockOnly: !f.inStockOnly }))} />In Stock Only</label></div>
+      </aside>
+    </>
+  );
+}
+
+function ShopSection() {
+  const products = useAdminStore((s) => s.products);
+  const loadProducts = useAdminStore((s) => s.loadProducts);
+  const productsLoaded = useAdminStore((s) => s.productsLoaded);
+  const defaultFilters = { category: "All", priceMin: "", priceMax: "", minRating: 0, compat: [], inStockOnly: false, deliveryType: "all" };
+  const [filters, setFilters] = useState(defaultFilters);
+  const [sort, setSort] = useState("popular");
+  const [view, setView] = useState("grid");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
+  const [qvProduct, setQvProduct] = useState(null);
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  // Always load fresh products from API on mount
+  useEffect(() => {
+    loadProducts();
+  }, []);
+  
+  // Hero Carousel State
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const heroSlides = [
+    { image: carousel1, title: "A5X ROBOTICS KIT", subtitle: "Complete Kit with Servo, Sensors & Motors", tag: "FEATURED KIT" },
+    { image: robotUnit003, title: "PREMIUM COMPONENTS", subtitle: "High-Quality Microcontrollers & Modules", tag: "BEST SELLERS" },
+    { image: cyberAndroid, title: "BUILD & INNOVATE", subtitle: "Everything You Need for Your Next Project", tag: "NEW ARRIVALS" }
+  ];
+  
+  // Auto-play hero carousel
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 4000); // Change slide every 4 seconds
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
+
+  const filtered = useMemo(() => {
+    let r = [...products];
+    if (searchQuery.trim()) r = r.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.category.toLowerCase().includes(searchQuery.toLowerCase()) || (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase())));
+    if (filters.category !== "All") r = r.filter((p) => p.category === filters.category);
+    if (filters.priceMin) r = r.filter((p) => p.price >= Number(filters.priceMin));
+    if (filters.priceMax) r = r.filter((p) => p.price <= Number(filters.priceMax));
+    if (filters.minRating) r = r.filter((p) => p.rating >= filters.minRating);
+    if (filters.inStockOnly) r = r.filter((p) => p.inStock);
+    if (filters.compat.length) r = r.filter((p) => p.compatibility?.some((c) => filters.compat.includes(c)));
+    // Delivery filter: Quick (1 day) or Scheduled (1 week)
+    if (filters.deliveryType === "quick") r = r.filter((p) => p.quickDelivery === true);
+    if (filters.deliveryType === "scheduled") r = r.filter((p) => p.quickDelivery !== true);
+    if (sort === "price-asc") r.sort((a, b) => a.price - b.price);
+    else if (sort === "price-desc") r.sort((a, b) => b.price - a.price);
+    else if (sort === "rating") r.sort((a, b) => b.rating - a.rating);
+    else if (sort === "newest") r.sort((a, b) => b.id.localeCompare(a.id));
+    return r;
+  }, [products, filters, sort, searchQuery]);
+
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paged = filtered.slice((page - 1) * perPage, page * perPage);
+  const start = (page - 1) * perPage + 1;
+  const end = Math.min(page * perPage, filtered.length);
+
+  return (
+    <div className="shop-page-redesign">
+
+      {/* Hero Carousel */}
+      <div className="shop-hero-carousel">
+        <div className="shop-hero-slides">
+          {heroSlides.map((slide, index) => (
+            <div
+              key={index}
+              className={`shop-hero-slide ${index === currentSlide ? "active" : ""}`}
+              style={{ backgroundImage: `url(${slide.image})` }}
+            >
+              <div className="shop-hero-overlay" />
+              <div className="shop-hero-content">
+                <span className="shop-hero-tag">{slide.tag}</span>
+                <h1 className="shop-hero-title">{slide.title}</h1>
+                <p className="shop-hero-subtitle">{slide.subtitle}</p>
+                <button className="shop-hero-btn" onClick={() => window.scrollTo({ top: 800, behavior: 'smooth' })}>
+                  Shop Now <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {/* Carousel Indicators */}
+        <div className="shop-hero-indicators">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              className={`shop-hero-indicator ${index === currentSlide ? "active" : ""}`}
+              onClick={() => setCurrentSlide(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+        
+        {/* Navigation Arrows */}
+        <button 
+          className="shop-hero-nav shop-hero-nav-prev" 
+          onClick={() => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
+          aria-label="Previous slide"
+        >
+          <ChevronLeft size={32} />
+        </button>
+        <button 
+          className="shop-hero-nav shop-hero-nav-next" 
+          onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)}
+          aria-label="Next slide"
+        >
+          <ChevronRight size={32} />
+        </button>
+      </div>
+
+      {/* Search + Categories Section */}
+      <div className="shop-search-section">
+        {/* Search Bar */}
+        <div className="shop-search-bar-wrapper">
+          <div className="shop-search-input-wrap">
+            <Search size={20} className="shop-search-icon" />
+            <input
+              type="text"
+              className="shop-search-input"
+              placeholder="Search products, categories, SKUs..."
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            />
+            {searchQuery && (
+              <button className="shop-search-clear" onClick={() => { setSearchQuery(""); setPage(1); }} aria-label="Clear search">
+                <X size={18} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Category Pills */}
+        <div className="shop-category-pills">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              className={`shop-cat-pill ${filters.category === cat ? "active" : ""}`}
+              onClick={() => { setFilters({ ...filters, category: cat }); setPage(1); }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Compact Header: Search + Categories + Deals */}
+      <div className="shop-compact-header" style={{display: 'none'}}>
+        {/* Search Bar */}
+        <div className="shop-top-search-bar">
+          <div className="shop-search-input-wrap">
+            <Search size={18} className="shop-search-icon" />
+            <input
+              type="text"
+              className="shop-search-input"
+              placeholder="Search products, categories, SKUs..."
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            />
+            {searchQuery && (
+              <button className="shop-search-clear" onClick={() => { setSearchQuery(""); setPage(1); }} aria-label="Clear search">
+                <X size={16} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Category Pills */}
+        <div className="shop-category-bar">
+          <div className="shop-category-scroll">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={`shop-cat-pill ${filters.category === cat ? "active" : ""}`}
+                onClick={() => { setFilters({ ...filters, category: cat }); setPage(1); }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Deal Banners */}
+        <div className="shop-deal-banners">
+          <div className="shop-deal-card shop-deal-blue">
+            <div className="shop-deal-text">
+              <span className="shop-deal-tag">BEST SELLER</span>
+              <h3>Arduino Starter Kit</h3>
+              <p>Complete kit for beginners</p>
+              <strong>â‚¹2,499 <s>â‚¹3,499</s></strong>
+            </div>
+            <div className="shop-deal-badge">-29%</div>
+          </div>
+          <div className="shop-deal-card shop-deal-purple">
+            <div className="shop-deal-text">
+              <span className="shop-deal-tag">TOP RATED</span>
+              <h3>Motor Driver L298N</h3>
+              <p>Dual H-Bridge controller</p>
+              <strong>â‚¹349 <s>â‚¹499</s></strong>
+            </div>
+            <div className="shop-deal-badge">-30%</div>
+          </div>
+          <div className="shop-deal-card shop-deal-teal">
+            <div className="shop-deal-text">
+              <span className="shop-deal-tag">HOT DEAL</span>
+              <h3>Ultrasonic Sensor</h3>
+              <p>HC-SR04 distance sensor</p>
+              <strong>â‚¹149 <s>â‚¹249</s></strong>
+            </div>
+            <div className="shop-deal-badge">-40%</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="shop-body">
+        {/* Sidebar */}
+        <aside className={`shop-sidebar-new ${showMobileFilter ? "open" : ""}`}>
+          <div className="shop-sidebar-header">
+            <span className="shop-sidebar-title"><SlidersHorizontal size={16} /> Filters</span>
+            <button className="shop-sidebar-clear" onClick={() => { setFilters(defaultFilters); setPage(1); }}>Clear All</button>
+          </div>
+
+          <div className="shop-filter-group">
+            <p className="shop-filter-label">PRICE RANGE</p>
+            <div className="shop-price-inputs">
+              <input type="number" placeholder="Min â‚¹" value={filters.priceMin} onChange={(e) => setFilters({ ...filters, priceMin: e.target.value })} />
+              <span>â€”</span>
+              <input type="number" placeholder="Max â‚¹" value={filters.priceMax} onChange={(e) => setFilters({ ...filters, priceMax: e.target.value })} />
+            </div>
+          </div>
+
+          <div className="shop-filter-group">
+            <p className="shop-filter-label">MIN RATING</p>
+            <div className="shop-rating-btns">
+              {[0, 3, 4, 4.5].map((r) => (
+                <button key={r} className={`shop-rating-btn ${filters.minRating === r ? "active" : ""}`} onClick={() => setFilters({ ...filters, minRating: r })}>
+                  {r === 0 ? "All" : `${r}â˜…+`}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="shop-filter-group">
+            <label className="shop-toggle-label">
+              <span>In Stock Only</span>
+              <div className={`shop-toggle ${filters.inStockOnly ? "on" : ""}`} onClick={() => setFilters({ ...filters, inStockOnly: !filters.inStockOnly })}>
+                <div className="shop-toggle-knob" />
+              </div>
+            </label>
+          </div>
+
+          <div className="shop-filter-group">
+            <p className="shop-filter-label">DELIVERY OPTIONS</p>
+            <div className="shop-delivery-btns">
+              <button 
+                className={`shop-delivery-btn ${filters.deliveryType === "all" ? "active" : ""}`} 
+                onClick={() => setFilters({ ...filters, deliveryType: "all" })}
+              >
+                <Truck size={16} /> All
+              </button>
+              <button 
+                className={`shop-delivery-btn ${filters.deliveryType === "quick" ? "active" : ""}`} 
+                onClick={() => setFilters({ ...filters, deliveryType: "quick" })}
+              >
+                <Zap size={16} /> Quick (1 Day)
+              </button>
+              <button 
+                className={`shop-delivery-btn ${filters.deliveryType === "scheduled" ? "active" : ""}`} 
+                onClick={() => setFilters({ ...filters, deliveryType: "scheduled" })}
+              >
+                <Package size={16} /> Scheduled (1 Week)
+              </button>
+            </div>
+          </div>
+
+          <button className="shop-sidebar-close-btn" onClick={() => setShowMobileFilter(false)}>
+            <X size={18} /> Close Filters
+          </button>
+        </aside>
+
+        {showMobileFilter && <div className="shop-filter-overlay" onClick={() => setShowMobileFilter(false)} />}
+
+        {/* Products Area */}
+        <div className="shop-products-area">
+          <div className="shop-toolbar">
+            <div className="shop-toolbar-left">
+              <button className="shop-filter-toggle-btn" onClick={() => setShowMobileFilter(true)}>
+                <Filter size={16} /> Filters
+              </button>
+              <span className="shop-count-text">
+                Showing <strong>{start}â€“{end}</strong> of <strong>{filtered.length}</strong> products
+              </span>
+            </div>
+            <div className="shop-toolbar-right">
+              <select className="shop-sort-select" value={sort} onChange={(e) => { setSort(e.target.value); setPage(1); }}>
+                <option value="popular">Most Popular</option>
+                <option value="price-asc">Price: Lowâ€“High</option>
+                <option value="price-desc">Price: Highâ€“Low</option>
+                <option value="rating">Highest Rated</option>
+                <option value="newest">Newest</option>
+              </select>
+              <select className="shop-sort-select" value={perPage} onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}>
+                <option value={12}>12 / page</option>
+                <option value={24}>24 / page</option>
+                <option value={48}>48 / page</option>
+              </select>
+              <div className="shop-view-btns">
+                <button className={view === "grid" ? "active" : ""} onClick={() => setView("grid")}><Grid2X2 size={16} /></button>
+                <button className={view === "list" ? "active" : ""} onClick={() => setView("list")}><List size={16} /></button>
+              </div>
+            </div>
+          </div>
+
+          {!productsLoaded && products.length === 0 ? (
+            <div className="shop-loading-grid">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="shop-skeleton-card">
+                  <div className="skeleton-img" />
+                  <div className="skeleton-line" style={{width:'70%'}} />
+                  <div className="skeleton-line" style={{width:'40%'}} />
+                  <div className="skeleton-line" style={{width:'55%'}} />
+                </div>
+              ))}
+            </div>
+          ) : paged.length === 0 ? (
+            <div className="shop-empty">
+              <Search size={48} style={{ opacity: 0.3, marginBottom: 16 }} />
+              <h3>No products found</h3>
+              <p>Try adjusting your filters</p>
+              <button className="btn" onClick={() => { setFilters(defaultFilters); setPage(1); }}>Clear Filters</button>
+            </div>
+          ) : (
+            <div className={view === "grid" ? "shop-products-grid" : "shop-products-list"}>
+              {paged.map((p) => <ProductCard key={p.id} product={p} onQuickView={setQvProduct} />)}
+            </div>
+          )}
+
+          {totalPages > 1 && (
+            <div className="shop-pagination">
+              <button className="shop-page-btn" disabled={page === 1} onClick={() => setPage(page - 1)}>
+                <ChevronLeft size={16} />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button key={i} className={`shop-page-btn ${page === i + 1 ? "active" : ""}`} onClick={() => setPage(i + 1)}>
+                  {i + 1}
+                </button>
+              ))}
+              <button className="shop-page-btn" disabled={page === totalPages} onClick={() => setPage(page + 1)}>
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <CompareBar products={products} />
+      {qvProduct && <QuickViewModal product={qvProduct} onClose={() => setQvProduct(null)} />}
+    </div>
+  );
+}
+
+function KitsSection() {

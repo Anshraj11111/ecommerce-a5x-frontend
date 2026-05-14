@@ -1,0 +1,459 @@
+﻿const useCartStore = create(persist((set, get) => ({
+  open: false,
+  items: [],
+  toggle: () => set((state) => ({ open: !state.open })),
+  add: (item) => set((state) => {
+    const found = state.items.find((line) => line.id === item.id);
+    return { open: true, items: found ? state.items.map((line) => line.id === item.id ? { ...line, qty: line.qty + 1 } : line) : [...state.items, { ...item, qty: 1 }] };
+  }),
+  inc: (id) => set((state) => ({ items: state.items.map((item) => item.id === id ? { ...item, qty: item.qty + 1 } : item) })),
+  dec: (id) => set((state) => ({ items: state.items.flatMap((item) => item.id === id ? (item.qty > 1 ? [{ ...item, qty: item.qty - 1 }] : []) : [item]) })),
+  remove: (id) => set((state) => ({ items: state.items.filter((item) => item.id !== id) })),
+  subtotal: () => get().items.reduce((sum, item) => sum + item.price * item.qty, 0)
+}), { name: "a5x-cart" }));
+
+const useWishlistStore = create(persist((set, get) => ({
+  ids: [],
+  toggle: (id) => set((s) => ({ ids: s.ids.includes(id) ? s.ids.filter((x) => x !== id) : [...s.ids, id] })),
+  has: (id) => get().ids.includes(id),
+}), { name: "a5x-wishlist" }));
+
+const useCompareStore = create((set, get) => ({
+  ids: [],
+  toggle: (id) => set((s) => {
+    if (s.ids.includes(id)) return { ids: s.ids.filter((x) => x !== id) };
+    if (s.ids.length >= 3) return s;
+    return { ids: [...s.ids, id] };
+  }),
+  has: (id) => get().ids.includes(id),
+  clear: () => set({ ids: [] }),
+}));
+
+const useRecentlyViewedStore = create(persist((set) => ({
+  ids: [],
+  add: (id) => set((s) => ({ ids: [id, ...s.ids.filter((x) => x !== id)].slice(0, 10) })),
+}), { name: "a5x-recent" }));
+
+const useAuthStore = create(persist((set, get) => ({
+  user: null,
+  isAuthenticated: false,
+  login: (userData) => set({ user: userData, isAuthenticated: true }),
+  logout: () => set({ user: null, isAuthenticated: false }),
+  signup: (userData) => set({ user: userData, isAuthenticated: true }),
+}), { name: "a5x-auth" }));
+
+const useAuthModalStore = create((set) => ({
+  isOpen: false,
+  redirectPath: null,
+  open: (redirectPath = null) => set({ isOpen: true, redirectPath }),
+  close: () => set({ isOpen: false, redirectPath: null }),
+}));
+
+const useAdminStore = create(persist((set, get) => ({
+  products: [],  // Start with empty array, will be loaded from API
+  kits: [],      // Start with empty array, will be loaded from API
+  courses: coursesSeed,
+  productsLoaded: false,
+  kitsLoaded: false,
+  error: null,
+  
+  // Error management
+  setError: (error) => set({ error }),
+  clearError: () => set({ error: null }),
+  
+  // Helper to get user-friendly error message
+  getErrorMessage: (response, error) => {
+    if (!response) {
+      // Network error
+      return "Network error. Please check your connection and try again.";
+    }
+    
+    if (response.status === 401) {
+      return "Authentication required. Please log in again.";
+    }
+    
+    if (response.status === 403) {
+      return "Insufficient permissions. Admin access required.";
+    }
+    
+    if (response.status === 404) {
+      return "Resource not found.";
+    }
+    
+    if (response.status >= 500) {
+      return "Server error. Please try again later.";
+    }
+    
+    return error || "Operation failed. Please try again.";
+  },
+  
+  // Load products from API - always fetch fresh
+  loadProducts: async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/products?limit=1000`);
+      const data = await response.json();
+      if (data.data && Array.isArray(data.data)) {
+        set({ products: data.data, productsLoaded: true });
+      }
+    } catch (error) {
+      console.error('Failed to load products:', error);
+    }
+  },
+  
+  // Add product to API and update local state
+  addProduct: async (product) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(product)
+      });
+      
+      if (response.ok) {
+        const created = await response.json();
+        set((state) => ({ products: [created, ...state.products], error: null }));
+        return created;
+      } else {
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to add product:', errorText);
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error adding product:', error);
+      }
+      throw error;
+    }
+  },
+  
+  // Update product in API and local state
+  updateProduct: async (id, product) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/products/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(product)
+      });
+      
+      if (response.ok) {
+        const updated = await response.json();
+        set((state) => ({ products: state.products.map((item) => item.id === id ? updated : item), error: null }));
+        return updated;
+      } else {
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to update product:', errorText);
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error updating product:', error);
+      }
+      throw error;
+    }
+  },
+  
+  // Delete product from API and local state
+  deleteProduct: async (id) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/products/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        set((state) => ({ products: state.products.filter((item) => item.id !== id), error: null }));
+      } else {
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to delete product:', errorText);
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error deleting product:', error);
+      }
+      throw error;
+    }
+  },
+  
+  // Add kit to API and update local state
+  addKit: async (kit) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/kits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(kit)
+      });
+      
+      if (response.ok) {
+        const created = await response.json();
+        set((state) => ({ kits: [created, ...state.kits], error: null }));
+        return created;
+      } else {
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to add kit:', errorText);
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error adding kit:', error);
+      }
+      throw error;
+    }
+  },
+
+  // Update kit in API and local state
+  updateKit: async (id, kit) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    console.log('=== UPDATE KIT - REQUEST PAYLOAD ===');
+    console.log('Kit ID:', id);
+    console.log('Payload images:', kit.images);
+    console.log('Payload images length:', kit.images?.length);
+    console.log('=== END REQUEST PAYLOAD ===');
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/kits/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(kit)
+      });
+      
+      if (response.ok) {
+        const updated = await response.json();
+        console.log('=== UPDATE KIT - API RESPONSE ===');
+        console.log('Updated kit ID:', updated.id);
+        console.log('Updated kit images:', updated.images);
+        console.log('Updated kit images length:', updated.images?.length);
+        console.log('Full updated kit:', updated);
+        console.log('=== END API RESPONSE ===');
+        
+        set((state) => {
+          const updatedKits = state.kits.map((item) => item.id === id ? updated : item);
+          const kitInStore = updatedKits.find(k => k.id === id);
+          console.log('=== UPDATE KIT - STORE UPDATE ===');
+          console.log('Kit in store after update:', kitInStore?.id);
+          console.log('Kit images in store:', kitInStore?.images);
+          console.log('Kit images length in store:', kitInStore?.images?.length);
+          console.log('=== END STORE UPDATE ===');
+          return { kits: updatedKits, error: null };
+        });
+        return updated;
+      } else {
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to update kit:', errorText);
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error updating kit:', error);
+      }
+      throw error;
+    }
+  },
+
+  // Delete kit from API and local state
+  deleteKit: async (id) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    
+    // Check token exists before making API call
+    if (!token) {
+      const errorMsg = "Authentication required. Please log in again.";
+      set({ error: errorMsg });
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/kits/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        set((state) => ({ kits: state.kits.filter((item) => item.id !== id), error: null }));
+      } else {
+        // API call failed - show error, do NOT fall back to localStorage
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to delete kit:', errorText);
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      // Network error - show error, do NOT fall back to localStorage
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error deleting kit:', error);
+      }
+      throw error;
+    }
+  },
+
+  // Bulk upload products to API
+  bulkUploadProducts: async (products) => {
+    const token = localStorage.getItem('a5x-admin-token');
+    if (!token) {
+      const errorMsg = 'Authentication required. Please log in again.';
+      set({ error: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    try {
+      console.log(`[Bulk Upload] Uploading ${products.length} products to API...`);
+      
+      const response = await fetch(`${API_BASE}/api/products/bulk`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ products })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(`[Bulk Upload] Success:`, result);
+        
+        // Reload products from API to get the updated list
+        await get().loadProducts();
+        
+        set({ error: null });
+        return result;
+      } else {
+        // API call failed - show error
+        const errorText = await response.text();
+        const errorMsg = get().getErrorMessage(response, errorText);
+        set({ error: errorMsg });
+        console.error('Failed to bulk upload products:', errorText);
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      // Network error - show error
+      if (!error.message.includes('Authentication required')) {
+        const errorMsg = get().getErrorMessage(null, error.message);
+        set({ error: errorMsg });
+        console.error('Error bulk uploading products:', error);
+      }
+      throw error;
+    }
+  },
+
+  // Load kits from API
+  loadKits: async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/kits?limit=1000`);
+      const data = await response.json();
+      if (data.data && Array.isArray(data.data)) {
+        set({ kits: data.data, kitsLoaded: true });
+      }
+    } catch (error) {
+      console.error('Failed to load kits:', error);
+    }
+  },
+  addCourse: (course) => set((state) => ({ courses: [{ ...course, id: course.id || uid(), videos: course.videos || [] }, ...state.courses] })),
+  updateCourse: (id, course) => set((state) => ({ courses: state.courses.map((item) => item.id === id ? { ...item, ...course } : item) })),
+  deleteCourse: (id) => set((state) => ({ courses: state.courses.filter((item) => item.id !== id) })),
+  addVideo: (courseId, video) => set((state) => ({ courses: state.courses.map((course) => course.id === courseId ? { ...course, videos: [...course.videos, { ...video, id: video.id || uid() }] } : course) }))
+}), { 
+  name: "a5x-admin-data",
+  partialPersist: true,
+  partialize: (state) => ({
+    // Only persist courses, NOT products or kits
+    // Products and kits should always be loaded from API
+    courses: state.courses
+  })
+}));
+

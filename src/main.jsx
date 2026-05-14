@@ -1,8 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+﻿import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { AnimatePresence, motion } from "framer-motion";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import {
   ArrowLeft,
   BadgeIndianRupee,
@@ -123,15 +121,10 @@ import "./cart-modern.css";
 const kitSpinFrames = [kitSpin035, kitSpin050, kitSpin065, kitSpin076, kitSpin080, kitSpin095, kitSpin110, kitSpin125, kitSpin140, kitSpin155, kitSpin170, kitSpin185, kitSpin200, kitSpin215, kitSpin230];
 
 
-const inr = (value) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(value);
-const seconds = (value) => `${Math.floor(value / 60)}:${String(value % 60).padStart(2, "0")}`;
-const uid = () => Math.random().toString(36).slice(2, 9);
+// Import constants and helpers from config
+import { API_BASE, categories, courseCategories, inr, seconds, uid } from "./config/constants";
 
-// Global API URL - Always use production backend (MongoDB Atlas)
-const API_BASE = import.meta.env.VITE_API_URL || 'https://ecommerce-a5x-backend.onrender.com';
 
-const categories = ["All", "MicroController", "Sensor", "Motors", "Display", "Connectors", "Motor Driver", "Battery", "Charger", "Cables", "Kits", "Remote", "Custom 3D Prints"];
-const courseCategories = ["All", "Beginner", "Intermediate", "Advanced", "Arduino", "ESP32", "Robotics", "IoT", "3D Printing"];
 
 const productsSeed = [
   { id: "esp32", name: "ESP32 Devkit V1", price: 350, mrp: 499, minQty: 1, category: "MicroController", sku: "A5X-MC-001", rating: 4.8, reviewCount: 124, inStock: true, stockCount: 45, quickDelivery: true, shortDescription: "Dual-core 240MHz with Wi-Fi + Bluetooth. The go-to board for IoT.", features: ["Dual-core Xtensa 240MHz", "Wi-Fi 802.11 b/g/n", "Bluetooth 4.2 + BLE", "34 GPIO pins", "Ultra-low power co-processor"], specs: { "CPU": "Xtensa LX6 Dual-Core 240MHz", "Flash": "4MB", "SRAM": "520KB", "GPIO": "34 pins", "ADC": "18 channels", "Voltage": "3.3V", "USB": "Micro-USB", "Dimensions": "55 x 28 mm" }, compatibility: ["Arduino IDE", "MicroPython", "ESP-IDF", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 350 }, { min: 10, max: 49, price: 320 }, { min: 50, max: 999, price: 290 }], badges: ["Best Seller", "IoT Ready"], frequentlyBoughtWith: ["oled", "hcsr04"], relatedIds: ["esp8266", "esp32cam", "uno-r3"] },
@@ -142,11 +135,11 @@ const productsSeed = [
   { id: "nano", name: "Arduino Nano V3", price: 199, mrp: 349, minQty: 1, category: "MicroController", sku: "A5X-MC-006", rating: 4.5, reviewCount: 145, inStock: true, stockCount: 90, shortDescription: "Compact ATmega328P board. Breadboard-friendly form factor.", features: ["ATmega328P", "Mini-USB", "Breadboard compatible", "30 pins"], specs: { "CPU": "ATmega328P 16MHz", "Flash": "32KB", "SRAM": "2KB", "GPIO": "22 pins", "Voltage": "5V", "Dimensions": "45 x 18 mm" }, compatibility: ["Arduino IDE", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 199 }, { min: 10, max: 49, price: 175 }], badges: ["Compact"], frequentlyBoughtWith: ["l298n", "mpu6050"], relatedIds: ["uno-r3", "mega"] },
   { id: "mega", name: "Arduino Mega 2560", price: 999, mrp: 1499, minQty: 1, category: "MicroController", sku: "A5X-MC-007", rating: 4.8, reviewCount: 67, inStock: true, stockCount: 8, shortDescription: "54 I/O pins, 256KB flash. For complex robotics projects.", features: ["ATmega2560", "54 digital I/O pins", "16 analog inputs", "4 UARTs", "256KB flash"], specs: { "CPU": "ATmega2560 16MHz", "Flash": "256KB", "SRAM": "8KB", "GPIO": "54 digital + 16 analog", "Voltage": "5V", "Dimensions": "101.5 x 53.3 mm" }, compatibility: ["Arduino IDE", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 999 }, { min: 10, max: 49, price: 899 }], badges: ["Pro Choice"], frequentlyBoughtWith: ["l298n", "oled"], relatedIds: ["uno-r3", "pico"] },
   { id: "pico", name: "Raspberry Pi Pico", price: 549, mrp: 799, minQty: 1, category: "MicroController", sku: "A5X-MC-008", rating: 4.7, reviewCount: 92, inStock: true, stockCount: 25, shortDescription: "RP2040 dual-core ARM. The future of microcontrollers.", features: ["RP2040 dual-core ARM Cortex-M0+", "264KB SRAM", "2MB Flash", "26 GPIO", "PIO state machines"], specs: { "CPU": "RP2040 Dual-Core 133MHz", "Flash": "2MB", "SRAM": "264KB", "GPIO": "26 pins", "ADC": "3 channels (12-bit)", "Voltage": "3.3V" }, compatibility: ["MicroPython", "C/C++", "CircuitPython"], bulkPricing: [{ min: 1, max: 9, price: 549 }, { min: 10, max: 49, price: 490 }], badges: ["Trending"], frequentlyBoughtWith: ["oled", "mpu6050"], relatedIds: ["esp32", "nano"] },
-  { id: "l298n", name: "L298N Motor Driver", price: 85, mrp: 149, minQty: 1, category: "Motor Driver", sku: "A5X-MD-001", rating: 4.8, reviewCount: 312, inStock: true, stockCount: 150, quickDelivery: true, imageUrl: motorDriver, shortDescription: "Dual H-Bridge driver. Control 2 DC motors or 1 stepper.", features: ["Dual H-Bridge", "Up to 2A per channel", "5V–35V operating", "Built-in 5V regulator", "PWM speed control"], specs: { "Channels": "2", "Max Current": "2A per channel", "Voltage": "5V–35V", "Logic": "5V", "Dimensions": "43 x 43 x 27 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 85 }, { min: 10, max: 49, price: 72 }, { min: 50, max: 999, price: 60 }], badges: ["Best Seller"], frequentlyBoughtWith: ["uno-r3", "18650"], relatedIds: ["a4988"] },
-  { id: "a4988", name: "A4988 Stepper Driver", price: 120, mrp: 199, minQty: 1, category: "Motor Driver", sku: "A5X-MD-002", rating: 4.6, reviewCount: 87, inStock: true, stockCount: 40, shortDescription: "Microstepping stepper motor driver. Up to 1/16 step.", features: ["Up to 1/16 microstepping", "Adjustable current limiting", "Automatic current decay", "3.3V/5V compatible"], specs: { "Max Current": "2A (with heatsink)", "Voltage": "8V–35V", "Step Modes": "Full, 1/2, 1/4, 1/8, 1/16", "Logic": "3.3V–5V" }, compatibility: ["Arduino", "GRBL", "Marlin"], bulkPricing: [{ min: 1, max: 9, price: 120 }, { min: 10, max: 49, price: 100 }], badges: ["3D Printing"], frequentlyBoughtWith: ["mega", "18650"], relatedIds: ["l298n"] },
-  { id: "hcsr04", name: "HC-SR04 Ultrasonic Sensor", price: 45, mrp: 89, minQty: 1, category: "Sensor", sku: "A5X-SN-001", rating: 4.7, reviewCount: 267, inStock: true, stockCount: 200, quickDelivery: true, shortDescription: "2cm–400cm distance measurement. Essential for obstacle avoidance.", features: ["2cm–400cm range", "3mm accuracy", "15° beam angle", "Trigger/Echo pins"], specs: { "Range": "2–400 cm", "Accuracy": "±3mm", "Beam Angle": "15°", "Voltage": "5V", "Current": "15mA", "Frequency": "40kHz" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 45 }, { min: 10, max: 49, price: 38 }, { min: 50, max: 999, price: 30 }], badges: ["Essential"], frequentlyBoughtWith: ["uno-r3", "l298n"], relatedIds: ["mpu6050"] },
-  { id: "mpu6050", name: "MPU-6050 IMU 6DOF", price: 120, mrp: 199, minQty: 1, category: "Sensor", sku: "A5X-SN-002", rating: 4.8, reviewCount: 156, inStock: true, stockCount: 35, shortDescription: "3-axis accelerometer + 3-axis gyroscope. For motion tracking.", features: ["3-axis accelerometer", "3-axis gyroscope", "Digital motion processor", "I2C interface", "16-bit ADC"], specs: { "Accelerometer": "±2/4/8/16g", "Gyroscope": "±250/500/1000/2000°/s", "Interface": "I2C (400kHz)", "Voltage": "3.3V–5V", "Current": "3.9mA" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 120 }, { min: 10, max: 49, price: 100 }], badges: ["Motion"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["hcsr04"] },
-  { id: "oled", name: "OLED 0.96 I2C Display", price: 180, mrp: 299, minQty: 1, category: "Display", sku: "A5X-DI-001", rating: 4.9, reviewCount: 198, inStock: true, stockCount: 55, shortDescription: "128x64 pixel OLED. Crystal clear display over I2C.", features: ["128x64 pixels", "SSD1306 driver", "I2C interface", "Self-emitting — no backlight", "Wide viewing angle"], specs: { "Resolution": "128 x 64", "Driver": "SSD1306", "Interface": "I2C", "Voltage": "3.3V–5V", "Size": "0.96 inch", "Dimensions": "27 x 27 x 4 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 180 }, { min: 10, max: 49, price: 155 }], badges: ["Popular"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["lcd16"] },
+  { id: "l298n", name: "L298N Motor Driver", price: 85, mrp: 149, minQty: 1, category: "Motor Driver", sku: "A5X-MD-001", rating: 4.8, reviewCount: 312, inStock: true, stockCount: 150, quickDelivery: true, imageUrl: motorDriver, shortDescription: "Dual H-Bridge driver. Control 2 DC motors or 1 stepper.", features: ["Dual H-Bridge", "Up to 2A per channel", "5Vâ€“35V operating", "Built-in 5V regulator", "PWM speed control"], specs: { "Channels": "2", "Max Current": "2A per channel", "Voltage": "5Vâ€“35V", "Logic": "5V", "Dimensions": "43 x 43 x 27 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 85 }, { min: 10, max: 49, price: 72 }, { min: 50, max: 999, price: 60 }], badges: ["Best Seller"], frequentlyBoughtWith: ["uno-r3", "18650"], relatedIds: ["a4988"] },
+  { id: "a4988", name: "A4988 Stepper Driver", price: 120, mrp: 199, minQty: 1, category: "Motor Driver", sku: "A5X-MD-002", rating: 4.6, reviewCount: 87, inStock: true, stockCount: 40, shortDescription: "Microstepping stepper motor driver. Up to 1/16 step.", features: ["Up to 1/16 microstepping", "Adjustable current limiting", "Automatic current decay", "3.3V/5V compatible"], specs: { "Max Current": "2A (with heatsink)", "Voltage": "8Vâ€“35V", "Step Modes": "Full, 1/2, 1/4, 1/8, 1/16", "Logic": "3.3Vâ€“5V" }, compatibility: ["Arduino", "GRBL", "Marlin"], bulkPricing: [{ min: 1, max: 9, price: 120 }, { min: 10, max: 49, price: 100 }], badges: ["3D Printing"], frequentlyBoughtWith: ["mega", "18650"], relatedIds: ["l298n"] },
+  { id: "hcsr04", name: "HC-SR04 Ultrasonic Sensor", price: 45, mrp: 89, minQty: 1, category: "Sensor", sku: "A5X-SN-001", rating: 4.7, reviewCount: 267, inStock: true, stockCount: 200, quickDelivery: true, shortDescription: "2cmâ€“400cm distance measurement. Essential for obstacle avoidance.", features: ["2cmâ€“400cm range", "3mm accuracy", "15Â° beam angle", "Trigger/Echo pins"], specs: { "Range": "2â€“400 cm", "Accuracy": "Â±3mm", "Beam Angle": "15Â°", "Voltage": "5V", "Current": "15mA", "Frequency": "40kHz" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 45 }, { min: 10, max: 49, price: 38 }, { min: 50, max: 999, price: 30 }], badges: ["Essential"], frequentlyBoughtWith: ["uno-r3", "l298n"], relatedIds: ["mpu6050"] },
+  { id: "mpu6050", name: "MPU-6050 IMU 6DOF", price: 120, mrp: 199, minQty: 1, category: "Sensor", sku: "A5X-SN-002", rating: 4.8, reviewCount: 156, inStock: true, stockCount: 35, shortDescription: "3-axis accelerometer + 3-axis gyroscope. For motion tracking.", features: ["3-axis accelerometer", "3-axis gyroscope", "Digital motion processor", "I2C interface", "16-bit ADC"], specs: { "Accelerometer": "Â±2/4/8/16g", "Gyroscope": "Â±250/500/1000/2000Â°/s", "Interface": "I2C (400kHz)", "Voltage": "3.3Vâ€“5V", "Current": "3.9mA" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 120 }, { min: 10, max: 49, price: 100 }], badges: ["Motion"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["hcsr04"] },
+  { id: "oled", name: "OLED 0.96 I2C Display", price: 180, mrp: 299, minQty: 1, category: "Display", sku: "A5X-DI-001", rating: 4.9, reviewCount: 198, inStock: true, stockCount: 55, shortDescription: "128x64 pixel OLED. Crystal clear display over I2C.", features: ["128x64 pixels", "SSD1306 driver", "I2C interface", "Self-emitting â€” no backlight", "Wide viewing angle"], specs: { "Resolution": "128 x 64", "Driver": "SSD1306", "Interface": "I2C", "Voltage": "3.3Vâ€“5V", "Size": "0.96 inch", "Dimensions": "27 x 27 x 4 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 180 }, { min: 10, max: 49, price: 155 }], badges: ["Popular"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["lcd16"] },
   { id: "lcd16", name: "16x2 LCD with I2C", price: 70, mrp: 129, minQty: 1, category: "Display", sku: "A5X-DI-002", rating: 4.5, reviewCount: 134, inStock: true, stockCount: 70, shortDescription: "16x2 character LCD with I2C backpack. Only 2 wires needed.", features: ["16x2 character display", "I2C backpack included", "Blue backlight", "Adjustable contrast"], specs: { "Characters": "16 x 2", "Interface": "I2C (PCF8574)", "Backlight": "Blue LED", "Voltage": "5V", "Dimensions": "80 x 36 x 12 mm" }, compatibility: ["Arduino", "ESP32"], bulkPricing: [{ min: 1, max: 9, price: 70 }, { min: 10, max: 49, price: 58 }], badges: [], frequentlyBoughtWith: ["uno-r3"], relatedIds: ["oled"] },
   { id: "18650", name: "18650 LiPo Battery 3000mAh", price: 220, mrp: 349, minQty: 1, category: "Battery", sku: "A5X-BA-001", rating: 4.6, reviewCount: 89, inStock: true, stockCount: 100, shortDescription: "3.7V rechargeable lithium cell. Powers your robots.", features: ["3000mAh capacity", "3.7V nominal", "Rechargeable 500+ cycles", "Protected circuit"], specs: { "Capacity": "3000mAh", "Voltage": "3.7V nominal", "Max Discharge": "2A", "Dimensions": "18 x 65 mm", "Weight": "48g" }, compatibility: ["All boards (with regulator)"], bulkPricing: [{ min: 1, max: 9, price: 220 }, { min: 10, max: 49, price: 190 }], badges: ["Power"], frequentlyBoughtWith: ["tp4056", "l298n"], relatedIds: ["tp4056"] },
   { id: "tp4056", name: "TP4056 Charger Module", price: 35, mrp: 69, minQty: 1, category: "Charger", sku: "A5X-CH-001", rating: 4.7, reviewCount: 210, inStock: true, stockCount: 180, shortDescription: "Micro-USB Li-Ion charger with protection circuit.", features: ["1A charge current", "Micro-USB input", "Overcharge protection", "Over-discharge protection", "LED indicators"], specs: { "Input": "5V Micro-USB", "Charge Current": "1A max", "Battery": "3.7V Li-Ion/LiPo", "Protection": "Overcharge + Overdischarge", "Dimensions": "25 x 19 mm" }, compatibility: ["18650 cells", "LiPo packs"], bulkPricing: [{ min: 1, max: 9, price: 35 }, { min: 10, max: 49, price: 28 }, { min: 50, max: 999, price: 22 }], badges: ["Essential"], frequentlyBoughtWith: ["18650"], relatedIds: ["18650"] },
@@ -200,7 +193,7 @@ const productsSeed = [
   { id: uid(), name: "RESISTOR Kit 30 values 600 pcs", price: 420.00, mrp: 588, minQty: 1, category: "Electronics", sku: "A5X-INV2-009", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "RESISTOR Kit 30 values 600 pcs" },
   { id: uid(), name: "CAPACITOR Kit 20 values 400 pcs with electrolite capacitor", price: 530.00, mrp: 742, minQty: 1, category: "Electronics", sku: "A5X-INV2-010", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "CAPACITOR Kit 20 values 400 pcs with electrolite capacitor" },
   { id: uid(), name: "200 RPM 12v DC Center Shaft metal Gear Motor", price: 155.00, mrp: 217, minQty: 1, category: "Motors", sku: "A5X-INV2-011", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 33, shortDescription: "200 RPM 12v DC Center Shaft metal Gear Motor" },
-  { id: uid(), name: "TowerPro SG90 9g Micro Servo Motor – 180 Degree Rotation", price: 97.00, mrp: 136, minQty: 1, category: "Motors", sku: "A5X-INV2-012", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "TowerPro SG90 9g Micro Servo Motor – 180 Degree Rotation" },
+  { id: uid(), name: "TowerPro SG90 9g Micro Servo Motor â€“ 180 Degree Rotation", price: 97.00, mrp: 136, minQty: 1, category: "Motors", sku: "A5X-INV2-012", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "TowerPro SG90 9g Micro Servo Motor â€“ 180 Degree Rotation" },
   { id: uid(), name: "N20 12V 400 Rpm Micro Metal Gear Motor", price: 240.00, mrp: 336, minQty: 1, category: "Motors", sku: "A5X-INV2-013", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "N20 12V 400 Rpm Micro Metal Gear Motor" },
   { id: uid(), name: "300 RPM Dual Shaft BO Motor + Wheel", price: 72.00, mrp: 101, minQty: 1, category: "Motors", sku: "A5X-INV2-014", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 28, shortDescription: "300 RPM Dual Shaft BO Motor + Wheel" },
   { id: uid(), name: "diode kits 10 values each 10", price: 3.00, mrp: 4.20, minQty: 1, category: "Electronics", sku: "A5X-INV2-015", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 100, shortDescription: "diode kits 10 values each 10" },
@@ -245,7 +238,7 @@ const productsSeed = [
   { id: uid(), name: "BUTTON SWITCH SET 5 tpye each 10", price: 8.00, mrp: 11.20, minQty: 1, category: "Electronics", sku: "A5X-INV2-054", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 50, shortDescription: "BUTTON SWITCH SET 5 tpye each 10" },
   { id: uid(), name: "TTP223B Capacitive Single Touch Sensor Module", price: 38.00, mrp: 53, minQty: 1, category: "Sensor", sku: "A5X-INV2-055", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "TTP223B Capacitive Single Touch Sensor Module" },
   { id: uid(), name: "IR OBSTICLE SENSOR MODULE", price: 45.00, mrp: 63, minQty: 1, category: "Sensor", sku: "A5X-INV2-056", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 29, shortDescription: "IR OBSTICLE SENSOR MODULE" },
-  { id: uid(), name: "GY-521 MPU6050 Module – Triple Axis Accelerometer And Gyro Module", price: 180.00, mrp: 252, minQty: 1, category: "Sensor", sku: "A5X-INV2-057", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "GY-521 MPU6050 Module – Triple Axis Accelerometer And Gyro Module" },
+  { id: uid(), name: "GY-521 MPU6050 Module â€“ Triple Axis Accelerometer And Gyro Module", price: 180.00, mrp: 252, minQty: 1, category: "Sensor", sku: "A5X-INV2-057", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "GY-521 MPU6050 Module â€“ Triple Axis Accelerometer And Gyro Module" },
   { id: uid(), name: "MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2", price: 130.00, mrp: 182, minQty: 1, category: "Sensor", sku: "A5X-INV2-058", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2" },
   { id: uid(), name: "TCRT5000 IR Sensor Module", price: 52.00, mrp: 73, minQty: 1, category: "Sensor", sku: "A5X-INV2-059", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "TCRT5000 IR Sensor Module" },
   { id: uid(), name: "Ultrasonic distance Ranging module detector sensor HC-SR04", price: 65.00, mrp: 91, minQty: 1, category: "Sensor", sku: "A5X-INV2-060", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "Ultrasonic distance Ranging module detector sensor HC-SR04" },
@@ -296,464 +289,14 @@ const coursesSeed = [
   { id: "arduino-basics", title: "Arduino Maker Basics", description: "Inputs, outputs, displays, and readable code habits.", level: "BEGINNER", category: "Arduino", thumbnailUrl: robotHands, instructor: "Meera Iyer", tags: ["Arduino", "Display"], isPublished: true, isFeatured: false, createdAt: "2026-04-10", videos: [{ id: "display", title: "LCD and OLED Output", description: "Show clean robot state on small displays.", videoUrl: "", thumbnailUrl: robotHands, duration: 480, relatedProducts: ["uno-r3", "oled", "lcd16"], publishedAt: "2026-04-10" }] }
 ];
 
-const useCartStore = create(persist((set, get) => ({
-  open: false,
-  items: [],
-  toggle: () => set((state) => ({ open: !state.open })),
-  add: (item) => set((state) => {
-    const found = state.items.find((line) => line.id === item.id);
-    return { open: true, items: found ? state.items.map((line) => line.id === item.id ? { ...line, qty: line.qty + 1 } : line) : [...state.items, { ...item, qty: 1 }] };
-  }),
-  inc: (id) => set((state) => ({ items: state.items.map((item) => item.id === id ? { ...item, qty: item.qty + 1 } : item) })),
-  dec: (id) => set((state) => ({ items: state.items.flatMap((item) => item.id === id ? (item.qty > 1 ? [{ ...item, qty: item.qty - 1 }] : []) : [item]) })),
-  remove: (id) => set((state) => ({ items: state.items.filter((item) => item.id !== id) })),
-  subtotal: () => get().items.reduce((sum, item) => sum + item.price * item.qty, 0)
-}), { name: "a5x-cart" }));
-
-const useWishlistStore = create(persist((set, get) => ({
-  ids: [],
-  toggle: (id) => set((s) => ({ ids: s.ids.includes(id) ? s.ids.filter((x) => x !== id) : [...s.ids, id] })),
-  has: (id) => get().ids.includes(id),
-}), { name: "a5x-wishlist" }));
-
-const useCompareStore = create((set, get) => ({
-  ids: [],
-  toggle: (id) => set((s) => {
-    if (s.ids.includes(id)) return { ids: s.ids.filter((x) => x !== id) };
-    if (s.ids.length >= 3) return s;
-    return { ids: [...s.ids, id] };
-  }),
-  has: (id) => get().ids.includes(id),
-  clear: () => set({ ids: [] }),
-}));
-
-const useRecentlyViewedStore = create(persist((set) => ({
-  ids: [],
-  add: (id) => set((s) => ({ ids: [id, ...s.ids.filter((x) => x !== id)].slice(0, 10) })),
-}), { name: "a5x-recent" }));
-
-const useAuthStore = create(persist((set, get) => ({
-  user: null,
-  isAuthenticated: false,
-  login: (userData) => set({ user: userData, isAuthenticated: true }),
-  logout: () => set({ user: null, isAuthenticated: false }),
-  signup: (userData) => set({ user: userData, isAuthenticated: true }),
-}), { name: "a5x-auth" }));
-
-const useAuthModalStore = create((set) => ({
-  isOpen: false,
-  redirectPath: null,
-  open: (redirectPath = null) => set({ isOpen: true, redirectPath }),
-  close: () => set({ isOpen: false, redirectPath: null }),
-}));
-
-const useAdminStore = create(persist((set, get) => ({
-  products: [],  // Start with empty array, will be loaded from API
-  kits: [],      // Start with empty array, will be loaded from API
-  courses: coursesSeed,
-  productsLoaded: false,
-  kitsLoaded: false,
-  error: null,
-  
-  // Error management
-  setError: (error) => set({ error }),
-  clearError: () => set({ error: null }),
-  
-  // Helper to get user-friendly error message
-  getErrorMessage: (response, error) => {
-    if (!response) {
-      // Network error
-      return "Network error. Please check your connection and try again.";
-    }
-    
-    if (response.status === 401) {
-      return "Authentication required. Please log in again.";
-    }
-    
-    if (response.status === 403) {
-      return "Insufficient permissions. Admin access required.";
-    }
-    
-    if (response.status === 404) {
-      return "Resource not found.";
-    }
-    
-    if (response.status >= 500) {
-      return "Server error. Please try again later.";
-    }
-    
-    return error || "Operation failed. Please try again.";
-  },
-  
-  // Load products from API - always fetch fresh
-  loadProducts: async () => {
-    try {
-      const response = await fetch(`${API_BASE}/api/products?limit=1000`);
-      const data = await response.json();
-      if (data.data && Array.isArray(data.data)) {
-        set({ products: data.data, productsLoaded: true });
-      }
-    } catch (error) {
-      console.error('Failed to load products:', error);
-    }
-  },
-  
-  // Add product to API and update local state
-  addProduct: async (product) => {
-    const token = localStorage.getItem('a5x-admin-token');
-    
-    // Check token exists before making API call
-    if (!token) {
-      const errorMsg = "Authentication required. Please log in again.";
-      set({ error: errorMsg });
-      console.error(errorMsg);
-      throw new Error(errorMsg);
-    }
-    
-    try {
-      const response = await fetch(`${API_BASE}/api/products`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(product)
-      });
-      
-      if (response.ok) {
-        const created = await response.json();
-        set((state) => ({ products: [created, ...state.products], error: null }));
-        return created;
-      } else {
-        // API call failed - show error, do NOT fall back to localStorage
-        const errorText = await response.text();
-        const errorMsg = get().getErrorMessage(response, errorText);
-        set({ error: errorMsg });
-        console.error('Failed to add product:', errorText);
-        throw new Error(errorMsg);
-      }
-    } catch (error) {
-      // Network error - show error, do NOT fall back to localStorage
-      if (!error.message.includes('Authentication required')) {
-        const errorMsg = get().getErrorMessage(null, error.message);
-        set({ error: errorMsg });
-        console.error('Error adding product:', error);
-      }
-      throw error;
-    }
-  },
-  
-  // Update product in API and local state
-  updateProduct: async (id, product) => {
-    const token = localStorage.getItem('a5x-admin-token');
-    
-    // Check token exists before making API call
-    if (!token) {
-      const errorMsg = "Authentication required. Please log in again.";
-      set({ error: errorMsg });
-      console.error(errorMsg);
-      throw new Error(errorMsg);
-    }
-    
-    try {
-      const response = await fetch(`${API_BASE}/api/products/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(product)
-      });
-      
-      if (response.ok) {
-        const updated = await response.json();
-        set((state) => ({ products: state.products.map((item) => item.id === id ? updated : item), error: null }));
-        return updated;
-      } else {
-        // API call failed - show error, do NOT fall back to localStorage
-        const errorText = await response.text();
-        const errorMsg = get().getErrorMessage(response, errorText);
-        set({ error: errorMsg });
-        console.error('Failed to update product:', errorText);
-        throw new Error(errorMsg);
-      }
-    } catch (error) {
-      // Network error - show error, do NOT fall back to localStorage
-      if (!error.message.includes('Authentication required')) {
-        const errorMsg = get().getErrorMessage(null, error.message);
-        set({ error: errorMsg });
-        console.error('Error updating product:', error);
-      }
-      throw error;
-    }
-  },
-  
-  // Delete product from API and local state
-  deleteProduct: async (id) => {
-    const token = localStorage.getItem('a5x-admin-token');
-    
-    // Check token exists before making API call
-    if (!token) {
-      const errorMsg = "Authentication required. Please log in again.";
-      set({ error: errorMsg });
-      console.error(errorMsg);
-      throw new Error(errorMsg);
-    }
-    
-    try {
-      const response = await fetch(`${API_BASE}/api/products/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.ok) {
-        set((state) => ({ products: state.products.filter((item) => item.id !== id), error: null }));
-      } else {
-        // API call failed - show error, do NOT fall back to localStorage
-        const errorText = await response.text();
-        const errorMsg = get().getErrorMessage(response, errorText);
-        set({ error: errorMsg });
-        console.error('Failed to delete product:', errorText);
-        throw new Error(errorMsg);
-      }
-    } catch (error) {
-      // Network error - show error, do NOT fall back to localStorage
-      if (!error.message.includes('Authentication required')) {
-        const errorMsg = get().getErrorMessage(null, error.message);
-        set({ error: errorMsg });
-        console.error('Error deleting product:', error);
-      }
-      throw error;
-    }
-  },
-  
-  // Add kit to API and update local state
-  addKit: async (kit) => {
-    const token = localStorage.getItem('a5x-admin-token');
-    
-    // Check token exists before making API call
-    if (!token) {
-      const errorMsg = "Authentication required. Please log in again.";
-      set({ error: errorMsg });
-      console.error(errorMsg);
-      throw new Error(errorMsg);
-    }
-    
-    try {
-      const response = await fetch(`${API_BASE}/api/kits`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(kit)
-      });
-      
-      if (response.ok) {
-        const created = await response.json();
-        set((state) => ({ kits: [created, ...state.kits], error: null }));
-        return created;
-      } else {
-        // API call failed - show error, do NOT fall back to localStorage
-        const errorText = await response.text();
-        const errorMsg = get().getErrorMessage(response, errorText);
-        set({ error: errorMsg });
-        console.error('Failed to add kit:', errorText);
-        throw new Error(errorMsg);
-      }
-    } catch (error) {
-      // Network error - show error, do NOT fall back to localStorage
-      if (!error.message.includes('Authentication required')) {
-        const errorMsg = get().getErrorMessage(null, error.message);
-        set({ error: errorMsg });
-        console.error('Error adding kit:', error);
-      }
-      throw error;
-    }
-  },
-
-  // Update kit in API and local state
-  updateKit: async (id, kit) => {
-    const token = localStorage.getItem('a5x-admin-token');
-    
-    // Check token exists before making API call
-    if (!token) {
-      const errorMsg = "Authentication required. Please log in again.";
-      set({ error: errorMsg });
-      console.error(errorMsg);
-      throw new Error(errorMsg);
-    }
-    
-    console.log('=== UPDATE KIT - REQUEST PAYLOAD ===');
-    console.log('Kit ID:', id);
-    console.log('Payload images:', kit.images);
-    console.log('Payload images length:', kit.images?.length);
-    console.log('=== END REQUEST PAYLOAD ===');
-    
-    try {
-      const response = await fetch(`${API_BASE}/api/kits/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(kit)
-      });
-      
-      if (response.ok) {
-        const updated = await response.json();
-        console.log('=== UPDATE KIT - API RESPONSE ===');
-        console.log('Updated kit ID:', updated.id);
-        console.log('Updated kit images:', updated.images);
-        console.log('Updated kit images length:', updated.images?.length);
-        console.log('Full updated kit:', updated);
-        console.log('=== END API RESPONSE ===');
-        
-        set((state) => {
-          const updatedKits = state.kits.map((item) => item.id === id ? updated : item);
-          const kitInStore = updatedKits.find(k => k.id === id);
-          console.log('=== UPDATE KIT - STORE UPDATE ===');
-          console.log('Kit in store after update:', kitInStore?.id);
-          console.log('Kit images in store:', kitInStore?.images);
-          console.log('Kit images length in store:', kitInStore?.images?.length);
-          console.log('=== END STORE UPDATE ===');
-          return { kits: updatedKits, error: null };
-        });
-        return updated;
-      } else {
-        // API call failed - show error, do NOT fall back to localStorage
-        const errorText = await response.text();
-        const errorMsg = get().getErrorMessage(response, errorText);
-        set({ error: errorMsg });
-        console.error('Failed to update kit:', errorText);
-        throw new Error(errorMsg);
-      }
-    } catch (error) {
-      // Network error - show error, do NOT fall back to localStorage
-      if (!error.message.includes('Authentication required')) {
-        const errorMsg = get().getErrorMessage(null, error.message);
-        set({ error: errorMsg });
-        console.error('Error updating kit:', error);
-      }
-      throw error;
-    }
-  },
-
-  // Delete kit from API and local state
-  deleteKit: async (id) => {
-    const token = localStorage.getItem('a5x-admin-token');
-    
-    // Check token exists before making API call
-    if (!token) {
-      const errorMsg = "Authentication required. Please log in again.";
-      set({ error: errorMsg });
-      console.error(errorMsg);
-      throw new Error(errorMsg);
-    }
-    
-    try {
-      const response = await fetch(`${API_BASE}/api/kits/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      if (response.ok) {
-        set((state) => ({ kits: state.kits.filter((item) => item.id !== id), error: null }));
-      } else {
-        // API call failed - show error, do NOT fall back to localStorage
-        const errorText = await response.text();
-        const errorMsg = get().getErrorMessage(response, errorText);
-        set({ error: errorMsg });
-        console.error('Failed to delete kit:', errorText);
-        throw new Error(errorMsg);
-      }
-    } catch (error) {
-      // Network error - show error, do NOT fall back to localStorage
-      if (!error.message.includes('Authentication required')) {
-        const errorMsg = get().getErrorMessage(null, error.message);
-        set({ error: errorMsg });
-        console.error('Error deleting kit:', error);
-      }
-      throw error;
-    }
-  },
-
-  // Bulk upload products to API
-  bulkUploadProducts: async (products) => {
-    const token = localStorage.getItem('a5x-admin-token');
-    if (!token) {
-      const errorMsg = 'Authentication required. Please log in again.';
-      set({ error: errorMsg });
-      throw new Error(errorMsg);
-    }
-
-    try {
-      console.log(`[Bulk Upload] Uploading ${products.length} products to API...`);
-      
-      const response = await fetch(`${API_BASE}/api/products/bulk`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ products })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log(`[Bulk Upload] Success:`, result);
-        
-        // Reload products from API to get the updated list
-        await get().loadProducts();
-        
-        set({ error: null });
-        return result;
-      } else {
-        // API call failed - show error
-        const errorText = await response.text();
-        const errorMsg = get().getErrorMessage(response, errorText);
-        set({ error: errorMsg });
-        console.error('Failed to bulk upload products:', errorText);
-        throw new Error(errorMsg);
-      }
-    } catch (error) {
-      // Network error - show error
-      if (!error.message.includes('Authentication required')) {
-        const errorMsg = get().getErrorMessage(null, error.message);
-        set({ error: errorMsg });
-        console.error('Error bulk uploading products:', error);
-      }
-      throw error;
-    }
-  },
-
-  // Load kits from API
-  loadKits: async () => {
-    try {
-      const response = await fetch(`${API_BASE}/api/kits?limit=1000`);
-      const data = await response.json();
-      if (data.data && Array.isArray(data.data)) {
-        set({ kits: data.data, kitsLoaded: true });
-      }
-    } catch (error) {
-      console.error('Failed to load kits:', error);
-    }
-  },
-  addCourse: (course) => set((state) => ({ courses: [{ ...course, id: course.id || uid(), videos: course.videos || [] }, ...state.courses] })),
-  updateCourse: (id, course) => set((state) => ({ courses: state.courses.map((item) => item.id === id ? { ...item, ...course } : item) })),
-  deleteCourse: (id) => set((state) => ({ courses: state.courses.filter((item) => item.id !== id) })),
-  addVideo: (courseId, video) => set((state) => ({ courses: state.courses.map((course) => course.id === courseId ? { ...course, videos: [...course.videos, { ...video, id: video.id || uid() }] } : course) }))
-}), { 
-  name: "a5x-admin-data",
-  partialPersist: true,
-  partialize: (state) => ({
-    // Only persist courses, NOT products or kits
-    // Products and kits should always be loaded from API
-    courses: state.courses
-  })
-}));
+// â”€â”€ Stores (imported from separate files) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import useCartStore from "./stores/useCartStore";
+import useWishlistStore from "./stores/useWishlistStore";
+import useCompareStore from "./stores/useCompareStore";
+import useRecentlyViewedStore from "./stores/useRecentlyViewedStore";
+import useAuthStore from "./stores/useAuthStore";
+import useAuthModalStore from "./stores/useAuthModalStore";
+import useAdminStore from "./stores/useAdminStore";
 
 function useScrolled() {
   const [scrolled, setScrolled] = useState(false);
@@ -1012,7 +555,7 @@ function ProductCard({ product, compact, onQuickView }) {
         <div className="rating-row"><StarRating rating={product.rating} /><span className="review-count">({product.reviewCount || 0})</span></div>
         <div className="price-row"><strong>{inr(product.price)}</strong><span>/pcs</span>{product.mrp && <><s className="mrp">{inr(product.mrp)}</s><span className="discount-badge">{discount}% off</span></>}</div>
         <StockBadge stock={product.inStock} count={product.stockCount} />
-        <p className="delivery-est"><Truck size={13} /> Ships in 2–3 days</p>
+        <p className="delivery-est"><Truck size={13} /> Ships in 2â€“3 days</p>
         <div className="card-actions">
           <button className="add-quote-btn" onClick={() => add(product)} disabled={!product.inStock}>Add to Quote</button>
           <label className="compare-check"><input type="checkbox" checked={compared} onChange={() => compToggle(product.id)} /><span>Compare</span></label>
@@ -1042,7 +585,7 @@ function KitCard({ kit }) {
       <div className="kit-image">
         <img src={kit.imageUrl || kitInnovation} alt={kit.name} />
         <span className={`tier ${kit.tier.toLowerCase().split(" ")[0]}`}>{kit.tier}</span>
-        <span className="rating">★ {kit.rating}</span>
+        <span className="rating">â˜… {kit.rating}</span>
         <div className="kit-image-glow" />
       </div>
       <div className="kit-body">
@@ -1071,7 +614,7 @@ function CourseMiniCard({ course }) {
       </Link>
       <div>
         <h3>{course.title}</h3>
-        <p><ListVideo size={14} /> {videos.length} videos · {Math.round(total / 60)}m</p>
+        <p><ListVideo size={14} /> {videos.length} videos Â· {Math.round(total / 60)}m</p>
         <Link className="mini-btn" to={linkTo}>Watch Course</Link>
       </div>
     </article>
@@ -1220,7 +763,7 @@ function TypewriterText({ texts, speed = 80, pause = 2000 }) {
   return <span>{texts[textIndex].slice(0, charIndex)}<span className="blink-cursor">|</span></span>;
 }
 
-/* ─── SCI-FI ANIMATION INFRASTRUCTURE ─── */
+/* â”€â”€â”€ SCI-FI ANIMATION INFRASTRUCTURE â”€â”€â”€ */
 
 function AuroraBackground() {
   return <div className="aurora-bg" />;
@@ -1548,7 +1091,7 @@ function Hero() {
 
 function TrustBar() {
   const items = [
-    { icon: <Truck size={22} />, title: "Free Shipping", sub: "On all orders above ₹999" },
+    { icon: <Truck size={22} />, title: "Free Shipping", sub: "On all orders above â‚¹999" },
     { icon: <Shield size={22} />, title: "Secure Payments", sub: "100% secure & trusted" },
     { icon: <RefreshCw size={22} />, title: "7 Days Return", sub: "Hassle free returns" },
     { icon: <MessageSquare size={22} />, title: "24/7 Support", sub: "We're here to help" },
@@ -1583,7 +1126,7 @@ function PopularCategories() {
           <p className="popular-cats-eyebrow">BROWSE CATEGORIES</p>
           <h2 className="popular-cats-title">Popular Categories</h2>
         </div>
-        <Link className="popular-cats-viewall" to="/shop">View All Categories →</Link>
+        <Link className="popular-cats-viewall" to="/shop">View All Categories â†’</Link>
       </div>
       <div className="popular-cats-grid">
         {categories.map(({ label, sub, img, to }) => (
@@ -1594,7 +1137,7 @@ function PopularCategories() {
             <div className="popular-cat-body">
               <strong>{label}</strong>
               <span>{sub}</span>
-              <span className="popular-cat-link">Shop Now →</span>
+              <span className="popular-cat-link">Shop Now â†’</span>
             </div>
           </Link>
         ))}
@@ -1645,7 +1188,7 @@ function GatewayCards() {
             <span className="gw-num">{num}</span>
             <h2>{title}</h2>
             <p>{text}</p>
-            <span className="gw-link">Explore <span>→</span></span>
+            <span className="gw-link">Explore <span>â†’</span></span>
           </Link>
         </motion.div>
       ))}
@@ -1747,7 +1290,7 @@ function QuickViewModal({ product, onClose }) {
               <p className="qv-desc">{product.shortDescription}</p>
               <div className="qty-selector"><button onClick={() => setQty(Math.max(1, qty - 1))}><Minus size={16} /></button><span>{qty}</span><button onClick={() => setQty(qty + 1)}><Plus size={16} /></button></div>
               <button className="add-quote-btn full" onClick={() => { for (let i = 0; i < qty; i++) add(product); onClose(); }}>Add to Quote</button>
-              <Link to={`/shop/${product.id}`} className="qv-detail-link" onClick={onClose}>View Full Details →</Link>
+              <Link to={`/shop/${product.id}`} className="qv-detail-link" onClick={onClose}>View Full Details â†’</Link>
             </div>
           </div>
         </motion.div>
@@ -1778,8 +1321,8 @@ function FilterSidebar({ filters, setFilters, onClear, categories: cats }) {
       <aside className={`filter-sidebar glass-card ${open ? "open" : ""}`}>
         <div className="filter-header"><h3><SlidersHorizontal size={16} /> Filters</h3><button onClick={onClear}>Clear All</button></div>
         <div className="filter-group"><h4>Category</h4>{cats.map((c) => <label key={c}><input type="radio" name="cat" checked={filters.category === c} onChange={() => setFilters((f) => ({ ...f, category: c }))} />{c}</label>)}</div>
-        <div className="filter-group"><h4>Price Range</h4><div className="price-inputs"><input type="number" placeholder="Min ₹" value={filters.priceMin} onChange={(e) => setFilters((f) => ({ ...f, priceMin: e.target.value }))} /><span>–</span><input type="number" placeholder="Max ₹" value={filters.priceMax} onChange={(e) => setFilters((f) => ({ ...f, priceMax: e.target.value }))} /></div></div>
-        <div className="filter-group"><h4>Rating</h4>{[4, 3, 2].map((r) => <label key={r}><input type="radio" name="rating" checked={filters.minRating === r} onChange={() => setFilters((f) => ({ ...f, minRating: r }))} />★ {r}.0+</label>)}</div>
+        <div className="filter-group"><h4>Price Range</h4><div className="price-inputs"><input type="number" placeholder="Min â‚¹" value={filters.priceMin} onChange={(e) => setFilters((f) => ({ ...f, priceMin: e.target.value }))} /><span>â€“</span><input type="number" placeholder="Max â‚¹" value={filters.priceMax} onChange={(e) => setFilters((f) => ({ ...f, priceMax: e.target.value }))} /></div></div>
+        <div className="filter-group"><h4>Rating</h4>{[4, 3, 2].map((r) => <label key={r}><input type="radio" name="rating" checked={filters.minRating === r} onChange={() => setFilters((f) => ({ ...f, minRating: r }))} />â˜… {r}.0+</label>)}</div>
         <div className="filter-group"><h4>Compatibility</h4>{compatOptions.map((c) => <label key={c}><input type="checkbox" checked={filters.compat.includes(c)} onChange={() => setFilters((f) => ({ ...f, compat: f.compat.includes(c) ? f.compat.filter((x) => x !== c) : [...f.compat, c] }))} />{c}</label>)}</div>
         <div className="filter-group"><label className="stock-toggle"><input type="checkbox" checked={filters.inStockOnly} onChange={() => setFilters((f) => ({ ...f, inStockOnly: !f.inStockOnly }))} />In Stock Only</label></div>
       </aside>
@@ -1978,7 +1521,7 @@ function ShopSection() {
               <span className="shop-deal-tag">BEST SELLER</span>
               <h3>Arduino Starter Kit</h3>
               <p>Complete kit for beginners</p>
-              <strong>₹2,499 <s>₹3,499</s></strong>
+              <strong>â‚¹2,499 <s>â‚¹3,499</s></strong>
             </div>
             <div className="shop-deal-badge">-29%</div>
           </div>
@@ -1987,7 +1530,7 @@ function ShopSection() {
               <span className="shop-deal-tag">TOP RATED</span>
               <h3>Motor Driver L298N</h3>
               <p>Dual H-Bridge controller</p>
-              <strong>₹349 <s>₹499</s></strong>
+              <strong>â‚¹349 <s>â‚¹499</s></strong>
             </div>
             <div className="shop-deal-badge">-30%</div>
           </div>
@@ -1996,7 +1539,7 @@ function ShopSection() {
               <span className="shop-deal-tag">HOT DEAL</span>
               <h3>Ultrasonic Sensor</h3>
               <p>HC-SR04 distance sensor</p>
-              <strong>₹149 <s>₹249</s></strong>
+              <strong>â‚¹149 <s>â‚¹249</s></strong>
             </div>
             <div className="shop-deal-badge">-40%</div>
           </div>
@@ -2015,9 +1558,9 @@ function ShopSection() {
           <div className="shop-filter-group">
             <p className="shop-filter-label">PRICE RANGE</p>
             <div className="shop-price-inputs">
-              <input type="number" placeholder="Min ₹" value={filters.priceMin} onChange={(e) => setFilters({ ...filters, priceMin: e.target.value })} />
-              <span>—</span>
-              <input type="number" placeholder="Max ₹" value={filters.priceMax} onChange={(e) => setFilters({ ...filters, priceMax: e.target.value })} />
+              <input type="number" placeholder="Min â‚¹" value={filters.priceMin} onChange={(e) => setFilters({ ...filters, priceMin: e.target.value })} />
+              <span>â€”</span>
+              <input type="number" placeholder="Max â‚¹" value={filters.priceMax} onChange={(e) => setFilters({ ...filters, priceMax: e.target.value })} />
             </div>
           </div>
 
@@ -2026,7 +1569,7 @@ function ShopSection() {
             <div className="shop-rating-btns">
               {[0, 3, 4, 4.5].map((r) => (
                 <button key={r} className={`shop-rating-btn ${filters.minRating === r ? "active" : ""}`} onClick={() => setFilters({ ...filters, minRating: r })}>
-                  {r === 0 ? "All" : `${r}★+`}
+                  {r === 0 ? "All" : `${r}â˜…+`}
                 </button>
               ))}
             </div>
@@ -2080,14 +1623,14 @@ function ShopSection() {
                 <Filter size={16} /> Filters
               </button>
               <span className="shop-count-text">
-                Showing <strong>{start}–{end}</strong> of <strong>{filtered.length}</strong> products
+                Showing <strong>{start}â€“{end}</strong> of <strong>{filtered.length}</strong> products
               </span>
             </div>
             <div className="shop-toolbar-right">
               <select className="shop-sort-select" value={sort} onChange={(e) => { setSort(e.target.value); setPage(1); }}>
                 <option value="popular">Most Popular</option>
-                <option value="price-asc">Price: Low–High</option>
-                <option value="price-desc">Price: High–Low</option>
+                <option value="price-asc">Price: Lowâ€“High</option>
+                <option value="price-desc">Price: Highâ€“Low</option>
                 <option value="rating">Highest Rated</option>
                 <option value="newest">Newest</option>
               </select>
@@ -2368,7 +1911,7 @@ function KitDetailPage() {
           <h1>{kit.name}</h1>
           <p className="kit-detail-desc">{kit.description}</p>
           <div className="kit-detail-price">{inr(Number(kit.price))}</div>
-          <div className="kit-detail-rating">{'★'.repeat(Math.round(kit.rating))} <span>{kit.rating}/5</span></div>
+          <div className="kit-detail-rating">{'â˜…'.repeat(Math.round(kit.rating))} <span>{kit.rating}/5</span></div>
           {hasVideo && (
             <button 
               className="btn ghost" 
@@ -2380,7 +1923,7 @@ function KitDetailPage() {
           )}
           <h3>What's Included</h3>
           <div className="kit-detail-includes">{kit.includes.map((item) => <div key={item} className="glass-card"><CheckCircle size={16} />{item}</div>)}</div>
-          <button className="btn" onClick={() => add({ ...kit, category: 'Kits', sku: kit.tier })} style={{marginBottom: '1rem'}}>Add to Cart — {inr(Number(kit.price))}</button>
+          <button className="btn" onClick={() => add({ ...kit, category: 'Kits', sku: kit.tier })} style={{marginBottom: '1rem'}}>Add to Cart â€” {inr(Number(kit.price))}</button>
           <ButtonLink to="/contact" ghost>Request Custom Version</ButtonLink>
         </div>
       </section>
@@ -2518,7 +2061,7 @@ function HowItWorks() {
 
 function Testimonials() {
   const quotes = [["AM", "Anika M.", "Engineering Student", "The kit list finally made sense. I could build the rover without mystery parts."], ["RK", "Rohan K.", "Lab Coordinator", "Bulk quotes are clean and the components are documented enough for class use."], ["SP", "Sara P.", "Maker", "The L298N and sensor bundles saved me from compatibility guesswork."]];
-  return <section className="testimonials" style={{ backgroundImage: `linear-gradient(rgba(5,8,16,.78), rgba(5,8,16,.84)), url(${darkSpheres})` }}><h2>What Makers Say</h2><div>{quotes.map(([initials, name, role, quote]) => <article key={name}><b>{initials}</b><h3>{name}</h3><p>{role}</p><span>★★★★★</span><blockquote>{quote}</blockquote></article>)}</div></section>;
+  return <section className="testimonials" style={{ backgroundImage: `linear-gradient(rgba(5,8,16,.78), rgba(5,8,16,.84)), url(${darkSpheres})` }}><h2>What Makers Say</h2><div>{quotes.map(([initials, name, role, quote]) => <article key={name}><b>{initials}</b><h3>{name}</h3><p>{role}</p><span>â˜…â˜…â˜…â˜…â˜…</span><blockquote>{quote}</blockquote></article>)}</div></section>;
 }
 
 function LearnPreview() {
@@ -2588,7 +2131,7 @@ function LearnPage() {
       {/* Featured Course */}
       {featured && (
         <div className="learn-featured-section">
-          <p className="learn-section-label">⭐ FEATURED COURSE</p>
+          <p className="learn-section-label">â­ FEATURED COURSE</p>
           <div className="learn-featured-card">
             <div className="learn-featured-img">
               <img src={featured.thumbnailUrl || learnGrid} alt={featured.title} />
@@ -2852,9 +2395,9 @@ function VideoPlayerPage() {
       {/* Breadcrumb */}
       <div className="watch-breadcrumb">
         <Link to="/learn">Learn</Link>
-        <span>›</span>
+        <span>â€º</span>
         <Link to={`/learn/${course.id}/${videos[0]?.id}`}>{course.title}</Link>
-        <span>›</span>
+        <span>â€º</span>
         <span>{video.title}</span>
       </div>
 
@@ -2908,7 +2451,7 @@ function VideoPlayerPage() {
           {/* Related Products */}
           {products.length > 0 && (
             <div className="watch-products">
-              <h3 className="watch-section-title">🛒 Products Used in This Lesson</h3>
+              <h3 className="watch-section-title">ðŸ›’ Products Used in This Lesson</h3>
               <div className="watch-products-grid">
                 {products.map((p) => <ProductCard key={p.id} product={p} compact />)}
               </div>
@@ -3095,7 +2638,7 @@ function ProductDetailPage() {
                 <tbody>
                   {product.bulkPricing.map((bp) => (
                     <tr key={bp.min}>
-                      <td>{bp.min}–{bp.max === 999 ? "∞" : bp.max} pcs</td>
+                      <td>{bp.min}â€“{bp.max === 999 ? "âˆž" : bp.max} pcs</td>
                       <td>{inr(bp.price)}</td>
                       <td className="save-amount">{inr(product.price - bp.price)}</td>
                     </tr>
@@ -3162,7 +2705,7 @@ function ProductDetailPage() {
               <Zap size={20} />
               <div>
                 <strong>Free Shipping</strong>
-                <span>On orders above ₹999</span>
+                <span>On orders above â‚¹999</span>
               </div>
             </div>
           </div>
@@ -3736,7 +3279,7 @@ function LoginPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="••••••••"
+                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                     required
                     style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '14px', color: '#fff', padding: '15px 18px', paddingRight: '50px', fontSize: '15px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
                     onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)'; }}
@@ -3762,7 +3305,7 @@ function LoginPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    placeholder="••••••••"
+                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                     required={!isLogin}
                     style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '14px', color: '#fff', padding: '15px 18px', fontSize: '15px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
                     onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)'; }}
@@ -4027,7 +3570,7 @@ function AuthModal() {
           <div>
             <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Password</label>
             <div style={{ position: 'relative' }}>
-              <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} placeholder="••••••••" required style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', paddingRight: '48px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
+              <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', paddingRight: '48px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
               <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00d4ff'} onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.5)'}>
                 <Eye size={18} />
               </button>
@@ -4037,7 +3580,7 @@ function AuthModal() {
           {!isLogin && (
             <div>
               <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Confirm Password</label>
-              <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} placeholder="••••••••" required={!isLogin} style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
+              <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required={!isLogin} style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
             </div>
           )}
 
@@ -4112,35 +3655,35 @@ function AboutPage() {
     {
       name: "Ansh Raj Baghel",
       role: "Co-Founder & Full-Stack Lead",
-      desc: "💻 Turns caffeine into clean code. The backbone of every digital magic we create. ✨",
+      desc: "ðŸ’» Turns caffeine into clean code. The backbone of every digital magic we create. âœ¨",
       photo: teamAnsh,
       initial: "A"
     },
     {
       name: "Anupam Mishra",
       role: "Co-Founder & AI/ML Software Lead",
-      desc: "Predicts the future before algorithms even learn it. Brains + Machine = Innovation. 🤖 ✨",
+      desc: "Predicts the future before algorithms even learn it. Brains + Machine = Innovation. ðŸ¤– âœ¨",
       photo: teamAnupam,
       initial: "A"
     },
     {
       name: "Chris Alex Francis",
       role: "Co-Founder & IoT + Robotics Lead",
-      desc: "Makes ideas move, blink & fly. If it's hardware, Chris already cracked it. ⚡ 🤖",
+      desc: "Makes ideas move, blink & fly. If it's hardware, Chris already cracked it. âš¡ ðŸ¤–",
       photo: teamChris,
       initial: "C"
     },
     {
       name: "Amit Payasi",
       role: "Co-Founder & Hardware Lead",
-      desc: "🔧 Soldering, circuits, sensors — if it's noisy & technical, Amit loves it. 🔥 💡",
+      desc: "ðŸ”§ Soldering, circuits, sensors â€” if it's noisy & technical, Amit loves it. ðŸ”¥ ðŸ’¡",
       photo: teamAmit,
       initial: "A"
     },
     {
       name: "Aditya Mishra",
       role: "Co-Founder & Software Dev",
-      desc: "🧠 Writes code so smooth, even bugs give up. UI? Logic? Speed? He owns it. ⚡ 💻",
+      desc: "ðŸ§  Writes code so smooth, even bugs give up. UI? Logic? Speed? He owns it. âš¡ ðŸ’»",
       photo: teamAditya,
       initial: "A"
     },
@@ -4193,7 +3736,7 @@ function AboutPage() {
           <div className="about-mission-text">
             <p className="about-eyebrow">OUR MISSION</p>
             <h2>Robotics for <em>Everyone</em></h2>
-            <p>We started A5X Industries because we saw a gap — students and makers in India had brilliant ideas but couldn't find quality components at fair prices. We're here to change that.</p>
+            <p>We started A5X Industries because we saw a gap â€” students and makers in India had brilliant ideas but couldn't find quality components at fair prices. We're here to change that.</p>
             <p>From a single Arduino to a complete robotics lab setup, we provide everything you need to bring your ideas to life. Our team of engineers personally tests every product we sell.</p>
             <Link to="/shop" className="btn" style={{ marginTop: '24px', display: 'inline-flex' }}>Explore Products</Link>
           </div>
@@ -4353,7 +3896,7 @@ function ContactPage() {
   if (submitted) return (
     <main className="contact-page">
       <section className="contact-form glass-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-        <div style={{ fontSize: '64px', marginBottom: '20px' }}>✅</div>
+        <div style={{ fontSize: '64px', marginBottom: '20px' }}>âœ…</div>
         <h2 style={{ color: 'var(--brand-cyan)', marginBottom: '12px' }}>Message Sent!</h2>
         <p style={{ color: 'var(--brand-steel)', marginBottom: '28px' }}>We'll get back to you within 24 hours.</p>
         <button className="btn" onClick={() => setSubmitted(false)}>Send Another Message</button>
@@ -4640,7 +4183,7 @@ function CheckoutPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
       >
-        {/* ── LEFT: FORM ── */}
+        {/* â”€â”€ LEFT: FORM â”€â”€ */}
         <div className="checkout-form glass-card">
           <div className="checkout-header">
             <Shield size={28} color="#00ff88" />
@@ -4656,15 +4199,15 @@ function CheckoutPage() {
                 <h3>Contact Information</h3>
               </div>
               <div className="input-group">
-                <span className="input-prefix-icon">👤</span>
+                <span className="input-prefix-icon">ðŸ‘¤</span>
                 <input type="text" name="customerName" placeholder="Full Name" value={formData.customerName} onChange={handleChange} required />
               </div>
               <div className="input-group">
-                <span className="input-prefix-icon">📧</span>
+                <span className="input-prefix-icon">ðŸ“§</span>
                 <input type="email" name="customerEmail" placeholder="Email Address" value={formData.customerEmail} onChange={handleChange} required />
               </div>
               <div className="input-group">
-                <span className="input-prefix-icon">📱</span>
+                <span className="input-prefix-icon">ðŸ“±</span>
                 <input
                   type="tel"
                   name="customerPhone"
@@ -4689,26 +4232,26 @@ function CheckoutPage() {
                 <h3>Shipping Address</h3>
               </div>
               <div className="input-group">
-                <span className="input-prefix-icon">🏠</span>
+                <span className="input-prefix-icon">ðŸ </span>
                 <input type="text" name="street" placeholder="Street Address" value={formData.street} onChange={handleChange} required />
               </div>
               <div className="form-row">
                 <div className="input-group">
-                  <span className="input-prefix-icon">🏙️</span>
+                  <span className="input-prefix-icon">ðŸ™ï¸</span>
                   <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} required />
                 </div>
                 <div className="input-group">
-                  <span className="input-prefix-icon">📍</span>
+                  <span className="input-prefix-icon">ðŸ“</span>
                   <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleChange} required />
                 </div>
               </div>
               <div className="form-row">
                 <div className="input-group">
-                  <span className="input-prefix-icon">📮</span>
+                  <span className="input-prefix-icon">ðŸ“®</span>
                   <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} required />
                 </div>
                 <div className="input-group">
-                  <span className="input-prefix-icon">🗺️</span>
+                  <span className="input-prefix-icon">ðŸ—ºï¸</span>
                   <input type="text" name="landmark" placeholder="Landmark (Optional)" value={formData.landmark} onChange={handleChange} />
                 </div>
               </div>
@@ -4763,7 +4306,7 @@ function CheckoutPage() {
                       )}
                     </div>
                     <div className={`qr-timer ${qrTimer <= 30 ? 'urgent' : ''}`}>
-                      <span>⏱ QR expires in </span>
+                      <span>â± QR expires in </span>
                       <strong>{qrMins}:{qrSecs}</strong>
                     </div>
                     <p className="qr-note">After payment, place your order below</p>
@@ -4775,7 +4318,7 @@ function CheckoutPage() {
                         onChange={e => setPaymentConfirmed(e.target.checked)}
                         disabled={qrExpired}
                       />
-                      <span>I have completed the payment ✅</span>
+                      <span>I have completed the payment âœ…</span>
                     </label>
                   </motion.div>
                 )}
@@ -4804,7 +4347,7 @@ function CheckoutPage() {
               whileTap={{ scale: 0.98 }}
               title={formData.paymentMethod === 'online' && upiId && !paymentConfirmed ? 'Please scan QR and confirm payment first' : ''}
             >
-              {loading ? <><div className="spinner" />Processing...</> : <><Shield size={18} />Place Secure Order — {inr(subtotal())}</>}
+              {loading ? <><div className="spinner" />Processing...</> : <><Shield size={18} />Place Secure Order â€” {inr(subtotal())}</>}
             </motion.button>
 
             <div className="secure-badge">
@@ -4814,7 +4357,7 @@ function CheckoutPage() {
           </form>
         </div>
 
-        {/* ── RIGHT: ORDER SUMMARY ── */}
+        {/* â”€â”€ RIGHT: ORDER SUMMARY â”€â”€ */}
         <div className="order-summary glass-card">
           <div className="summary-header">
             <ShoppingCart size={20} />
@@ -4827,7 +4370,7 @@ function CheckoutPage() {
                 <img src={item.imageUrl || a5xCarKit} alt={item.name} />
                 <div className="item-details">
                   <p className="item-name">{item.name}</p>
-                  <p className="item-qty">Qty: {item.qty} × {inr(item.price)}</p>
+                  <p className="item-qty">Qty: {item.qty} Ã— {inr(item.price)}</p>
                 </div>
                 <p className="item-total">{inr(item.price * item.qty)}</p>
               </motion.div>
@@ -4858,6 +4401,8 @@ function AdminOrders() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [updatingId, setUpdatingId] = useState(null); // tracks which order is being updated
 
+  const [authError, setAuthError] = useState(false);
+
   useEffect(() => {
     fetchOrders();
   }, [filter]);
@@ -4868,6 +4413,7 @@ function AdminOrders() {
       const token = localStorage.getItem('a5x-admin-token');
       if (!token) {
         console.error('No admin token found');
+        setAuthError(true);
         setOrders([]);
         setLoading(false);
         return;
@@ -4881,13 +4427,16 @@ function AdminOrders() {
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
         console.error('Orders fetch failed:', response.status, errData);
-        // If 401/403, token is invalid - clear it
         if (response.status === 401 || response.status === 403) {
-          console.warn('Admin token invalid/expired. Please log in again.');
+          setAuthError(true);
+          // Clear invalid token
+          localStorage.removeItem('a5x-admin-token');
+          localStorage.removeItem('a5x-admin-user');
         }
         setOrders([]);
         return;
       }
+      setAuthError(false);
       const data = await response.json();
       setOrders(data.orders || []);
     } catch (error) {
@@ -4913,13 +4462,13 @@ function AdminOrders() {
       const data = await response.json();
 
       if (response.ok) {
-        // Update local state immediately — no need to refetch
+        // Update local state immediately â€” no need to refetch
         setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status } : o));
         setSelectedOrder(prev => prev ? { ...prev, status } : null);
-        const label = status === 'confirmed' ? 'confirmed ✅ — confirmation email sent to customer'
-          : status === 'shipped' ? 'marked as shipped 🚚 — shipping email sent'
-          : status === 'delivered' ? 'marked as delivered 🎉'
-          : 'cancelled ❌';
+        const label = status === 'confirmed' ? 'confirmed âœ… â€” confirmation email sent to customer'
+          : status === 'shipped' ? 'marked as shipped ðŸšš â€” shipping email sent'
+          : status === 'delivered' ? 'marked as delivered ðŸŽ‰'
+          : 'cancelled âŒ';
         alert(`Order ${label}`);
       } else {
         alert(data.error || 'Failed to update order');
@@ -5018,7 +4567,7 @@ function AdminOrders() {
                     <img src={item.imageUrl || a5xCarKit} alt={item.name} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />
                     <div>
                       <p><strong>{item.name}</strong></p>
-                      <p>Qty: {item.quantity} × {inr(item.price)}</p>
+                      <p>Qty: {item.quantity} Ã— {inr(item.price)}</p>
                     </div>
                     <p><strong>{inr(item.price * item.quantity)}</strong></p>
                   </div>
@@ -5050,7 +4599,7 @@ function AdminOrders() {
                     >
                       {updatingId === selectedOrder._id + 'confirmed'
                         ? <><div className="spinner" style={{ borderTopColor: '#0a0a0f' }} />Confirming...</>
-                        : <>✅ Confirm Order</>}
+                        : <>âœ… Confirm Order</>}
                     </button>
                   )}
                   {selectedOrder.status === 'confirmed' && (
@@ -5062,7 +4611,7 @@ function AdminOrders() {
                     >
                       {updatingId === selectedOrder._id + 'shipped'
                         ? <><div className="spinner" style={{ borderTopColor: '#fff' }} />Updating...</>
-                        : <>🚚 Mark as Shipped</>}
+                        : <>ðŸšš Mark as Shipped</>}
                     </button>
                   )}
                   {selectedOrder.status === 'shipped' && (
@@ -5074,7 +4623,7 @@ function AdminOrders() {
                     >
                       {updatingId === selectedOrder._id + 'delivered'
                         ? <><div className="spinner" style={{ borderTopColor: '#0a0a0f' }} />Updating...</>
-                        : <>🎉 Mark as Delivered</>}
+                        : <>ðŸŽ‰ Mark as Delivered</>}
                     </button>
                   )}
                   {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
@@ -5086,7 +4635,7 @@ function AdminOrders() {
                     >
                       {updatingId === selectedOrder._id + 'cancelled'
                         ? <><div className="spinner" style={{ borderTopColor: '#fff' }} />Cancelling...</>
-                        : <>❌ Cancel Order</>}
+                        : <>âŒ Cancel Order</>}
                     </button>
                   )}
                 </div>
@@ -5183,19 +4732,19 @@ function Footer() {
           </form>
           <div className="footer-contact-info">
             <div className="footer-contact-item">
-              <span className="footer-contact-icon">📧</span>
+              <span className="footer-contact-icon">ðŸ“§</span>
               <a href="mailto:a5x.industries@gmail.com" style={{color:'inherit',textDecoration:'none'}}>a5x.industries@gmail.com</a>
             </div>
             <div className="footer-contact-item">
-              <span className="footer-contact-icon">📱</span>
+              <span className="footer-contact-icon">ðŸ“±</span>
               <a href="tel:+918269858259" style={{color:'inherit',textDecoration:'none'}}>+91 82698 58259</a>
             </div>
             <div className="footer-contact-item">
-              <span className="footer-contact-icon">📱</span>
+              <span className="footer-contact-icon">ðŸ“±</span>
               <a href="tel:+919340212224" style={{color:'inherit',textDecoration:'none'}}>+91 93402 12224</a>
             </div>
             <div className="footer-contact-item">
-              <span className="footer-contact-icon">📍</span>
+              <span className="footer-contact-icon">ðŸ“</span>
               <span>India</span>
             </div>
           </div>
@@ -5206,7 +4755,7 @@ function Footer() {
       <div className="footer-bottom">
         <div className="footer-bottom-inner">
           <p className="footer-copyright">
-            © {currentYear} <strong>A5X Industries</strong>. All rights reserved.
+            Â© {currentYear} <strong>A5X Industries</strong>. All rights reserved.
           </p>
           <div className="footer-bottom-links">
             <Link to="/contact">Terms of Service</Link>
@@ -5216,7 +4765,7 @@ function Footer() {
             <Link to="/contact">Cookie Policy</Link>
           </div>
           <p className="footer-made-with">
-            Made with <span style={{color:'#ef4444'}}>♥</span> for makers
+            Made with <span style={{color:'#ef4444'}}>â™¥</span> for makers
           </p>
         </div>
       </div>
@@ -5225,7 +4774,25 @@ function Footer() {
 }
 
 function AdminAuthGuard() {
-  return localStorage.getItem("a5x-admin-token") ? <Outlet /> : <Navigate to="/admin/login" replace />;
+  const navigate = useNavigate();
+  const token = localStorage.getItem("a5x-admin-token");
+  
+  // Verify token is still valid by checking with backend
+  useEffect(() => {
+    if (!token) return;
+    fetch(`${API_BASE}/api/auth/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).then(res => {
+      if (res.status === 401 || res.status === 403) {
+        // Token invalid - clear and redirect to login
+        localStorage.removeItem("a5x-admin-token");
+        localStorage.removeItem("a5x-admin-user");
+        navigate("/admin/login");
+      }
+    }).catch(() => {});
+  }, []);
+  
+  return token ? <Outlet /> : <Navigate to="/admin/login" replace />;
 }
 
 function AdminLogin() {
@@ -5361,11 +4928,11 @@ function BulkProductUpload() {
       if (values.length >= 3 && /^\d+$/.test(values[0])) {
         const rowNum = values[0];
         const description = values[1];
-        const priceStr = values[2]?.replace(/[₹,\s]/g, '');
+        const priceStr = values[2]?.replace(/[â‚¹,\s]/g, '');
         const price = parseFloat(priceStr);
         const qty = values[3] ? parseInt(values[3]) : 10;
         
-        console.log(`Row ${rowNum}: ${description} - ₹${price} x ${qty}`);
+        console.log(`Row ${rowNum}: ${description} - â‚¹${price} x ${qty}`);
         
         if (description && price > 0) {
           products.push({
@@ -5404,9 +4971,9 @@ function BulkProductUpload() {
         for (let j = 0; j < values.length; j++) {
           const val = values[j];
           
-          // Check if this looks like a price (contains ₹ or is a number)
-          if (/₹|^\d+\.?\d*$/.test(val)) {
-            const priceStr = val.replace(/[₹,\s]/g, '');
+          // Check if this looks like a price (contains â‚¹ or is a number)
+          if (/â‚¹|^\d+\.?\d*$/.test(val)) {
+            const priceStr = val.replace(/[â‚¹,\s]/g, '');
             const parsedPrice = parseFloat(priceStr);
             if (parsedPrice > 0 && parsedPrice < 10000) {
               price = parsedPrice;
@@ -5414,7 +4981,7 @@ function BulkProductUpload() {
           }
           
           // Check if this looks like a product name (longer text)
-          if (val.length > 5 && !/^\d+\.?\d*$/.test(val) && !val.includes('₹')) {
+          if (val.length > 5 && !/^\d+\.?\d*$/.test(val) && !val.includes('â‚¹')) {
             name = val;
           }
           
@@ -5428,7 +4995,7 @@ function BulkProductUpload() {
         }
         
         if (name && price > 0) {
-          console.log(`Found: ${name} - ₹${price}`);
+          console.log(`Found: ${name} - â‚¹${price}`);
           products.push({
             id: uid(),
             name: name,
@@ -5587,7 +5154,7 @@ function BulkProductUpload() {
             try {
               // Load your 62 products from second invoice
               const invoice2Products = [
-                {name:"LEDs 5 color each 120pcs",price:0.90,qty:600},{name:"RGB LED",price:4.00,qty:150},{name:"GL-12 830 Points Solderless Breadboard",price:65.00,qty:15},{name:"Solderless Breadboard Half Size 400 Point",price:47.00,qty:18},{name:"Purf Board(6x4 Inch)",price:35.00,qty:24},{name:"11.1V 2200mAh 3S 80C Lithium-Polymer Rechargeable Battery",price:1589.00,qty:4},{name:"18650 3.7V 2000mAh Li-ion Battery",price:52.00,qty:36},{name:"9v Battery with connector",price:24.00,qty:20},{name:"RESISTOR Kit 30 values 600 pcs",price:420.00,qty:2},{name:"CAPACITOR Kit 20 values 400 pcs with electrolite capacitor",price:530.00,qty:2},{name:"200 RPM 12v DC Center Shaft metal Gear Motor",price:155.00,qty:33},{name:"TowerPro SG90 9g Micro Servo Motor – 180 Degree Rotation",price:97.00,qty:20},{name:"N20 12V 400 Rpm Micro Metal Gear Motor",price:240.00,qty:10},{name:"300 RPM Dual Shaft BO Motor + Wheel",price:72.00,qty:28},{name:"diode kits 10 values each 10",price:3.00,qty:100},{name:"transistor kits 5 values each 10 pcs",price:7.00,qty:50},{name:"Test Leads Alligator Clip 1 pair",price:10.00,qty:24},{name:"9v Battery Connector + DC Jack(Battery Connector Cap)",price:14.00,qty:20},{name:"HOOKUP WIRES ( MULTI COLOUR ROLL) 10m each 5 color",price:30.00,qty:50},{name:"MALE TO MALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"MALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"FEMALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"BERG STRIP (PIN HEADER) MALE",price:8.00,qty:50},{name:"BERG STRIP (PIN HEADER) FEMALE",price:12.00,qty:50},{name:"Arduino Nano R3 Board Soldered",price:210.00,qty:6},{name:"Arduino Uno R3 SMD CH340G ATmega328p Development Board",price:240.00,qty:14},{name:"Arduino Mega 2560 R3",price:1250.00,qty:2},{name:"ESP32 Wifi & Bluetooth Development Board 38 Pin",price:350.00,qty:18},{name:"NodeMcu ESP8266 V3 Lua CH340 Wifi Dev. Board",price:220.00,qty:10},{name:"ESP32 CAM WiFi Module with OV3660 Camera Module 3MP",price:610.00,qty:3},{name:"Cable for Arduino UNO/MEGA (USB A to B)-30cm",price:40.00,qty:5},{name:"Nano USB Cable - 1 Meter ( USB To MiniUSB)",price:60.00,qty:5},{name:"Micro USB Cable for ESP32/NodeMCU -1 Meter",price:60.00,qty:5},{name:"Type C to USB Cable 2.0 (1 m)",price:60.00,qty:5},{name:"1602 (16x2) LCD Display with I2C/IIC interface",price:170.00,qty:6},{name:"DC-DC ADJUSTABLE VOLT. REGULATOR LM2596 3A",price:65.00,qty:6},{name:"DC to DC Step Up Boost Converter 4A XL6009",price:69.00,qty:6},{name:"3-6V Mini Submersible Water Pump",price:60.00,qty:6},{name:"35mm Piezoelectric Sensor WITH WIRE",price:30.00,qty:15},{name:"MAX7219 8x8 LED Dot Matrix Display Module",price:155.00,qty:4},{name:"HC-05 6pin Bluetooth Module with Button ORIGINAL",price:270.00,qty:3},{name:"TM1637 4-Digit LED Display Red",price:68.00,qty:3},{name:"Laser Diode Module",price:35.00,qty:12},{name:"Photo-resistor LDR Light Sensor Module 3 Pin",price:36.00,qty:15},{name:"4x4 Matrix Membrane Keypad 16 Key Switch Module",price:60.00,qty:4},{name:"DUAL AXIS XY / PS2 JOYSTICK MODULE",price:45.00,qty:6},{name:"Active Buzzer Module 3.3-5V for Arduino",price:21.00,qty:8},{name:"2A Dual L298N Motor Driver Module",price:122.00,qty:20},{name:"Motor Driver TB6612FNG Module",price:160.00,qty:14},{name:"L293D Motor Driver Shield For Arduino",price:150.00,qty:2},{name:"Dual DC Motor Driver bts7960 43A H bridge PWM",price:360.00,qty:8},{name:"ISD1820 Sound Board Recording Recorder Playback Module",price:160.00,qty:3},{name:"TIMER IC LM 555",price:15.00,qty:3},{name:"BUTTON SWITCH SET 5 tpye each 10",price:8.00,qty:50},{name:"TTP223B Capacitive Single Touch Sensor Module",price:38.00,qty:12},{name:"IR OBSTICLE SENSOR MODULE",price:45.00,qty:29},{name:"GY-521 MPU6050 Module – Triple Axis Accelerometer And Gyro Module",price:180.00,qty:3},{name:"MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2",price:130.00,qty:12},{name:"TCRT5000 IR Sensor Module",price:52.00,qty:10},{name:"Ultrasonic distance Ranging module detector sensor HC-SR04",price:65.00,qty:12},{name:"PIR Motion Sensor",price:67.00,qty:6},{name:"Pulse Sensor - Heart Rate Detector",price:150.00,qty:4}
+                {name:"LEDs 5 color each 120pcs",price:0.90,qty:600},{name:"RGB LED",price:4.00,qty:150},{name:"GL-12 830 Points Solderless Breadboard",price:65.00,qty:15},{name:"Solderless Breadboard Half Size 400 Point",price:47.00,qty:18},{name:"Purf Board(6x4 Inch)",price:35.00,qty:24},{name:"11.1V 2200mAh 3S 80C Lithium-Polymer Rechargeable Battery",price:1589.00,qty:4},{name:"18650 3.7V 2000mAh Li-ion Battery",price:52.00,qty:36},{name:"9v Battery with connector",price:24.00,qty:20},{name:"RESISTOR Kit 30 values 600 pcs",price:420.00,qty:2},{name:"CAPACITOR Kit 20 values 400 pcs with electrolite capacitor",price:530.00,qty:2},{name:"200 RPM 12v DC Center Shaft metal Gear Motor",price:155.00,qty:33},{name:"TowerPro SG90 9g Micro Servo Motor â€“ 180 Degree Rotation",price:97.00,qty:20},{name:"N20 12V 400 Rpm Micro Metal Gear Motor",price:240.00,qty:10},{name:"300 RPM Dual Shaft BO Motor + Wheel",price:72.00,qty:28},{name:"diode kits 10 values each 10",price:3.00,qty:100},{name:"transistor kits 5 values each 10 pcs",price:7.00,qty:50},{name:"Test Leads Alligator Clip 1 pair",price:10.00,qty:24},{name:"9v Battery Connector + DC Jack(Battery Connector Cap)",price:14.00,qty:20},{name:"HOOKUP WIRES ( MULTI COLOUR ROLL) 10m each 5 color",price:30.00,qty:50},{name:"MALE TO MALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"MALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"FEMALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"BERG STRIP (PIN HEADER) MALE",price:8.00,qty:50},{name:"BERG STRIP (PIN HEADER) FEMALE",price:12.00,qty:50},{name:"Arduino Nano R3 Board Soldered",price:210.00,qty:6},{name:"Arduino Uno R3 SMD CH340G ATmega328p Development Board",price:240.00,qty:14},{name:"Arduino Mega 2560 R3",price:1250.00,qty:2},{name:"ESP32 Wifi & Bluetooth Development Board 38 Pin",price:350.00,qty:18},{name:"NodeMcu ESP8266 V3 Lua CH340 Wifi Dev. Board",price:220.00,qty:10},{name:"ESP32 CAM WiFi Module with OV3660 Camera Module 3MP",price:610.00,qty:3},{name:"Cable for Arduino UNO/MEGA (USB A to B)-30cm",price:40.00,qty:5},{name:"Nano USB Cable - 1 Meter ( USB To MiniUSB)",price:60.00,qty:5},{name:"Micro USB Cable for ESP32/NodeMCU -1 Meter",price:60.00,qty:5},{name:"Type C to USB Cable 2.0 (1 m)",price:60.00,qty:5},{name:"1602 (16x2) LCD Display with I2C/IIC interface",price:170.00,qty:6},{name:"DC-DC ADJUSTABLE VOLT. REGULATOR LM2596 3A",price:65.00,qty:6},{name:"DC to DC Step Up Boost Converter 4A XL6009",price:69.00,qty:6},{name:"3-6V Mini Submersible Water Pump",price:60.00,qty:6},{name:"35mm Piezoelectric Sensor WITH WIRE",price:30.00,qty:15},{name:"MAX7219 8x8 LED Dot Matrix Display Module",price:155.00,qty:4},{name:"HC-05 6pin Bluetooth Module with Button ORIGINAL",price:270.00,qty:3},{name:"TM1637 4-Digit LED Display Red",price:68.00,qty:3},{name:"Laser Diode Module",price:35.00,qty:12},{name:"Photo-resistor LDR Light Sensor Module 3 Pin",price:36.00,qty:15},{name:"4x4 Matrix Membrane Keypad 16 Key Switch Module",price:60.00,qty:4},{name:"DUAL AXIS XY / PS2 JOYSTICK MODULE",price:45.00,qty:6},{name:"Active Buzzer Module 3.3-5V for Arduino",price:21.00,qty:8},{name:"2A Dual L298N Motor Driver Module",price:122.00,qty:20},{name:"Motor Driver TB6612FNG Module",price:160.00,qty:14},{name:"L293D Motor Driver Shield For Arduino",price:150.00,qty:2},{name:"Dual DC Motor Driver bts7960 43A H bridge PWM",price:360.00,qty:8},{name:"ISD1820 Sound Board Recording Recorder Playback Module",price:160.00,qty:3},{name:"TIMER IC LM 555",price:15.00,qty:3},{name:"BUTTON SWITCH SET 5 tpye each 10",price:8.00,qty:50},{name:"TTP223B Capacitive Single Touch Sensor Module",price:38.00,qty:12},{name:"IR OBSTICLE SENSOR MODULE",price:45.00,qty:29},{name:"GY-521 MPU6050 Module â€“ Triple Axis Accelerometer And Gyro Module",price:180.00,qty:3},{name:"MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2",price:130.00,qty:12},{name:"TCRT5000 IR Sensor Module",price:52.00,qty:10},{name:"Ultrasonic distance Ranging module detector sensor HC-SR04",price:65.00,qty:12},{name:"PIR Motion Sensor",price:67.00,qty:6},{name:"Pulse Sensor - Heart Rate Detector",price:150.00,qty:4}
               ];
               
               const products = invoice2Products.map(item => ({
@@ -5806,7 +5373,7 @@ function ProductForm() {
     }
   }
   
-  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}>{error && <div style={{padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px'}}>{error}</div>}<input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || `A5X-${Date.now().toString(36).toUpperCase()}`} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price (₹)*" required /><input name="mrp" type="number" defaultValue={product?.mrp} placeholder="MRP (₹)*" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} placeholder="Min Quantity" /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" />
+  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}>{error && <div style={{padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px'}}>{error}</div>}<input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || `A5X-${Date.now().toString(36).toUpperCase()}`} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price (â‚¹)*" required /><input name="mrp" type="number" defaultValue={product?.mrp} placeholder="MRP (â‚¹)*" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} placeholder="Min Quantity" /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" />
     
     <h4 style={{marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff'}}>Product Images (Max 5)</h4>
     <div style={{marginBottom: '1rem'}}>
@@ -5890,7 +5457,7 @@ function ProductForm() {
                 fontWeight: '700'
               }}
             >
-              ×
+              Ã—
             </button>
           </div>
         ))}
@@ -6082,7 +5649,7 @@ function KitForm() {
                 fontWeight: '700'
               }}
             >
-              ×
+              Ã—
             </button>
           </div>
         ))}
@@ -6127,14 +5694,14 @@ function AdminCourses() {
               <h3 className="admin-course-title">{course.title}</h3>
               <p className="admin-course-meta">
                 <span>{course.category}</span>
-                <span>·</span>
+                <span>Â·</span>
                 <span>{course.videos?.length || 0} videos</span>
-                <span>·</span>
+                <span>Â·</span>
                 <span>By {course.instructor || 'Unknown'}</span>
               </p>
               {course.youtubeUrl && (
                 <a href={course.youtubeUrl} target="_blank" rel="noopener noreferrer" className="admin-course-yt-link">
-                  🔗 YouTube Link
+                  ðŸ”— YouTube Link
                 </a>
               )}
             </div>
@@ -6249,11 +5816,11 @@ function CourseForm() {
         </div>
 
         <div className="admin-form-group">
-          <label className="admin-label">🎬 YouTube Video Link (Direct Watch Link)</label>
+          <label className="admin-label">ðŸŽ¬ YouTube Video Link (Direct Watch Link)</label>
           <input
             name="youtubeUrl"
             defaultValue={course?.youtubeUrl}
-            placeholder="https://www.youtube.com/watch?v=... (students click Watch Now → opens this)"
+            placeholder="https://www.youtube.com/watch?v=... (students click Watch Now â†’ opens this)"
           />
           <small style={{ color: 'var(--brand-steel)', fontSize: '12px', marginTop: '4px' }}>
             Paste your YouTube video URL here. When students click "Watch Now", this link will open directly.
@@ -6291,7 +5858,7 @@ function CourseForm() {
                   <img src={video.thumbnailUrl || a5xCarKit} alt="" className="admin-video-thumb" />
                   <div className="admin-video-info">
                     <strong>{video.title}</strong>
-                    <span>{video.videoUrl ? '🔗 YouTube Link' : '📁 No video'} • {seconds(video.duration || 0)}</span>
+                    <span>{video.videoUrl ? 'ðŸ”— YouTube Link' : 'ðŸ“ No video'} â€¢ {seconds(video.duration || 0)}</span>
                   </div>
                 </div>
               ))}
@@ -6375,7 +5942,7 @@ function AdminVideoUpload() {
         </div>
 
         <div className="admin-form-group">
-          <label className="admin-label">🎬 YouTube Video URL *</label>
+          <label className="admin-label">ðŸŽ¬ YouTube Video URL *</label>
           <input
             name="videoUrl"
             placeholder="https://www.youtube.com/watch?v=..."
@@ -6389,7 +5956,7 @@ function AdminVideoUpload() {
                 alt="YouTube thumbnail"
                 style={{ width: '100%', borderRadius: '10px' }}
               />
-              <p style={{ color: '#10b981', fontSize: '13px', marginTop: '6px' }}>✅ YouTube video detected! ID: {youtubeId}</p>
+              <p style={{ color: '#10b981', fontSize: '13px', marginTop: '6px' }}>âœ… YouTube video detected! ID: {youtubeId}</p>
             </div>
           )}
         </div>
@@ -6525,24 +6092,24 @@ function AdminContacts() {
                 </div>
                 <div className="contact-detail-fields">
                   <div className="contact-field">
-                    <span className="contact-field-label">📧 Email</span>
-                    <a href={`mailto:${selected.email}`} className="contact-field-value contact-link">{selected.email || '—'}</a>
+                    <span className="contact-field-label">ðŸ“§ Email</span>
+                    <a href={`mailto:${selected.email}`} className="contact-field-value contact-link">{selected.email || 'â€”'}</a>
                   </div>
                   <div className="contact-field">
-                    <span className="contact-field-label">📱 Phone</span>
-                    <a href={`tel:${selected.phone}`} className="contact-field-value contact-link">{selected.phone || '—'}</a>
+                    <span className="contact-field-label">ðŸ“± Phone</span>
+                    <a href={`tel:${selected.phone}`} className="contact-field-value contact-link">{selected.phone || 'â€”'}</a>
                   </div>
                   <div className="contact-field">
-                    <span className="contact-field-label">🏢 Organization</span>
-                    <span className="contact-field-value">{selected.organization || '—'}</span>
+                    <span className="contact-field-label">ðŸ¢ Organization</span>
+                    <span className="contact-field-value">{selected.organization || 'â€”'}</span>
                   </div>
                   <div className="contact-field">
-                    <span className="contact-field-label">📅 Date</span>
+                    <span className="contact-field-label">ðŸ“… Date</span>
                     <span className="contact-field-value">{new Date(selected.createdAt).toLocaleString('en-IN')}</span>
                   </div>
                 </div>
                 <div className="contact-message-box">
-                  <p className="contact-field-label">💬 Message</p>
+                  <p className="contact-field-label">ðŸ’¬ Message</p>
                   <p className="contact-message-text">{selected.message}</p>
                 </div>
                 <div className="contact-reply-actions">
@@ -6596,7 +6163,7 @@ function AdminSettings() {
         <textarea placeholder="SEO description" />
 
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 24, paddingTop: 24 }}>
-          <h3 style={{ marginBottom: 12, color: '#00ff88', fontSize: 16 }}>💳 UPI Payment Settings</h3>
+          <h3 style={{ marginBottom: 12, color: '#00ff88', fontSize: 16 }}>ðŸ’³ UPI Payment Settings</h3>
           <p style={{ fontSize: 13, opacity: 0.6, marginBottom: 12 }}>
             Enter your UPI ID. Customers who select "Online Payment" at checkout will see a QR code to scan.
           </p>
@@ -6623,14 +6190,14 @@ function AdminSettings() {
         </div>
 
         <button type="submit" style={{ marginTop: 16 }}>
-          {saved ? '✅ Saved!' : 'Save Settings'}
+          {saved ? 'âœ… Saved!' : 'Save Settings'}
         </button>
       </form>
     </AdminPage>
   );
 }
 
-// ── SCROLL TO TOP ON ROUTE CHANGE ──
+// â”€â”€ SCROLL TO TOP ON ROUTE CHANGE â”€â”€
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {

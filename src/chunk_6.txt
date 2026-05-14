@@ -1,0 +1,1015 @@
+﻿uctsLoaded } = useAdminStore();
+  const [query, setQuery] = useState("");
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
+  const filtered = products.filter((product) => product.name.toLowerCase().includes(query.toLowerCase()));
+  
+  // Always load fresh products from API on mount
+  useEffect(() => {
+    loadProducts();
+  }, []);
+  
+  return (
+    <AdminPage title={compact ? "Recently Added Products" : "Products"}>
+      {!compact && (
+        <>
+          <div className="admin-tools">
+            <input placeholder="Search products" value={query} onChange={(event) => setQuery(event.target.value)} />
+            <button onClick={() => setShowBulkUpload(!showBulkUpload)}>
+              <Upload size={16} />
+              {showBulkUpload ? 'Hide' : 'Bulk Upload'}
+            </button>
+            <Link to="/admin/products/new">+ Add New Product</Link>
+            <button onClick={() => loadProducts()} title="Refresh products from database">
+              <RefreshCw size={16} />
+              Refresh
+            </button>
+          </div>
+          
+          {showBulkUpload && <BulkProductUpload />}
+        </>
+      )}
+      
+      <table>
+        <tbody>
+          {filtered.slice(0, compact ? 5 : filtered.length).map((product) => (
+            <tr key={product.id}>
+              <td><img src={product.imageUrl || motorDriver} alt="" /></td>
+              <td>{product.name}<small>{product.sku}</small></td>
+              <td>{product.category}</td>
+              <td>{inr(Number(product.price))}</td>
+              <td>{product.inStock ? "In Stock" : "Out"}</td>
+              <td>
+                <Link to={`/admin/products/${product.id}`}><Pencil size={16} /></Link>
+                <button onClick={() => confirm("Delete product?") && deleteProduct(product.id)}><Trash2 size={16} /></button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </AdminPage>
+  );
+}
+
+function ProductForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { products, addProduct, updateProduct, error, clearError } = useAdminStore();
+  const product = products.find((item) => item.id === id);
+  const upload = useFileUpload({ types: ["image"], maxMb: 5 });
+  const [deliveryType, setDeliveryType] = useState(product?.quickDelivery === true ? 'quick' : product?.quickDelivery === false ? 'scheduled' : 'all');
+  const [saving, setSaving] = useState(false);
+  const [images, setImages] = useState(product?.images || []);
+  const [imagePreviews, setImagePreviews] = useState(product?.images || []);
+  
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files).slice(0, 5); // Max 5 images
+    
+    const readers = files.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => resolve(ev.target.result);
+        reader.readAsDataURL(file);
+      });
+    });
+    
+    Promise.all(readers).then(results => {
+      setImagePreviews(results);
+      setImages(results);
+    });
+  };
+  
+  const removeImage = (index) => {
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  async function submit(event) {
+    event.preventDefault();
+    setSaving(true);
+    clearError();
+    const data = Object.fromEntries(new FormData(event.currentTarget));
+    const quickDeliveryValue = data.deliveryType === 'all' ? undefined : data.deliveryType === 'quick';
+    const payload = { 
+      ...product, 
+      ...data, 
+      price: Number(data.price), 
+      mrp: Number(data.mrp || data.price), 
+      minQty: Number(data.minQty || 1), 
+      rating: Number(data.rating || 4.7), 
+      inStock: data.inStock === "on", 
+      quickDelivery: quickDeliveryValue, 
+      imageUrl: images[0] || product?.imageUrl || upload.previewUrl || "",
+      images: images.length > 0 ? images : (product?.images || [])
+    };
+    
+    try {
+      if (product) {
+        await updateProduct(product.id, payload);
+      } else {
+        await addProduct(payload);
+      }
+      navigate("/admin/products");
+    } catch (err) {
+      // Error is already set in store, just stop saving state
+      console.error('Failed to save product:', err);
+    } finally {
+      setSaving(false);
+    }
+  }
+  
+  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}>{error && <div style={{padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px'}}>{error}</div>}<input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || `A5X-${Date.now().toString(36).toUpperCase()}`} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price (â‚¹)*" required /><input name="mrp" type="number" defaultValue={product?.mrp} placeholder="MRP (â‚¹)*" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} placeholder="Min Quantity" /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" />
+    
+    <h4 style={{marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff'}}>Product Images (Max 5)</h4>
+    <div style={{marginBottom: '1rem'}}>
+      <input 
+        type="file" 
+        accept="image/*" 
+        multiple 
+        onChange={handleImageChange}
+        style={{
+          padding: '12px',
+          border: '2px dashed rgba(0, 229, 255, 0.3)',
+          borderRadius: '8px',
+          background: 'rgba(0, 229, 255, 0.05)',
+          color: '#fff',
+          cursor: 'pointer',
+          width: '100%'
+        }}
+      />
+      <p style={{fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: '8px'}}>
+        Select up to 5 images. First image will be the main thumbnail.
+      </p>
+    </div>
+    
+    {imagePreviews.length > 0 && (
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+        gap: '12px',
+        marginBottom: '1rem'
+      }}>
+        {imagePreviews.map((preview, index) => (
+          <div key={index} style={{
+            position: 'relative',
+            aspectRatio: '1',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            border: index === 0 ? '2px solid #00e5ff' : '1px solid rgba(255,255,255,0.2)'
+          }}>
+            <img 
+              src={preview} 
+              alt={`Preview ${index + 1}`}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+            {index === 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '4px',
+                left: '4px',
+                background: '#00e5ff',
+                color: '#000',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontSize: '10px',
+                fontWeight: '700'
+              }}>
+                MAIN
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => removeImage(index)}
+              style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                background: 'rgba(255, 0, 0, 0.8)',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#fff',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '700'
+              }}
+            >
+              Ã—
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+    
+    <input name="tags" placeholder="Tags, comma-separated" /><input name="rating" type="number" step=".1" defaultValue={product?.rating || 4.7} placeholder="Rating (1-5)" /><button disabled={saving}>{saving ? 'Saving...' : 'Save Product'}</button><Link to="/admin/products">Cancel</Link></form></AdminPage>;
+}
+
+function FileDrop({ upload, accept = "image/*,video/*" }) {
+  return <label className="drop"><Upload /><span>{upload.previewUrl ? "Uploaded preview ready" : "Drop or click to upload"}</span><input type="file" accept={accept} onChange={(event) => upload.upload(event.target.files[0])} />{upload.progress > 0 && <i style={{ width: `${upload.progress}%` }} />}{upload.previewUrl && <img src={upload.previewUrl} alt="" />}{upload.error && <p>{upload.error}</p>}</label>;
+}
+
+function AdminKits() {
+  const { kits, deleteKit, loadKits } = useAdminStore();
+
+  useEffect(() => {
+    loadKits();
+  }, []);
+
+  return <AdminPage title="Kits"><div className="admin-tools"><Link to="/admin/kits/new">+ Add New Kit</Link><button onClick={() => loadKits()} title="Refresh kits from database"><RefreshCw size={16} /> Refresh</button></div><table><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Items</th><th>Video</th><th>Actions</th></tr></thead><tbody>{kits.map((kit) => <tr key={kit.id}><td><img src={kit.imageUrl || a5xCarKit} alt="" /></td><td>{kit.name}<small>{kit.tier}</small></td><td>{inr(Number(kit.price))}</td><td>{kit.includes?.length || 0} items</td><td>{kit.videoUrl ? <span style={{color: '#0f0', display: 'flex', alignItems: 'center', gap: '4px'}}><PlayCircle size={14} /> Yes</span> : <span style={{opacity: 0.5}}>No</span>}</td><td><Link to={`/admin/kits/${kit.id}`}><Pencil size={16} /></Link><button onClick={() => confirm("Delete kit?") && deleteKit(kit.id)}><Trash2 size={16} /></button></td></tr>)}</tbody></table></AdminPage>;
+}
+
+function KitForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { kits, addKit, updateKit, error, clearError } = useAdminStore();
+  const kit = kits.find((item) => item.id === id);
+  const videoUpload = useFileUpload({ types: ["video"], maxMb: 500 });
+  const [saving, setSaving] = useState(false);
+  const [images, setImages] = useState(kit?.images || []);
+  const [imagePreviews, setImagePreviews] = useState(kit?.images || []);
+  
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files).slice(0, 5); // Max 5 images
+    
+    const readers = files.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => resolve(ev.target.result);
+        reader.readAsDataURL(file);
+      });
+    });
+    
+    Promise.all(readers).then(results => {
+      setImagePreviews(results);
+      setImages(results);
+    });
+  };
+  
+  const removeImage = (index) => {
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  async function submit(event) {
+    event.preventDefault();
+    setSaving(true);
+    clearError();
+    const data = Object.fromEntries(new FormData(event.currentTarget));
+    
+    console.log('=== KIT FORM SUBMIT DEBUG ===');
+    console.log('Images state:', images);
+    console.log('Images length:', images.length);
+    console.log('First image:', images[0]?.substring(0, 50));
+    
+    const payload = { 
+      ...kit, 
+      ...data, 
+      price: Number(data.price), 
+      rating: Number(data.rating || 4.8), 
+      includes: data.includes ? data.includes.split(",").map((item) => item.trim()).filter(Boolean) : [],
+      imageUrl: images[0] || kit?.imageUrl || data.imageUrl || "",
+      images: images.length > 0 ? images : (kit?.images || []),
+      videoUrl: videoUpload.previewUrl || kit?.videoUrl || "",
+      videoDuration: videoUpload.duration || kit?.videoDuration || 0
+    };
+    
+    console.log('Payload images:', payload.images);
+    console.log('Payload images length:', payload.images.length);
+    console.log('=== END DEBUG ===');
+    
+    try {
+      if (kit) {
+        await updateKit(kit.id, payload);
+      } else {
+        await addKit(payload);
+      }
+      navigate("/admin/kits");
+    } catch (err) {
+      console.error('Failed to save kit:', err);
+    } finally {
+      setSaving(false);
+    }
+  }
+  
+  return <AdminPage title={kit ? "Edit Kit" : "Add Kit"}><form className="admin-form" onSubmit={submit}>
+    {error && <div style={{padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px'}}>{error}</div>}
+    <input name="name" defaultValue={kit?.name} placeholder="Kit Name" required />
+    <select name="tier" defaultValue={kit?.tier || "STARTER KIT"}>
+      <option>STARTER KIT</option>
+      <option>PRO KIT</option>
+      <option>ELITE KIT</option>
+    </select>
+    <input name="price" type="number" defaultValue={kit?.price} placeholder="Price" />
+    <textarea name="description" defaultValue={kit?.description} placeholder="Description" />
+    <input name="includes" defaultValue={kit?.includes?.join(", ")} placeholder="What's included (comma separated)" />
+    <input name="rating" type="number" step=".1" defaultValue={kit?.rating || 4.8} />
+    
+    <h4 style={{marginTop: '2rem', marginBottom: '1rem'}}>Kit Images (Max 5)</h4>
+    <div style={{marginBottom: '1rem'}}>
+      <input 
+        type="file" 
+        accept="image/*" 
+        multiple 
+        onChange={handleImageChange}
+        style={{
+          padding: '12px',
+          border: '2px dashed rgba(0, 229, 255, 0.3)',
+          borderRadius: '8px',
+          background: 'rgba(0, 229, 255, 0.05)',
+          color: '#fff',
+          cursor: 'pointer',
+          width: '100%'
+        }}
+      />
+      <p style={{fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: '8px'}}>
+        Select up to 5 images. First image will be the main thumbnail.
+      </p>
+    </div>
+    
+    {imagePreviews.length > 0 && (
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+        gap: '12px',
+        marginBottom: '1rem'
+      }}>
+        {imagePreviews.map((preview, index) => (
+          <div key={index} style={{
+            position: 'relative',
+            aspectRatio: '1',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            border: index === 0 ? '2px solid #00e5ff' : '1px solid rgba(255,255,255,0.2)'
+          }}>
+            <img 
+              src={preview} 
+              alt={`Preview ${index + 1}`}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+            {index === 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '4px',
+                left: '4px',
+                background: '#00e5ff',
+                color: '#000',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontSize: '10px',
+                fontWeight: '700'
+              }}>
+                MAIN
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => removeImage(index)}
+              style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                background: 'rgba(255, 0, 0, 0.8)',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#fff',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '700'
+              }}
+            >
+              Ã—
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+    
+    <input name="imageUrl" defaultValue={kit?.imageUrl} placeholder="Or single image URL (fallback)" />
+    
+    <h4 style={{marginTop: '2rem', marginBottom: '1rem'}}>Premium Kit Video (Optional)</h4>
+    <FileDrop upload={videoUpload} accept="video/mp4,video/webm,video/quicktime" />
+    
+    <button disabled={saving}>{saving ? 'Saving...' : 'Save Kit'}</button>
+  </form></AdminPage>;
+}
+
+function AdminCourses() {
+  const { courses, deleteCourse, updateCourse } = useAdminStore();
+  return (
+    <AdminPage title="Courses & Videos">
+      <div className="admin-tools">
+        <Link to="/admin/courses/new" className="btn">+ New Course</Link>
+      </div>
+      <div className="admin-courses-grid">
+        {courses.length === 0 && (
+          <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '60px', color: 'var(--brand-steel)' }}>
+            <p>No courses yet. Create your first course!</p>
+          </div>
+        )}
+        {courses.map((course) => (
+          <div key={course.id} className="admin-course-card">
+            {/* Thumbnail */}
+            <div className="admin-course-thumb">
+              <img src={course.thumbnailUrl || a5xCarKit} alt={course.title} />
+              <span className={`admin-course-status ${course.isPublished ? 'published' : 'draft'}`}>
+                {course.isPublished ? 'Published' : 'Draft'}
+              </span>
+              <span className="admin-course-level-tag">{course.level}</span>
+            </div>
+
+            {/* Info */}
+            <div className="admin-course-info">
+              <h3 className="admin-course-title">{course.title}</h3>
+              <p className="admin-course-meta">
+                <span>{course.category}</span>
+                <span>Â·</span>
+                <span>{course.videos?.length || 0} videos</span>
+                <span>Â·</span>
+                <span>By {course.instructor || 'Unknown'}</span>
+              </p>
+              {course.youtubeUrl && (
+                <a href={course.youtubeUrl} target="_blank" rel="noopener noreferrer" className="admin-course-yt-link">
+                  ðŸ”— YouTube Link
+                </a>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="admin-course-actions">
+              <label className="admin-course-toggle">
+                <input
+                  type="checkbox"
+                  checked={course.isPublished}
+                  onChange={(e) => updateCourse(course.id, { isPublished: e.target.checked })}
+                />
+                <span>{course.isPublished ? 'Published' : 'Draft'}</span>
+              </label>
+              <div className="admin-course-btns">
+                <Link to={`/admin/courses/${course.id}`} className="admin-course-edit-btn">
+                  <Pencil size={14} /> Edit
+                </Link>
+                <button className="admin-course-delete-btn" onClick={() => {
+                  if (confirm(`Delete "${course.title}"?`)) deleteCourse(course.id);
+                }}>
+                  <Trash2 size={14} /> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </AdminPage>
+  );
+}
+
+function CourseForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { courses, addCourse, updateCourse } = useAdminStore();
+  const course = courses.find((item) => item.id === id);
+  const [thumbnailPreview, setThumbnailPreview] = useState(course?.thumbnailUrl || '');
+
+  function handleThumbnailChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Convert to base64 so it persists in localStorage
+    const reader = new FileReader();
+    reader.onload = (ev) => setThumbnailPreview(ev.target.result);
+    reader.readAsDataURL(file);
+  }
+
+  function submit(event) {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(event.currentTarget));
+    const payload = {
+      ...course,
+      ...data,
+      thumbnailUrl: thumbnailPreview || course?.thumbnailUrl || a5xCarKit,
+      youtubeUrl: data.youtubeUrl || course?.youtubeUrl || '',
+      tags: data.tags ? data.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
+      isFeatured: data.isFeatured === "on",
+      isPublished: data.isPublished === "on",
+      videos: course?.videos || [],
+      createdAt: course?.createdAt || new Date().toISOString().slice(0, 10),
+    };
+    course ? updateCourse(course.id, payload) : addCourse(payload);
+    navigate("/admin/courses");
+  }
+
+  return (
+    <AdminPage title={course ? "Edit Course" : "New Course"}>
+      <form className="admin-form" onSubmit={submit}>
+        <div className="admin-form-group">
+          <label className="admin-label">Course Title *</label>
+          <input name="title" defaultValue={course?.title} placeholder="e.g. Robotics From Zero" required />
+        </div>
+
+        <div className="admin-form-group">
+          <label className="admin-label">Description</label>
+          <textarea name="description" defaultValue={course?.description} placeholder="What will students learn?" rows={3} />
+        </div>
+
+        <div className="admin-form-row">
+          <div className="admin-form-group">
+            <label className="admin-label">Level</label>
+            <select name="level" defaultValue={course?.level || "BEGINNER"}>
+              <option value="BEGINNER">Beginner</option>
+              <option value="INTERMEDIATE">Intermediate</option>
+              <option value="ADVANCED">Advanced</option>
+            </select>
+          </div>
+          <div className="admin-form-group">
+            <label className="admin-label">Category</label>
+            <input name="category" defaultValue={course?.category || "Robotics"} placeholder="e.g. Arduino, ESP32" />
+          </div>
+        </div>
+
+        <div className="admin-form-row">
+          <div className="admin-form-group">
+            <label className="admin-label">Instructor Name</label>
+            <input name="instructor" defaultValue={course?.instructor} placeholder="Instructor name" />
+          </div>
+          <div className="admin-form-group">
+            <label className="admin-label">Tags (comma separated)</label>
+            <input name="tags" defaultValue={course?.tags?.join(", ")} placeholder="Arduino, Motors, Sensors" />
+          </div>
+        </div>
+
+        <div className="admin-form-group">
+          <label className="admin-label">Course Thumbnail Image</label>
+          <input type="file" accept="image/*" onChange={handleThumbnailChange} />
+          {thumbnailPreview && (
+            <img src={thumbnailPreview} alt="Thumbnail preview" style={{ width: '200px', height: '120px', objectFit: 'cover', borderRadius: '8px', marginTop: '8px' }} />
+          )}
+        </div>
+
+        <div className="admin-form-group">
+          <label className="admin-label">ðŸŽ¬ YouTube Video Link (Direct Watch Link)</label>
+          <input
+            name="youtubeUrl"
+            defaultValue={course?.youtubeUrl}
+            placeholder="https://www.youtube.com/watch?v=... (students click Watch Now â†’ opens this)"
+          />
+          <small style={{ color: 'var(--brand-steel)', fontSize: '12px', marginTop: '4px' }}>
+            Paste your YouTube video URL here. When students click "Watch Now", this link will open directly.
+          </small>
+        </div>
+
+        <div className="admin-form-row">
+          <label className="admin-checkbox-label">
+            <input type="checkbox" name="isFeatured" defaultChecked={course?.isFeatured} />
+            <span>Featured Course</span>
+          </label>
+          <label className="admin-checkbox-label">
+            <input type="checkbox" name="isPublished" defaultChecked={course?.isPublished ?? true} />
+            <span>Published</span>
+          </label>
+        </div>
+
+        <button type="submit" className="admin-save-btn">
+          {course ? "Update Course" : "Create Course"}
+        </button>
+      </form>
+
+      {/* Videos Section */}
+      {course && (
+        <div className="admin-videos-section">
+          <div className="admin-videos-header">
+            <h3>Course Videos ({course.videos?.length || 0})</h3>
+            <Link to={`/admin/courses/${course.id}/videos/new`} className="btn">+ Add Video</Link>
+          </div>
+          {course.videos?.length > 0 ? (
+            <div className="admin-videos-list">
+              {course.videos.map((video, index) => (
+                <div key={video.id} className="admin-video-item">
+                  <span className="admin-video-num">{String(index + 1).padStart(2, '0')}</span>
+                  <img src={video.thumbnailUrl || a5xCarKit} alt="" className="admin-video-thumb" />
+                  <div className="admin-video-info">
+                    <strong>{video.title}</strong>
+                    <span>{video.videoUrl ? 'ðŸ”— YouTube Link' : 'ðŸ“ No video'} â€¢ {seconds(video.duration || 0)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p style={{ color: 'var(--brand-steel)', padding: '20px 0' }}>No videos yet. Add your first video!</p>
+          )}
+        </div>
+      )}
+    </AdminPage>
+  );
+}
+
+function AdminVideoUpload() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const addVideo = useAdminStore((state) => state.addVideo);
+  const [thumbnailPreview, setThumbnailPreview] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [youtubeId, setYoutubeId] = useState('');
+
+  function extractYoutubeId(url) {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/shorts\/([^&\n?#]+)/
+    ];
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    return '';
+  }
+
+  function handleYoutubeChange(e) {
+    const url = e.target.value;
+    setYoutubeUrl(url);
+    const ytId = extractYoutubeId(url);
+    setYoutubeId(ytId);
+    // Auto-set thumbnail from YouTube
+    if (ytId && !thumbnailPreview) {
+      setThumbnailPreview(`https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`);
+    }
+  }
+
+  function handleThumbnailChange(e) {
+    const file = e.target.files?.[0];
+    if (file) setThumbnailPreview(URL.createObjectURL(file));
+  }
+
+  function submit(event) {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(event.currentTarget));
+    const ytId = extractYoutubeId(youtubeUrl || data.videoUrl || '');
+    const embedUrl = ytId ? `https://www.youtube.com/embed/${ytId}` : (data.videoUrl || '');
+    const autoThumb = ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : '';
+
+    addVideo(id, {
+      ...data,
+      videoUrl: embedUrl || data.videoUrl || '',
+      youtubeId: ytId,
+      thumbnailUrl: thumbnailPreview || autoThumb || a5xCarKit,
+      duration: Number(data.duration || 300),
+      relatedProducts: data.relatedProducts ? data.relatedProducts.split(",").map((item) => item.trim()).filter(Boolean) : [],
+      publishedAt: new Date().toISOString().slice(0, 10)
+    });
+    navigate(`/admin/courses/${id}`);
+  }
+
+  return (
+    <AdminPage title="Add Video to Course">
+      <form className="admin-form" onSubmit={submit}>
+
+        <div className="admin-form-group">
+          <label className="admin-label">Video Title *</label>
+          <input name="title" placeholder="e.g. Introduction to Motors" required />
+        </div>
+
+        <div className="admin-form-group">
+          <label className="admin-label">Description</label>
+          <textarea name="description" placeholder="What will students learn in this video?" rows={3} />
+        </div>
+
+        <div className="admin-form-group">
+          <label className="admin-label">ðŸŽ¬ YouTube Video URL *</label>
+          <input
+            name="videoUrl"
+            placeholder="https://www.youtube.com/watch?v=..."
+            value={youtubeUrl}
+            onChange={handleYoutubeChange}
+          />
+          {youtubeId && (
+            <div style={{ marginTop: '12px', borderRadius: '10px', overflow: 'hidden', maxWidth: '400px' }}>
+              <img
+                src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
+                alt="YouTube thumbnail"
+                style={{ width: '100%', borderRadius: '10px' }}
+              />
+              <p style={{ color: '#10b981', fontSize: '13px', marginTop: '6px' }}>âœ… YouTube video detected! ID: {youtubeId}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="admin-form-group">
+          <label className="admin-label">Custom Thumbnail (Optional - auto-fetched from YouTube)</label>
+          <input type="file" accept="image/*" onChange={handleThumbnailChange} />
+          {thumbnailPreview && !youtubeId && (
+            <img src={thumbnailPreview} alt="Thumbnail" style={{ width: '200px', height: '120px', objectFit: 'cover', borderRadius: '8px', marginTop: '8px' }} />
+          )}
+        </div>
+
+        <div className="admin-form-row">
+          <div className="admin-form-group">
+            <label className="admin-label">Duration (seconds)</label>
+            <input name="duration" type="number" placeholder="e.g. 600 (10 min)" />
+          </div>
+          <div className="admin-form-group">
+            <label className="admin-label">Related Product IDs</label>
+            <input name="relatedProducts" placeholder="esp32, l298n (comma separated)" />
+          </div>
+        </div>
+
+        <button type="submit" className="admin-save-btn">Save Video</button>
+      </form>
+    </AdminPage>
+  );
+}
+
+function AdminContacts() {
+  const [contacts, setContacts] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [filter, setFilter] = useState('all');
+
+  useEffect(() => {
+    // Load from localStorage (fallback) + try API
+    const loadContacts = async () => {
+      try {
+        const token = localStorage.getItem('a5x-admin-token');
+        if (!token) {
+          const local = JSON.parse(localStorage.getItem('a5x-contacts') || '[]');
+          setContacts(local);
+          return;
+        }
+        const res = await fetch(`${API_BASE}/api/contacts`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setContacts(data.contacts || []);
+          return;
+        }
+        console.error('Contacts fetch failed:', res.status);
+      } catch (err) {
+        console.error('Contacts fetch error:', err);
+      }
+      // Fallback to localStorage
+      const local = JSON.parse(localStorage.getItem('a5x-contacts') || '[]');
+      setContacts(local);
+    };
+    loadContacts();
+  }, []);
+
+  const markRead = (id) => {
+    const updated = contacts.map(c => c.id === id ? { ...c, status: 'read' } : c);
+    setContacts(updated);
+    localStorage.setItem('a5x-contacts', JSON.stringify(updated));
+  };
+
+  const deleteContact = (id) => {
+    if (!confirm('Delete this contact?')) return;
+    const updated = contacts.filter(c => c.id !== id);
+    setContacts(updated);
+    localStorage.setItem('a5x-contacts', JSON.stringify(updated));
+    if (selected?.id === id) setSelected(null);
+  };
+
+  const filtered = filter === 'all' ? contacts : contacts.filter(c => c.status === filter || (!c.status && filter === 'new'));
+  const newCount = contacts.filter(c => !c.status || c.status === 'new').length;
+
+  return (
+    <AdminPage title="Contact Messages">
+      <div className="contacts-toolbar">
+        <div className="contacts-filters">
+          {[['all', 'All'], ['new', 'New'], ['read', 'Read']].map(([val, label]) => (
+            <button key={val} className={`contacts-filter-btn ${filter === val ? 'active' : ''}`} onClick={() => setFilter(val)}>
+              {label} {val === 'new' && newCount > 0 && <span className="contacts-badge">{newCount}</span>}
+            </button>
+          ))}
+        </div>
+        <span className="contacts-count">{filtered.length} messages</span>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="contacts-empty">
+          <MessageSquare size={48} style={{ opacity: 0.2, marginBottom: 16 }} />
+          <p>No contact messages yet</p>
+        </div>
+      ) : (
+        <div className="contacts-layout">
+          {/* List */}
+          <div className="contacts-list">
+            {filtered.map(contact => (
+              <div
+                key={contact.id}
+                className={`contact-item ${selected?.id === contact.id ? 'active' : ''} ${!contact.status || contact.status === 'new' ? 'unread' : ''}`}
+                onClick={() => { setSelected(contact); markRead(contact.id); }}
+              >
+                <div className="contact-item-avatar">{contact.name?.[0]?.toUpperCase() || '?'}</div>
+                <div className="contact-item-info">
+                  <div className="contact-item-name">{contact.name}</div>
+                  <div className="contact-item-preview">{contact.message?.slice(0, 50)}...</div>
+                  <div className="contact-item-time">{new Date(contact.createdAt).toLocaleDateString('en-IN')}</div>
+                </div>
+                {(!contact.status || contact.status === 'new') && <div className="contact-unread-dot" />}
+              </div>
+            ))}
+          </div>
+
+          {/* Detail */}
+          <div className="contact-detail">
+            {selected ? (
+              <>
+                <div className="contact-detail-header">
+                  <div className="contact-detail-avatar">{selected.name?.[0]?.toUpperCase()}</div>
+                  <div>
+                    <h3 className="contact-detail-name">{selected.name}</h3>
+                    <p className="contact-detail-org">{selected.organization || 'No organization'}</p>
+                  </div>
+                  <button className="contact-delete-btn" onClick={() => deleteContact(selected.id)}>
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+                <div className="contact-detail-fields">
+                  <div className="contact-field">
+                    <span className="contact-field-label">ðŸ“§ Email</span>
+                    <a href={`mailto:${selected.email}`} className="contact-field-value contact-link">{selected.email || 'â€”'}</a>
+                  </div>
+                  <div className="contact-field">
+                    <span className="contact-field-label">ðŸ“± Phone</span>
+                    <a href={`tel:${selected.phone}`} className="contact-field-value contact-link">{selected.phone || 'â€”'}</a>
+                  </div>
+                  <div className="contact-field">
+                    <span className="contact-field-label">ðŸ¢ Organization</span>
+                    <span className="contact-field-value">{selected.organization || 'â€”'}</span>
+                  </div>
+                  <div className="contact-field">
+                    <span className="contact-field-label">ðŸ“… Date</span>
+                    <span className="contact-field-value">{new Date(selected.createdAt).toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+                <div className="contact-message-box">
+                  <p className="contact-field-label">ðŸ’¬ Message</p>
+                  <p className="contact-message-text">{selected.message}</p>
+                </div>
+                <div className="contact-reply-actions">
+                  <a href={`mailto:${selected.email}?subject=Re: Your inquiry to A5X Robotics`} className="btn">
+                    Reply via Email
+                  </a>
+                  {selected.phone && (
+                    <a href={`https://wa.me/91${selected.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="btn ghost">
+                      WhatsApp
+                    </a>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="contact-detail-empty">
+                <MessageSquare size={48} style={{ opacity: 0.2, marginBottom: 16 }} />
+                <p>Select a message to view details</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </AdminPage>
+  );
+}
+
+function AdminSettings() {
+  const [upiId, setUpiId] = useState(() => localStorage.getItem('a5x-upi-id') || '');
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    localStorage.setItem('a5x-upi-id', upiId.trim());
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  };
+
+  const previewQr = upiId.trim()
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=${upiId.trim()}&pn=A5X+Robotics&cu=INR`)}`
+    : '';
+
+  return (
+    <AdminPage title="Settings">
+      <form className="admin-form" onSubmit={handleSave}>
+        <input placeholder="Site name" defaultValue="A5X Robotics" />
+        <input placeholder="Tagline" defaultValue="Build the Future" />
+        <input placeholder="Contact email" defaultValue="support@a5x.in" />
+        <input placeholder="Phone" />
+        <textarea placeholder="Address" />
+        <input placeholder="Meta title" />
+        <textarea placeholder="SEO description" />
+
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 24, paddingTop: 24 }}>
+          <h3 style={{ marginBottom: 12, color: '#00ff88', fontSize: 16 }}>ðŸ’³ UPI Payment Settings</h3>
+          <p style={{ fontSize: 13, opacity: 0.6, marginBottom: 12 }}>
+            Enter your UPI ID. Customers who select "Online Payment" at checkout will see a QR code to scan.
+          </p>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 220 }}>
+              <input
+                type="text"
+                placeholder="yourname@upi (e.g. ansh@paytm)"
+                value={upiId}
+                onChange={e => setUpiId(e.target.value)}
+                style={{ width: '100%' }}
+              />
+              <p style={{ fontSize: 12, opacity: 0.5, marginTop: 6 }}>
+                Supports: @paytm, @gpay, @phonepe, @ybl, @okaxis, etc.
+              </p>
+            </div>
+            {previewQr && (
+              <div style={{ textAlign: 'center' }}>
+                <img src={previewQr} alt="UPI QR Preview" style={{ borderRadius: 8, border: '2px solid rgba(0,255,136,0.3)', display: 'block' }} />
+                <p style={{ fontSize: 11, opacity: 0.5, marginTop: 6 }}>QR Preview</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <button type="submit" style={{ marginTop: 16 }}>
+          {saved ? 'âœ… Saved!' : 'Save Settings'}
+        </button>
+      </form>
+    </AdminPage>
+  );
+}
+
+// â”€â”€ SCROLL TO TOP ON ROUTE CHANGE â”€â”€
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [pathname]);
+  return null;
+}
+
+function App() {
+  const loadProducts = useAdminStore((s) => s.loadProducts);
+  const loadKits = useAdminStore((s) => s.loadKits);
+
+  // Preload products & kits immediately when app starts
+  // Also ping backend to wake up Render free tier
+  useEffect(() => {
+    // Ping backend health first to wake up Render
+    fetch(`${API_BASE}/api/health`).catch(() => {});
+    // Then load data in parallel
+    loadProducts();
+    loadKits();
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <ScrollToTop />
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/shop" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
+          <Route path="/shop/:id" element={<ProtectedRoute><ProductDetailPage /></ProtectedRoute>} />
+          <Route path="/wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
+          <Route path="/kits" element={<ProtectedRoute><KitsPage /></ProtectedRoute>} />
+          <Route path="/kits/:id" element={<ProtectedRoute><KitDetailPage /></ProtectedRoute>} />
+          <Route path="/learn" element={<ProtectedRoute><LearnPage /></ProtectedRoute>} />
+          <Route path="/learn/:courseId" element={<ProtectedRoute><LearnPage /></ProtectedRoute>} />
+          <Route path="/learn/:courseId/:videoId" element={<ProtectedRoute><VideoPlayerPage /></ProtectedRoute>} />
+          <Route path="/pricing" element={<ProtectedRoute><PricingPage /></ProtectedRoute>} />
+          <Route path="/about" element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
+          <Route path="/contact" element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
+          <Route path="/quote" element={<ProtectedRoute><QuotePage /></ProtectedRoute>} />
+          <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+        </Route>
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route element={<AdminAuthGuard />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/products" element={<AdminProducts />} />
+            <Route path="/admin/products/new" element={<ProductForm />} />
+            <Route path="/admin/products/:id" element={<ProductForm />} />
+            <Route path="/admin/kits" element={<AdminKits />} />
+            <Route path="/admin/kits/new" element={<KitForm />} />
+            <Route path="/admin/kits/:id" element={<KitForm />} />
+            <Route path="/admin/courses" element={<AdminCourses />} />
+            <Route path="/admin/courses/new" element={<CourseForm />} />
+            <Route path="/admin/courses/:id" element={<CourseForm />} />
+            <Route path="/admin/courses/:id/videos/new" element={<AdminVideoUpload />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/contacts" element={<AdminContacts />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<App />);
+

@@ -1,0 +1,895 @@
+﻿function CheckoutPage() {
+  const navigate = useNavigate();
+  const { items, subtotal } = useCartStore();
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [orderNumber, setOrderNumber] = useState('');
+  const [showQR, setShowQR] = useState(false);
+  const [qrTimer, setQrTimer] = useState(120); // 2 minutes
+  const [qrExpired, setQrExpired] = useState(false);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false); // UPI scan confirmation
+  const timerRef = useRef(null);
+
+  // Get UPI ID set by admin
+  const upiId = localStorage.getItem('a5x-upi-id') || '';
+  const upiQrUrl = upiId
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`upi://pay?pa=${upiId}&pn=A5X+Robotics&am=${subtotal()}&cu=INR`)}`
+    : '';
+
+  const [formData, setFormData] = useState({
+    customerName: '',
+    customerEmail: '',
+    customerPhone: '',
+    street: '',
+    city: '',
+    state: '',
+    pincode: '',
+    landmark: '',
+    customerNotes: '',
+    paymentMethod: 'cod'
+  });
+
+  // Start QR timer when online payment selected
+  useEffect(() => {
+    if (formData.paymentMethod === 'online' && upiId) {
+      setShowQR(true);
+      setQrTimer(120);
+      setQrExpired(false);
+      setPaymentConfirmed(false); // reset confirmation when switching
+      clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setQrTimer(prev => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            setQrExpired(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      setShowQR(false);
+      clearInterval(timerRef.current);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [formData.paymentMethod, upiId]);
+
+  const refreshQR = () => {
+    setQrExpired(false);
+    setQrTimer(120);
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setQrTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setQrExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // Limit phone to 10 digits only
+    if (name === 'customerPhone') {
+      const digits = value.replace(/\D/g, '').slice(0, 10);
+      setFormData({ ...formData, customerPhone: digits });
+      return;
+    }
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.customerPhone.length !== 10) {
+      alert('Please enter a valid 10-digit phone number.');
+      return;
+    }
+    // If online payment with QR, user must confirm they've scanned and paid
+    if (formData.paymentMethod === 'online' && upiId && !paymentConfirmed) {
+      alert('Please scan the QR code and tick "I have completed the payment" before placing your order.');
+      return;
+    }
+    setLoading(true);
+
+    try {
+      const orderData = {
+        customerName: formData.customerName,
+        customerEmail: formData.customerEmail,
+        customerPhone: formData.customerPhone,
+        address: {
+          street: formData.street,
+          city: formData.city,
+          state: formData.state,
+          pincode: formData.pincode,
+          landmark: formData.landmark
+        },
+        items: items.map(item => ({
+          productId: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.qty,
+          imageUrl: item.imageUrl
+        })),
+        subtotal: subtotal(),
+        shippingCost: 0,
+        tax: 0,
+        total: subtotal(),
+        paymentMethod: formData.paymentMethod,
+        customerNotes: formData.customerNotes
+      };
+
+      const response = await fetch(`${API_BASE}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        clearInterval(timerRef.current);
+        setSuccess(true);
+        setOrderNumber(data.order.orderNumber);
+        useCartStore.setState({ items: [] });
+        setTimeout(() => navigate('/'), 5000);
+      } else {
+        alert('Order failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+      alert('Order failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const qrMins = String(Math.floor(qrTimer / 60)).padStart(2, '0');
+  const qrSecs = String(qrTimer % 60).padStart(2, '0');
+
+  if (items.length === 0 && !success) {
+    return (
+      <main className="checkout-page">
+        <div className="checkout-empty glass-card">
+          <ShoppingCart size={56} style={{ opacity: 0.4, marginBottom: 16 }} />
+          <h2>Your cart is empty</h2>
+          <p>Add some products before checking out</p>
+          <Link to="/shop" className="btn" style={{ marginTop: 24 }}>Go to Shop</Link>
+        </div>
+      </main>
+    );
+  }
+
+  if (success) {
+    return (
+      <main className="checkout-page">
+        <motion.div className="checkout-success glass-card" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+          <div className="success-icon"><CheckCircle size={64} color="#00ff88" /></div>
+          <h2>Order Placed!</h2>
+          <p className="order-num">#{orderNumber}</p>
+          <p className="success-msg">Thank you! We'll send a confirmation to your email shortly.</p>
+          <Link to="/" className="btn" style={{ marginTop: 24 }}>Back to Home</Link>
+        </motion.div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="checkout-page">
+      <motion.div
+        className="checkout-container"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+      >
+        {/* â”€â”€ LEFT: FORM â”€â”€ */}
+        <div className="checkout-form glass-card">
+          <div className="checkout-header">
+            <Shield size={28} color="#00ff88" />
+            <h1>Secure Checkout</h1>
+            <p className="checkout-subtitle">Complete your order in a few simple steps</p>
+          </div>
+
+          <form onSubmit={handleSubmit} noValidate>
+            {/* Contact */}
+            <div className="form-section">
+              <div className="section-header">
+                <div className="section-icon"><MessageSquare size={18} /></div>
+                <h3>Contact Information</h3>
+              </div>
+              <div className="input-group">
+                <span className="input-prefix-icon">ðŸ‘¤</span>
+                <input type="text" name="customerName" placeholder="Full Name" value={formData.customerName} onChange={handleChange} required />
+              </div>
+              <div className="input-group">
+                <span className="input-prefix-icon">ðŸ“§</span>
+                <input type="email" name="customerEmail" placeholder="Email Address" value={formData.customerEmail} onChange={handleChange} required />
+              </div>
+              <div className="input-group">
+                <span className="input-prefix-icon">ðŸ“±</span>
+                <input
+                  type="tel"
+                  name="customerPhone"
+                  placeholder="10-digit Phone Number"
+                  value={formData.customerPhone}
+                  onChange={handleChange}
+                  maxLength={10}
+                  pattern="\d{10}"
+                  inputMode="numeric"
+                  required
+                />
+                <span className="phone-counter" style={{ color: formData.customerPhone.length === 10 ? '#00ff88' : 'rgba(255,255,255,0.4)' }}>
+                  {formData.customerPhone.length}/10
+                </span>
+              </div>
+            </div>
+
+            {/* Address */}
+            <div className="form-section">
+              <div className="section-header">
+                <div className="section-icon"><Truck size={18} /></div>
+                <h3>Shipping Address</h3>
+              </div>
+              <div className="input-group">
+                <span className="input-prefix-icon">ðŸ </span>
+                <input type="text" name="street" placeholder="Street Address" value={formData.street} onChange={handleChange} required />
+              </div>
+              <div className="form-row">
+                <div className="input-group">
+                  <span className="input-prefix-icon">ðŸ™ï¸</span>
+                  <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} required />
+                </div>
+                <div className="input-group">
+                  <span className="input-prefix-icon">ðŸ“</span>
+                  <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleChange} required />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="input-group">
+                  <span className="input-prefix-icon">ðŸ“®</span>
+                  <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} required />
+                </div>
+                <div className="input-group">
+                  <span className="input-prefix-icon">ðŸ—ºï¸</span>
+                  <input type="text" name="landmark" placeholder="Landmark (Optional)" value={formData.landmark} onChange={handleChange} />
+                </div>
+              </div>
+            </div>
+
+            {/* Payment */}
+            <div className="form-section">
+              <div className="section-header">
+                <div className="section-icon"><BadgeIndianRupee size={18} /></div>
+                <h3>Payment Method</h3>
+              </div>
+              <div className="payment-options">
+                {[
+                  { value: 'cod', icon: <Truck size={22} />, label: 'Cash on Delivery', sub: 'Pay when you receive' },
+                  { value: 'online', icon: <Zap size={22} />, label: 'Online Payment', sub: 'UPI, Cards, Net Banking' },
+                  { value: 'bank_transfer', icon: <BadgeIndianRupee size={22} />, label: 'Bank Transfer', sub: 'Direct bank transfer' },
+                ].map(opt => (
+                  <label key={opt.value} className={`payment-option ${formData.paymentMethod === opt.value ? 'active' : ''}`}>
+                    <input type="radio" name="paymentMethod" value={opt.value} checked={formData.paymentMethod === opt.value} onChange={handleChange} />
+                    <div className="payment-content">
+                      <span className="pay-icon">{opt.icon}</span>
+                      <div>
+                        <strong>{opt.label}</strong>
+                        <p>{opt.sub}</p>
+                      </div>
+                      {formData.paymentMethod === opt.value && <Check size={16} className="pay-check" />}
+                    </div>
+                  </label>
+                ))}
+              </div>
+
+              {/* QR Code Panel */}
+              <AnimatePresence>
+                {showQR && upiId && (
+                  <motion.div
+                    className="qr-panel glass-card"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <p className="qr-title">Scan to Pay via UPI</p>
+                    <p className="qr-upi-id">{upiId}</p>
+                    <div className="qr-image-wrap" style={{ position: 'relative' }}>
+                      {qrExpired ? (
+                        <div className="qr-expired-overlay">
+                          <p>QR Expired</p>
+                          <button type="button" className="btn" onClick={refreshQR} style={{ marginTop: 10, padding: '8px 20px', fontSize: 13 }}>Refresh QR</button>
+                        </div>
+                      ) : (
+                        <img src={upiQrUrl} alt="UPI QR Code" className="qr-image" />
+                      )}
+                    </div>
+                    <div className={`qr-timer ${qrTimer <= 30 ? 'urgent' : ''}`}>
+                      <span>â± QR expires in </span>
+                      <strong>{qrMins}:{qrSecs}</strong>
+                    </div>
+                    <p className="qr-note">After payment, place your order below</p>
+                    {/* Payment confirmation checkbox */}
+                    <label className="qr-confirm-label">
+                      <input
+                        type="checkbox"
+                        checked={paymentConfirmed}
+                        onChange={e => setPaymentConfirmed(e.target.checked)}
+                        disabled={qrExpired}
+                      />
+                      <span>I have completed the payment âœ…</span>
+                    </label>
+                  </motion.div>
+                )}
+                {formData.paymentMethod === 'online' && !upiId && (
+                  <motion.div className="qr-panel glass-card" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '20px' }}>
+                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>UPI payment QR not configured yet. Please use COD or Bank Transfer.</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Notes */}
+            <div className="form-section">
+              <div className="section-header">
+                <div className="section-icon"><MessageSquare size={18} /></div>
+                <h3>Order Notes <span style={{ fontWeight: 400, opacity: 0.5, fontSize: 13 }}>(Optional)</span></h3>
+              </div>
+              <textarea name="customerNotes" placeholder="Any special instructions for your order?" value={formData.customerNotes} onChange={handleChange} rows="3" className="notes-textarea" />
+            </div>
+
+            <motion.button
+              type="submit"
+              className="checkout-btn"
+              disabled={loading || (formData.paymentMethod === 'online' && upiId && !paymentConfirmed)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              title={formData.paymentMethod === 'online' && upiId && !paymentConfirmed ? 'Please scan QR and confirm payment first' : ''}
+            >
+              {loading ? <><div className="spinner" />Processing...</> : <><Shield size={18} />Place Secure Order â€” {inr(subtotal())}</>}
+            </motion.button>
+
+            <div className="secure-badge">
+              <Shield size={14} />
+              <span>Secure SSL Encrypted Checkout</span>
+            </div>
+          </form>
+        </div>
+
+        {/* â”€â”€ RIGHT: ORDER SUMMARY â”€â”€ */}
+        <div className="order-summary glass-card">
+          <div className="summary-header">
+            <ShoppingCart size={20} />
+            <h3>Order Summary</h3>
+            <span className="summary-count">{items.reduce((s, i) => s + i.qty, 0)} item{items.reduce((s, i) => s + i.qty, 0) !== 1 ? 's' : ''}</span>
+          </div>
+          <div className="summary-items">
+            {items.map(item => (
+              <motion.div key={item.id} className="summary-item" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}>
+                <img src={item.imageUrl || a5xCarKit} alt={item.name} />
+                <div className="item-details">
+                  <p className="item-name">{item.name}</p>
+                  <p className="item-qty">Qty: {item.qty} Ã— {inr(item.price)}</p>
+                </div>
+                <p className="item-total">{inr(item.price * item.qty)}</p>
+              </motion.div>
+            ))}
+          </div>
+          <div className="summary-divider" />
+          <div className="summary-totals">
+            <div className="summary-row"><span>Subtotal</span><span>{inr(subtotal())}</span></div>
+            <div className="summary-row shipping"><span><Truck size={14} /> Shipping</span><span className="free-badge">FREE</span></div>
+            <div className="summary-row total"><span>Total</span><span>{inr(subtotal())}</span></div>
+          </div>
+          <div className="trust-badges">
+            <div className="trust-badge"><Shield size={16} /><span>Secure Payment</span></div>
+            <div className="trust-badge"><Truck size={16} /><span>Fast Delivery</span></div>
+            <div className="trust-badge"><CheckCircle size={16} /><span>Easy Returns</span></div>
+          </div>
+        </div>
+      </motion.div>
+    </main>
+  );
+}
+
+// Admin Orders Component
+function AdminOrders() {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [updatingId, setUpdatingId] = useState(null); // tracks which order is being updated
+
+  const [authError, setAuthError] = useState(false);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [filter]);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('a5x-admin-token');
+      if (!token) {
+        console.error('No admin token found');
+        setAuthError(true);
+        setOrders([]);
+        setLoading(false);
+        return;
+      }
+      const url = filter === 'all'
+        ? `${API_BASE}/api/orders`
+        : `${API_BASE}/api/orders?status=${filter}`;
+      const response = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        console.error('Orders fetch failed:', response.status, errData);
+        if (response.status === 401 || response.status === 403) {
+          setAuthError(true);
+          // Clear invalid token
+          localStorage.removeItem('a5x-admin-token');
+          localStorage.removeItem('a5x-admin-user');
+        }
+        setOrders([]);
+        return;
+      }
+      setAuthError(false);
+      const data = await response.json();
+      setOrders(data.orders || []);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateOrderStatus = async (orderId, status) => {
+    setUpdatingId(orderId + status);
+    try {
+      const token = localStorage.getItem('a5x-admin-token');
+      const response = await fetch(`${API_BASE}/api/orders/${orderId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Update local state immediately â€” no need to refetch
+        setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status } : o));
+        setSelectedOrder(prev => prev ? { ...prev, status } : null);
+        const label = status === 'confirmed' ? 'confirmed âœ… â€” confirmation email sent to customer'
+          : status === 'shipped' ? 'marked as shipped ðŸšš â€” shipping email sent'
+          : status === 'delivered' ? 'marked as delivered ðŸŽ‰'
+          : 'cancelled âŒ';
+        alert(`Order ${label}`);
+      } else {
+        alert(data.error || 'Failed to update order');
+      }
+    } catch (error) {
+      console.error('Error updating order:', error);
+      alert('Failed to update order. Check your connection.');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      pending: '#ffa500',
+      confirmed: '#00ff88',
+      processing: '#00bfff',
+      shipped: '#9370db',
+      delivered: '#32cd32',
+      cancelled: '#ff4444'
+    };
+    return colors[status] || '#888';
+  };
+
+  if (loading) {
+    return <div className="admin-page"><p>Loading orders...</p></div>;
+  }
+
+  return (
+    <div className="admin-page">
+      <div className="admin-header">
+        <h1>Orders Management</h1>
+        <div className="filter-buttons">
+          <button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>All</button>
+          <button className={filter === 'pending' ? 'active' : ''} onClick={() => setFilter('pending')}>Pending</button>
+          <button className={filter === 'confirmed' ? 'active' : ''} onClick={() => setFilter('confirmed')}>Confirmed</button>
+          <button className={filter === 'shipped' ? 'active' : ''} onClick={() => setFilter('shipped')}>Shipped</button>
+          <button className={filter === 'delivered' ? 'active' : ''} onClick={() => setFilter('delivered')}>Delivered</button>
+        </div>
+      </div>
+
+      <div className="orders-grid">
+        {orders.length === 0 ? (
+          <p>No orders found</p>
+        ) : (
+          orders.map(order => (
+            <div key={order._id} className="order-card glass-card" onClick={() => setSelectedOrder(order)}>
+              <div className="order-header">
+                <h3>#{order.orderNumber}</h3>
+                <span className="status-badge" style={{ backgroundColor: getStatusColor(order.status) }}>
+                  {order.status}
+                </span>
+              </div>
+              <div className="order-info">
+                <p><strong>{order.customerName}</strong></p>
+                <p>{order.customerPhone}</p>
+                <p>{order.customerEmail}</p>
+                <p className="order-date">{new Date(order.orderDate).toLocaleDateString()}</p>
+              </div>
+              <div className="order-summary">
+                <p>{order.items.length} item(s)</p>
+                <p><strong>{inr(order.total)}</strong></p>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {selectedOrder && (
+        <div className="modal-overlay" onClick={() => setSelectedOrder(null)}>
+          <div className="modal-content glass-card" onClick={(e) => e.stopPropagation()}>
+            <button className="icon-btn close" onClick={() => setSelectedOrder(null)}><X /></button>
+            
+            <h2>Order Details - #{selectedOrder.orderNumber}</h2>
+            
+            <div className="order-details">
+              <div className="detail-section">
+                <h3>Customer Information</h3>
+                <p><strong>Name:</strong> {selectedOrder.customerName}</p>
+                <p><strong>Email:</strong> {selectedOrder.customerEmail}</p>
+                <p><strong>Phone:</strong> {selectedOrder.customerPhone}</p>
+              </div>
+
+              <div className="detail-section">
+                <h3>Shipping Address</h3>
+                <p>{selectedOrder.address.street}</p>
+                <p>{selectedOrder.address.city}, {selectedOrder.address.state}</p>
+                <p>Pincode: {selectedOrder.address.pincode}</p>
+                {selectedOrder.address.landmark && <p>Landmark: {selectedOrder.address.landmark}</p>}
+              </div>
+
+              <div className="detail-section">
+                <h3>Order Items</h3>
+                {selectedOrder.items.map((item, idx) => (
+                  <div key={idx} className="order-item">
+                    <img src={item.imageUrl || a5xCarKit} alt={item.name} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />
+                    <div>
+                      <p><strong>{item.name}</strong></p>
+                      <p>Qty: {item.quantity} Ã— {inr(item.price)}</p>
+                    </div>
+                    <p><strong>{inr(item.price * item.quantity)}</strong></p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="detail-section">
+                <h3>Payment</h3>
+                <p><strong>Method:</strong> {selectedOrder.paymentMethod.toUpperCase()}</p>
+                <p><strong>Total:</strong> {inr(selectedOrder.total)}</p>
+              </div>
+
+              {selectedOrder.customerNotes && (
+                <div className="detail-section">
+                  <h3>Customer Notes</h3>
+                  <p>{selectedOrder.customerNotes}</p>
+                </div>
+              )}
+
+              <div className="detail-section">
+                <h3>Update Status</h3>
+                <div className="status-buttons">
+                  {selectedOrder.status === 'pending' && (
+                    <button
+                      className="btn btn-success"
+                      disabled={!!updatingId}
+                      onClick={() => updateOrderStatus(selectedOrder._id, 'confirmed')}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 160 }}
+                    >
+                      {updatingId === selectedOrder._id + 'confirmed'
+                        ? <><div className="spinner" style={{ borderTopColor: '#0a0a0f' }} />Confirming...</>
+                        : <>âœ… Confirm Order</>}
+                    </button>
+                  )}
+                  {selectedOrder.status === 'confirmed' && (
+                    <button
+                      className="btn btn-primary"
+                      disabled={!!updatingId}
+                      onClick={() => updateOrderStatus(selectedOrder._id, 'shipped')}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 160 }}
+                    >
+                      {updatingId === selectedOrder._id + 'shipped'
+                        ? <><div className="spinner" style={{ borderTopColor: '#fff' }} />Updating...</>
+                        : <>ðŸšš Mark as Shipped</>}
+                    </button>
+                  )}
+                  {selectedOrder.status === 'shipped' && (
+                    <button
+                      className="btn btn-success"
+                      disabled={!!updatingId}
+                      onClick={() => updateOrderStatus(selectedOrder._id, 'delivered')}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 160 }}
+                    >
+                      {updatingId === selectedOrder._id + 'delivered'
+                        ? <><div className="spinner" style={{ borderTopColor: '#0a0a0f' }} />Updating...</>
+                        : <>ðŸŽ‰ Mark as Delivered</>}
+                    </button>
+                  )}
+                  {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
+                    <button
+                      className="btn btn-danger"
+                      disabled={!!updatingId}
+                      onClick={() => updateOrderStatus(selectedOrder._id, 'cancelled')}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 140 }}
+                    >
+                      {updatingId === selectedOrder._id + 'cancelled'
+                        ? <><div className="spinner" style={{ borderTopColor: '#fff' }} />Cancelling...</>
+                        : <>âŒ Cancel Order</>}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Footer() {
+  const currentYear = new Date().getFullYear();
+  return (
+    <footer className="site-footer-pro">
+      {/* Top glow line */}
+      <div className="footer-glow-line" />
+
+      <div className="footer-inner">
+        {/* Brand Column */}
+        <div className="footer-brand-col">
+          <div className="footer-logo">
+            <span className="footer-logo-text">A5X</span>
+            <span className="footer-logo-sub">ROBOTICS</span>
+          </div>
+          <p className="footer-brand-desc">
+            Premium robotics components, kits, and courses for engineers, students, and makers. Building the future, one circuit at a time.
+          </p>
+          <div className="footer-social-row">
+            {/* <Link to="https://www.instagram.com/a5x.in/" className="footer-social-btn" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            </Link> */}
+            <a href="https://www.instagram.com/a5x.in/" target="_blank" rel="noopener noreferrer" className="footer-social-btn" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+            </a>
+            <a href="https://www.youtube.com/@A5x_in" target="_blank" rel="noopener noreferrer" className="footer-social-btn" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg></a>
+            
+           <a href="https://www.linkedin.com/company/a5x-industries/?viewAsMember=true" target="_blank" rel="noopener noreferrer" className="footer-social-btn" aria-label="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+          </div>
+          <div className="footer-badge-row">
+            <span className="footer-badge"><Check size={12} /> Secure Payments</span>
+            <span className="footer-badge"><Truck size={12} /> Fast Dispatch</span>
+          </div>
+        </div>
+
+        {/* Products Column */}
+        <div className="footer-links-col">
+          <h4 className="footer-col-title">Products</h4>
+          <ul className="footer-link-list">
+            <li><Link to="/shop?cat=MicroController">Microcontrollers</Link></li>
+            <li><Link to="/shop?cat=Sensor">Sensors</Link></li>
+            <li><Link to="/shop?cat=Motors">Motors</Link></li>
+            <li><Link to="/shop?cat=Motor+Driver">Motor Drivers</Link></li>
+            <li><Link to="/shop?cat=Display">Displays</Link></li>
+            <li><Link to="/shop?cat=Battery">Batteries</Link></li>
+            <li><Link to="/kits">Robotics Kits</Link></li>
+          </ul>
+        </div>
+
+        {/* Learn Column */}
+        <div className="footer-links-col">
+          <h4 className="footer-col-title">Learn</h4>
+          <ul className="footer-link-list">
+            <li><Link to="/learn">All Courses</Link></li>
+            <li><Link to="/learn">Beginner Guides</Link></li>
+            <li><Link to="/learn">Arduino Tutorials</Link></li>
+            <li><Link to="/learn">ESP32 Projects</Link></li>
+            <li><Link to="/learn">Robotics Academy</Link></li>
+            <li><Link to="/learn">IoT & Cloud</Link></li>
+          </ul>
+        </div>
+
+        {/* Company Column */}
+        <div className="footer-links-col">
+          <h4 className="footer-col-title">Company</h4>
+          <ul className="footer-link-list">
+            <li><Link to="/about">About A5X</Link></li>
+            <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/contact">Shipping Policy</Link></li>
+            <li><Link to="/contact">Return Policy</Link></li>
+            <li><Link to="/contact">Privacy Policy</Link></li>
+          </ul>
+        </div>
+
+        {/* Newsletter Column */}
+        <div className="footer-newsletter-col">
+          <h4 className="footer-col-title">Stay Updated</h4>
+          <p className="footer-newsletter-desc">Get new product launches, tutorials, and exclusive deals.</p>
+          <form className="footer-newsletter-form" onSubmit={(e) => e.preventDefault()}>
+            <input type="email" placeholder="your@email.com" />
+            <button type="submit">Subscribe</button>
+          </form>
+          <div className="footer-contact-info">
+            <div className="footer-contact-item">
+              <span className="footer-contact-icon">ðŸ“§</span>
+              <a href="mailto:a5x.industries@gmail.com" style={{color:'inherit',textDecoration:'none'}}>a5x.industries@gmail.com</a>
+            </div>
+            <div className="footer-contact-item">
+              <span className="footer-contact-icon">ðŸ“±</span>
+              <a href="tel:+918269858259" style={{color:'inherit',textDecoration:'none'}}>+91 82698 58259</a>
+            </div>
+            <div className="footer-contact-item">
+              <span className="footer-contact-icon">ðŸ“±</span>
+              <a href="tel:+919340212224" style={{color:'inherit',textDecoration:'none'}}>+91 93402 12224</a>
+            </div>
+            <div className="footer-contact-item">
+              <span className="footer-contact-icon">ðŸ“</span>
+              <span>India</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="footer-bottom">
+        <div className="footer-bottom-inner">
+          <p className="footer-copyright">
+            Â© {currentYear} <strong>A5X Industries</strong>. All rights reserved.
+          </p>
+          <div className="footer-bottom-links">
+            <Link to="/contact">Terms of Service</Link>
+            <span className="footer-dot" />
+            <Link to="/contact">Privacy Policy</Link>
+            <span className="footer-dot" />
+            <Link to="/contact">Cookie Policy</Link>
+          </div>
+          <p className="footer-made-with">
+            Made with <span style={{color:'#ef4444'}}>â™¥</span> for makers
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function AdminAuthGuard() {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("a5x-admin-token");
+  
+  // Verify token is still valid by checking with backend
+  useEffect(() => {
+    if (!token) return;
+    fetch(`${API_BASE}/api/auth/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).then(res => {
+      if (res.status === 401 || res.status === 403) {
+        // Token invalid - clear and redirect to login
+        localStorage.removeItem("a5x-admin-token");
+        localStorage.removeItem("a5x-admin-user");
+        navigate("/admin/login");
+      }
+    }).catch(() => {});
+  }, []);
+  
+  return token ? <Outlet /> : <Navigate to="/admin/login" replace />;
+}
+
+function AdminLogin() {
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  
+  // Get API URL
+  const API_URL = API_BASE;
+  
+  async function submit(event) {
+    event.preventDefault();
+    setError("");
+    setLoading(true);
+    
+    const data = Object.fromEntries(new FormData(event.currentTarget));
+    
+    console.log('Submitting login with:', { email: data.email, password: '***' });
+    console.log('API URL:', API_URL);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email, password: data.password })
+      });
+      
+      console.log('Response status:', response.status);
+      const result = await response.json();
+      console.log('Response data:', result);
+      
+      if (response.ok && result.token) {
+        // Check if user is admin
+        if (result.user.role === "admin") {
+          localStorage.setItem("a5x-admin-token", result.token);
+          localStorage.setItem("a5x-admin-user", JSON.stringify(result.user));
+          navigate("/admin/dashboard");
+        } else {
+          setError("Access denied. Admin privileges required.");
+        }
+      } else {
+        setError(result.error || "Invalid credentials");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Connection error. Please check if backend is running.");
+    } finally {
+      setLoading(false);
+    }
+  }
+  
+  return (
+    <>
+      <CustomCursor />
+      <main className="admin-login">
+        <form onSubmit={submit}>
+          <h1>A5X Admin</h1>
+          <input 
+            name="email" 
+            type="email"
+            placeholder="admin@a5xrobotics.com" 
+            required 
+            disabled={loading}
+            defaultValue="admin@a5xrobotics.com"
+          />
+          <input 
+            name="password" 
+            type="password" 
+            placeholder="Password" 
+            required 
+            disabled={loading}
+            defaultValue="Admin@123456"
+          />
+          <button disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+          {error && <p className="error-message" style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+          <small style={{ marginTop: '1rem', opacity: 0.7 }}>
+            Default: admin@a5xrobotics.com / Admin@123456
+          </small>
+        </form>
+      </main>
+    </>
+  );
+}
+
+function AdminLayout() {
+  const navigate = useNavigate();
+  const items = [
+    [LayoutDashboard, "Dashboard", "/admin/dashboard"],
+    [Package, "Products", "/admin/products"],
+    [Layers, "Kits", "/admin/kits"],
+    [PlayCircle, "Courses & Videos", "/admin/courses"],
+    [ShoppingCart, "Orders", "/admin/orders"],
+    [MessageSquare, "Contacts", "/admin/contacts"],
+    [Settings, "Settings", "/admin/settings"]
+  ];
+  return <><CustomCursor /><div className="admin-shell"><aside><Link className="logo" to="/"><span>A5X</span><small>ADMIN PANEL</small></Link>{items.map(([Icon, label, to]) => <NavLink key={to} to={to}><Icon size={18} />{label}</NavLink>)}<button onClick={() => { localStorage.removeItem("a5x-admin-token"); navigate("/admin/login"); }}><LogOut size={18} />Logout</button></aside><main><Outlet /></main></div></>;
+}
