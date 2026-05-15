@@ -1,9 +1,0 @@
-name,price,mrp,category,sku,description,instock,rating,stockcount,quickdelivery
-ESP32 Devkit V1,350,499,MicroController,A5X-MC-001,Dual-core 240MHz with Wi-Fi + Bluetooth,true,4.8,45,true
-Arduino Uno R3,300,450,MicroController,A5X-MC-002,Classic ATmega328P board for beginners,true,4.6,60,true
-ESP8266 NodeMCU,190,299,MicroController,A5X-MC-004,Wi-Fi enabled microcontroller,true,4.7,80,true
-L298N Motor Driver,85,149,Motor Driver,A5X-MD-001,Dual H-Bridge driver for DC motors,true,4.8,150,true
-HC-SR04 Ultrasonic,45,89,Sensor,A5X-SN-001,Distance measurement sensor,true,4.7,200,true
-OLED 0.96 Display,180,299,Display,A5X-DI-001,128x64 pixel OLED display,true,4.9,55,false
-18650 Battery,220,349,Battery,A5X-BA-001,3.7V rechargeable lithium cell,true,4.6,100,false
-TP4056 Charger,35,69,Charger,A5X-CH-001,Micro-USB Li-Ion charger module,true,4.7,180,true
