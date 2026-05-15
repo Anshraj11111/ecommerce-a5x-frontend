@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
-import { useAuthStore } from '../../stores/useAuthStore';
+import useAuthStore from '../../stores/useAuthStore';
 
 export default function GoogleAuthSuccess() {
   const navigate = useNavigate();

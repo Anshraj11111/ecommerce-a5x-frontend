@@ -4,10 +4,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import CartDrawer from "../cart/CartDrawer";
 import AuthModal from "../auth/AuthModal";
-import AuroraBackground from "../effects/AuroraBackground";
-import TwinkleField from "../effects/TwinkleField";
-import FloatingOrbs from "../effects/FloatingOrbs";
-import CustomCursor from "../effects/CustomCursor";
+import { AuroraBackground, TwinkleField, FloatingOrbs, CustomCursor } from "../common/AnimationComponents";
 
 function MainLayout() {
   const location = useLocation();

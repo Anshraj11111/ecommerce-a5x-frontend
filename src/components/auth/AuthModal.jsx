@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, RefreshCw, Rocket, User, X } from 'lucide-react';
-import { useAuthModalStore } from '../../stores/useAuthModalStore';
-import { useAuthStore } from '../../stores/useAuthStore';
+import useAuthModalStore from '../../stores/useAuthModalStore';
+import useAuthStore from '../../stores/useAuthStore';
 import { API_BASE } from '../../config/constants';
 
 export default function AuthModal() {
