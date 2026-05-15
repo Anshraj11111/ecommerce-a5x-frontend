@@ -8,7 +8,6 @@ import "./home-premium.css";
 import "./hero-v4.css";
 import "./shop-amazon.css";
 import "./learn-watch.css";
-import "./admin-premium.css";
 import "./cart-modern.css";
 
 // Config
