@@ -8,6 +8,7 @@ import AuroraBackground from "../effects/AuroraBackground";
 import TwinkleField from "../effects/TwinkleField";
 import FloatingOrbs from "../effects/FloatingOrbs";
 import CustomCursor from "../effects/CustomCursor";
+import AxieWidget from "../ai/AxieWidget";
 
 function MainLayout() {
   const location = useLocation();
@@ -25,6 +26,7 @@ function MainLayout() {
       {!hideNavbar && <Footer />}
       <CartDrawer />
       <AuthModal />
+      <AxieWidget />
     </>
   );
 }

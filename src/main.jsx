@@ -117,6 +117,12 @@ import "./shop-amazon.css";
 import "./learn-watch.css";
 import "./admin-premium.css";
 import "./cart-modern.css";
+import "./signin-redesign.css";
+import "./axie-widget.css";
+import "./premium-overhaul.css";
+import "./kits-rebuild.css";
+import axieMascot from "./assets/axie-mascot.jpg";
+import AxieWidget from "./components/ai/AxieWidget";
 
 const kitSpinFrames = [kitSpin035, kitSpin050, kitSpin065, kitSpin076, kitSpin080, kitSpin095, kitSpin110, kitSpin125, kitSpin140, kitSpin155, kitSpin170, kitSpin185, kitSpin200, kitSpin215, kitSpin230];
 
@@ -135,11 +141,11 @@ const productsSeed = [
   { id: "nano", name: "Arduino Nano V3", price: 199, mrp: 349, minQty: 1, category: "MicroController", sku: "A5X-MC-006", rating: 4.5, reviewCount: 145, inStock: true, stockCount: 90, shortDescription: "Compact ATmega328P board. Breadboard-friendly form factor.", features: ["ATmega328P", "Mini-USB", "Breadboard compatible", "30 pins"], specs: { "CPU": "ATmega328P 16MHz", "Flash": "32KB", "SRAM": "2KB", "GPIO": "22 pins", "Voltage": "5V", "Dimensions": "45 x 18 mm" }, compatibility: ["Arduino IDE", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 199 }, { min: 10, max: 49, price: 175 }], badges: ["Compact"], frequentlyBoughtWith: ["l298n", "mpu6050"], relatedIds: ["uno-r3", "mega"] },
   { id: "mega", name: "Arduino Mega 2560", price: 999, mrp: 1499, minQty: 1, category: "MicroController", sku: "A5X-MC-007", rating: 4.8, reviewCount: 67, inStock: true, stockCount: 8, shortDescription: "54 I/O pins, 256KB flash. For complex robotics projects.", features: ["ATmega2560", "54 digital I/O pins", "16 analog inputs", "4 UARTs", "256KB flash"], specs: { "CPU": "ATmega2560 16MHz", "Flash": "256KB", "SRAM": "8KB", "GPIO": "54 digital + 16 analog", "Voltage": "5V", "Dimensions": "101.5 x 53.3 mm" }, compatibility: ["Arduino IDE", "PlatformIO"], bulkPricing: [{ min: 1, max: 9, price: 999 }, { min: 10, max: 49, price: 899 }], badges: ["Pro Choice"], frequentlyBoughtWith: ["l298n", "oled"], relatedIds: ["uno-r3", "pico"] },
   { id: "pico", name: "Raspberry Pi Pico", price: 549, mrp: 799, minQty: 1, category: "MicroController", sku: "A5X-MC-008", rating: 4.7, reviewCount: 92, inStock: true, stockCount: 25, shortDescription: "RP2040 dual-core ARM. The future of microcontrollers.", features: ["RP2040 dual-core ARM Cortex-M0+", "264KB SRAM", "2MB Flash", "26 GPIO", "PIO state machines"], specs: { "CPU": "RP2040 Dual-Core 133MHz", "Flash": "2MB", "SRAM": "264KB", "GPIO": "26 pins", "ADC": "3 channels (12-bit)", "Voltage": "3.3V" }, compatibility: ["MicroPython", "C/C++", "CircuitPython"], bulkPricing: [{ min: 1, max: 9, price: 549 }, { min: 10, max: 49, price: 490 }], badges: ["Trending"], frequentlyBoughtWith: ["oled", "mpu6050"], relatedIds: ["esp32", "nano"] },
-  { id: "l298n", name: "L298N Motor Driver", price: 85, mrp: 149, minQty: 1, category: "Motor Driver", sku: "A5X-MD-001", rating: 4.8, reviewCount: 312, inStock: true, stockCount: 150, quickDelivery: true, imageUrl: motorDriver, shortDescription: "Dual H-Bridge driver. Control 2 DC motors or 1 stepper.", features: ["Dual H-Bridge", "Up to 2A per channel", "5Vâ€“35V operating", "Built-in 5V regulator", "PWM speed control"], specs: { "Channels": "2", "Max Current": "2A per channel", "Voltage": "5Vâ€“35V", "Logic": "5V", "Dimensions": "43 x 43 x 27 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 85 }, { min: 10, max: 49, price: 72 }, { min: 50, max: 999, price: 60 }], badges: ["Best Seller"], frequentlyBoughtWith: ["uno-r3", "18650"], relatedIds: ["a4988"] },
-  { id: "a4988", name: "A4988 Stepper Driver", price: 120, mrp: 199, minQty: 1, category: "Motor Driver", sku: "A5X-MD-002", rating: 4.6, reviewCount: 87, inStock: true, stockCount: 40, shortDescription: "Microstepping stepper motor driver. Up to 1/16 step.", features: ["Up to 1/16 microstepping", "Adjustable current limiting", "Automatic current decay", "3.3V/5V compatible"], specs: { "Max Current": "2A (with heatsink)", "Voltage": "8Vâ€“35V", "Step Modes": "Full, 1/2, 1/4, 1/8, 1/16", "Logic": "3.3Vâ€“5V" }, compatibility: ["Arduino", "GRBL", "Marlin"], bulkPricing: [{ min: 1, max: 9, price: 120 }, { min: 10, max: 49, price: 100 }], badges: ["3D Printing"], frequentlyBoughtWith: ["mega", "18650"], relatedIds: ["l298n"] },
-  { id: "hcsr04", name: "HC-SR04 Ultrasonic Sensor", price: 45, mrp: 89, minQty: 1, category: "Sensor", sku: "A5X-SN-001", rating: 4.7, reviewCount: 267, inStock: true, stockCount: 200, quickDelivery: true, shortDescription: "2cmâ€“400cm distance measurement. Essential for obstacle avoidance.", features: ["2cmâ€“400cm range", "3mm accuracy", "15Â° beam angle", "Trigger/Echo pins"], specs: { "Range": "2â€“400 cm", "Accuracy": "Â±3mm", "Beam Angle": "15Â°", "Voltage": "5V", "Current": "15mA", "Frequency": "40kHz" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 45 }, { min: 10, max: 49, price: 38 }, { min: 50, max: 999, price: 30 }], badges: ["Essential"], frequentlyBoughtWith: ["uno-r3", "l298n"], relatedIds: ["mpu6050"] },
-  { id: "mpu6050", name: "MPU-6050 IMU 6DOF", price: 120, mrp: 199, minQty: 1, category: "Sensor", sku: "A5X-SN-002", rating: 4.8, reviewCount: 156, inStock: true, stockCount: 35, shortDescription: "3-axis accelerometer + 3-axis gyroscope. For motion tracking.", features: ["3-axis accelerometer", "3-axis gyroscope", "Digital motion processor", "I2C interface", "16-bit ADC"], specs: { "Accelerometer": "Â±2/4/8/16g", "Gyroscope": "Â±250/500/1000/2000Â°/s", "Interface": "I2C (400kHz)", "Voltage": "3.3Vâ€“5V", "Current": "3.9mA" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 120 }, { min: 10, max: 49, price: 100 }], badges: ["Motion"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["hcsr04"] },
-  { id: "oled", name: "OLED 0.96 I2C Display", price: 180, mrp: 299, minQty: 1, category: "Display", sku: "A5X-DI-001", rating: 4.9, reviewCount: 198, inStock: true, stockCount: 55, shortDescription: "128x64 pixel OLED. Crystal clear display over I2C.", features: ["128x64 pixels", "SSD1306 driver", "I2C interface", "Self-emitting â€” no backlight", "Wide viewing angle"], specs: { "Resolution": "128 x 64", "Driver": "SSD1306", "Interface": "I2C", "Voltage": "3.3Vâ€“5V", "Size": "0.96 inch", "Dimensions": "27 x 27 x 4 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 180 }, { min: 10, max: 49, price: 155 }], badges: ["Popular"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["lcd16"] },
+  { id: "l298n", name: "L298N Motor Driver", price: 85, mrp: 149, minQty: 1, category: "Motor Driver", sku: "A5X-MD-001", rating: 4.8, reviewCount: 312, inStock: true, stockCount: 150, quickDelivery: true, imageUrl: motorDriver, shortDescription: "Dual H-Bridge driver. Control 2 DC motors or 1 stepper.", features: ["Dual H-Bridge", "Up to 2A per channel", "5V-35V operating", "Built-in 5V regulator", "PWM speed control"], specs: { "Channels": "2", "Max Current": "2A per channel", "Voltage": "5V-35V", "Logic": "5V", "Dimensions": "43 x 43 x 27 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 85 }, { min: 10, max: 49, price: 72 }, { min: 50, max: 999, price: 60 }], badges: ["Best Seller"], frequentlyBoughtWith: ["uno-r3", "18650"], relatedIds: ["a4988"] },
+  { id: "a4988", name: "A4988 Stepper Driver", price: 120, mrp: 199, minQty: 1, category: "Motor Driver", sku: "A5X-MD-002", rating: 4.6, reviewCount: 87, inStock: true, stockCount: 40, shortDescription: "Microstepping stepper motor driver. Up to 1/16 step.", features: ["Up to 1/16 microstepping", "Adjustable current limiting", "Automatic current decay", "3.3V/5V compatible"], specs: { "Max Current": "2A (with heatsink)", "Voltage": "8V-35V", "Step Modes": "Full, 1/2, 1/4, 1/8, 1/16", "Logic": "3.3V-5V" }, compatibility: ["Arduino", "GRBL", "Marlin"], bulkPricing: [{ min: 1, max: 9, price: 120 }, { min: 10, max: 49, price: 100 }], badges: ["3D Printing"], frequentlyBoughtWith: ["mega", "18650"], relatedIds: ["l298n"] },
+  { id: "hcsr04", name: "HC-SR04 Ultrasonic Sensor", price: 45, mrp: 89, minQty: 1, category: "Sensor", sku: "A5X-SN-001", rating: 4.7, reviewCount: 267, inStock: true, stockCount: 200, quickDelivery: true, shortDescription: "2cm-400cm distance measurement. Essential for obstacle avoidance.", features: ["2cm-400cm range", "3mm accuracy", "15° beam angle", "Trigger/Echo pins"], specs: { "Range": "2-400 cm", "Accuracy": "±3mm", "Beam Angle": "15°", "Voltage": "5V", "Current": "15mA", "Frequency": "40kHz" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 45 }, { min: 10, max: 49, price: 38 }, { min: 50, max: 999, price: 30 }], badges: ["Essential"], frequentlyBoughtWith: ["uno-r3", "l298n"], relatedIds: ["mpu6050"] },
+  { id: "mpu6050", name: "MPU-6050 IMU 6DOF", price: 120, mrp: 199, minQty: 1, category: "Sensor", sku: "A5X-SN-002", rating: 4.8, reviewCount: 156, inStock: true, stockCount: 35, shortDescription: "3-axis accelerometer + 3-axis gyroscope. For motion tracking.", features: ["3-axis accelerometer", "3-axis gyroscope", "Digital motion processor", "I2C interface", "16-bit ADC"], specs: { "Accelerometer": "±2/4/8/16g", "Gyroscope": "±250/500/1000/2000°/s", "Interface": "I2C (400kHz)", "Voltage": "3.3V-5V", "Current": "3.9mA" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi"], bulkPricing: [{ min: 1, max: 9, price: 120 }, { min: 10, max: 49, price: 100 }], badges: ["Motion"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["hcsr04"] },
+  { id: "oled", name: "OLED 0.96 I2C Display", price: 180, mrp: 299, minQty: 1, category: "Display", sku: "A5X-DI-001", rating: 4.9, reviewCount: 198, inStock: true, stockCount: 55, shortDescription: "128x64 pixel OLED. Crystal clear display over I2C.", features: ["128x64 pixels", "SSD1306 driver", "I2C interface", "Self-emitting - no backlight", "Wide viewing angle"], specs: { "Resolution": "128 x 64", "Driver": "SSD1306", "Interface": "I2C", "Voltage": "3.3V-5V", "Size": "0.96 inch", "Dimensions": "27 x 27 x 4 mm" }, compatibility: ["Arduino", "ESP32", "Raspberry Pi", "MicroPython"], bulkPricing: [{ min: 1, max: 9, price: 180 }, { min: 10, max: 49, price: 155 }], badges: ["Popular"], frequentlyBoughtWith: ["esp32", "nano"], relatedIds: ["lcd16"] },
   { id: "lcd16", name: "16x2 LCD with I2C", price: 70, mrp: 129, minQty: 1, category: "Display", sku: "A5X-DI-002", rating: 4.5, reviewCount: 134, inStock: true, stockCount: 70, shortDescription: "16x2 character LCD with I2C backpack. Only 2 wires needed.", features: ["16x2 character display", "I2C backpack included", "Blue backlight", "Adjustable contrast"], specs: { "Characters": "16 x 2", "Interface": "I2C (PCF8574)", "Backlight": "Blue LED", "Voltage": "5V", "Dimensions": "80 x 36 x 12 mm" }, compatibility: ["Arduino", "ESP32"], bulkPricing: [{ min: 1, max: 9, price: 70 }, { min: 10, max: 49, price: 58 }], badges: [], frequentlyBoughtWith: ["uno-r3"], relatedIds: ["oled"] },
   { id: "18650", name: "18650 LiPo Battery 3000mAh", price: 220, mrp: 349, minQty: 1, category: "Battery", sku: "A5X-BA-001", rating: 4.6, reviewCount: 89, inStock: true, stockCount: 100, shortDescription: "3.7V rechargeable lithium cell. Powers your robots.", features: ["3000mAh capacity", "3.7V nominal", "Rechargeable 500+ cycles", "Protected circuit"], specs: { "Capacity": "3000mAh", "Voltage": "3.7V nominal", "Max Discharge": "2A", "Dimensions": "18 x 65 mm", "Weight": "48g" }, compatibility: ["All boards (with regulator)"], bulkPricing: [{ min: 1, max: 9, price: 220 }, { min: 10, max: 49, price: 190 }], badges: ["Power"], frequentlyBoughtWith: ["tp4056", "l298n"], relatedIds: ["tp4056"] },
   { id: "tp4056", name: "TP4056 Charger Module", price: 35, mrp: 69, minQty: 1, category: "Charger", sku: "A5X-CH-001", rating: 4.7, reviewCount: 210, inStock: true, stockCount: 180, shortDescription: "Micro-USB Li-Ion charger with protection circuit.", features: ["1A charge current", "Micro-USB input", "Overcharge protection", "Over-discharge protection", "LED indicators"], specs: { "Input": "5V Micro-USB", "Charge Current": "1A max", "Battery": "3.7V Li-Ion/LiPo", "Protection": "Overcharge + Overdischarge", "Dimensions": "25 x 19 mm" }, compatibility: ["18650 cells", "LiPo packs"], bulkPricing: [{ min: 1, max: 9, price: 35 }, { min: 10, max: 49, price: 28 }, { min: 50, max: 999, price: 22 }], badges: ["Essential"], frequentlyBoughtWith: ["18650"], relatedIds: ["18650"] },
@@ -193,7 +199,7 @@ const productsSeed = [
   { id: uid(), name: "RESISTOR Kit 30 values 600 pcs", price: 420.00, mrp: 588, minQty: 1, category: "Electronics", sku: "A5X-INV2-009", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "RESISTOR Kit 30 values 600 pcs" },
   { id: uid(), name: "CAPACITOR Kit 20 values 400 pcs with electrolite capacitor", price: 530.00, mrp: 742, minQty: 1, category: "Electronics", sku: "A5X-INV2-010", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 2, shortDescription: "CAPACITOR Kit 20 values 400 pcs with electrolite capacitor" },
   { id: uid(), name: "200 RPM 12v DC Center Shaft metal Gear Motor", price: 155.00, mrp: 217, minQty: 1, category: "Motors", sku: "A5X-INV2-011", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 33, shortDescription: "200 RPM 12v DC Center Shaft metal Gear Motor" },
-  { id: uid(), name: "TowerPro SG90 9g Micro Servo Motor â€“ 180 Degree Rotation", price: 97.00, mrp: 136, minQty: 1, category: "Motors", sku: "A5X-INV2-012", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "TowerPro SG90 9g Micro Servo Motor â€“ 180 Degree Rotation" },
+  { id: uid(), name: "TowerPro SG90 9g Micro Servo Motor - 180 Degree Rotation", price: 97.00, mrp: 136, minQty: 1, category: "Motors", sku: "A5X-INV2-012", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 20, shortDescription: "TowerPro SG90 9g Micro Servo Motor - 180 Degree Rotation" },
   { id: uid(), name: "N20 12V 400 Rpm Micro Metal Gear Motor", price: 240.00, mrp: 336, minQty: 1, category: "Motors", sku: "A5X-INV2-013", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "N20 12V 400 Rpm Micro Metal Gear Motor" },
   { id: uid(), name: "300 RPM Dual Shaft BO Motor + Wheel", price: 72.00, mrp: 101, minQty: 1, category: "Motors", sku: "A5X-INV2-014", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 28, shortDescription: "300 RPM Dual Shaft BO Motor + Wheel" },
   { id: uid(), name: "diode kits 10 values each 10", price: 3.00, mrp: 4.20, minQty: 1, category: "Electronics", sku: "A5X-INV2-015", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 100, shortDescription: "diode kits 10 values each 10" },
@@ -238,7 +244,7 @@ const productsSeed = [
   { id: uid(), name: "BUTTON SWITCH SET 5 tpye each 10", price: 8.00, mrp: 11.20, minQty: 1, category: "Electronics", sku: "A5X-INV2-054", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 50, shortDescription: "BUTTON SWITCH SET 5 tpye each 10" },
   { id: uid(), name: "TTP223B Capacitive Single Touch Sensor Module", price: 38.00, mrp: 53, minQty: 1, category: "Sensor", sku: "A5X-INV2-055", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "TTP223B Capacitive Single Touch Sensor Module" },
   { id: uid(), name: "IR OBSTICLE SENSOR MODULE", price: 45.00, mrp: 63, minQty: 1, category: "Sensor", sku: "A5X-INV2-056", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 29, shortDescription: "IR OBSTICLE SENSOR MODULE" },
-  { id: uid(), name: "GY-521 MPU6050 Module â€“ Triple Axis Accelerometer And Gyro Module", price: 180.00, mrp: 252, minQty: 1, category: "Sensor", sku: "A5X-INV2-057", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "GY-521 MPU6050 Module â€“ Triple Axis Accelerometer And Gyro Module" },
+  { id: uid(), name: "GY-521 MPU6050 Module - Triple Axis Accelerometer And Gyro Module", price: 180.00, mrp: 252, minQty: 1, category: "Sensor", sku: "A5X-INV2-057", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 3, shortDescription: "GY-521 MPU6050 Module - Triple Axis Accelerometer And Gyro Module" },
   { id: uid(), name: "MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2", price: 130.00, mrp: 182, minQty: 1, category: "Sensor", sku: "A5X-INV2-058", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2" },
   { id: uid(), name: "TCRT5000 IR Sensor Module", price: 52.00, mrp: 73, minQty: 1, category: "Sensor", sku: "A5X-INV2-059", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 10, shortDescription: "TCRT5000 IR Sensor Module" },
   { id: uid(), name: "Ultrasonic distance Ranging module detector sensor HC-SR04", price: 65.00, mrp: 91, minQty: 1, category: "Sensor", sku: "A5X-INV2-060", rating: 4.7, reviewCount: 0, inStock: true, stockCount: 12, shortDescription: "Ultrasonic distance Ranging module detector sensor HC-SR04" },
@@ -289,7 +295,7 @@ const coursesSeed = [
   { id: "arduino-basics", title: "Arduino Maker Basics", description: "Inputs, outputs, displays, and readable code habits.", level: "BEGINNER", category: "Arduino", thumbnailUrl: robotHands, instructor: "Meera Iyer", tags: ["Arduino", "Display"], isPublished: true, isFeatured: false, createdAt: "2026-04-10", videos: [{ id: "display", title: "LCD and OLED Output", description: "Show clean robot state on small displays.", videoUrl: "", thumbnailUrl: robotHands, duration: 480, relatedProducts: ["uno-r3", "oled", "lcd16"], publishedAt: "2026-04-10" }] }
 ];
 
-// â”€â”€ Stores (imported from separate files) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// == Stores (imported from separate files) ==================================
 import useCartStore from "./stores/useCartStore";
 import useWishlistStore from "./stores/useWishlistStore";
 import useCompareStore from "./stores/useCompareStore";
@@ -510,6 +516,7 @@ function MainLayout() {
       {!hideNavbar && <Footer />}
       <CartDrawer />
       <AuthModal />
+      <AxieWidget />
     </>
   );
 }
@@ -555,7 +562,7 @@ function ProductCard({ product, compact, onQuickView }) {
         <div className="rating-row"><StarRating rating={product.rating} /><span className="review-count">({product.reviewCount || 0})</span></div>
         <div className="price-row"><strong>{inr(product.price)}</strong><span>/pcs</span>{product.mrp && <><s className="mrp">{inr(product.mrp)}</s><span className="discount-badge">{discount}% off</span></>}</div>
         <StockBadge stock={product.inStock} count={product.stockCount} />
-        <p className="delivery-est"><Truck size={13} /> Ships in 2â€“3 days</p>
+        <p className="delivery-est"><Truck size={13} /> Ships in 2-3 days</p>
         <div className="card-actions">
           <button className="add-quote-btn" onClick={() => add(product)} disabled={!product.inStock}>Add to Quote</button>
           <label className="compare-check"><input type="checkbox" checked={compared} onChange={() => compToggle(product.id)} /><span>Compare</span></label>
@@ -585,7 +592,7 @@ function KitCard({ kit }) {
       <div className="kit-image">
         <img src={kit.imageUrl || kitInnovation} alt={kit.name} />
         <span className={`tier ${kit.tier.toLowerCase().split(" ")[0]}`}>{kit.tier}</span>
-        <span className="rating">â˜… {kit.rating}</span>
+        <span className="rating">\u2605 {kit.rating}</span>
         <div className="kit-image-glow" />
       </div>
       <div className="kit-body">
@@ -763,7 +770,7 @@ function TypewriterText({ texts, speed = 80, pause = 2000 }) {
   return <span>{texts[textIndex].slice(0, charIndex)}<span className="blink-cursor">|</span></span>;
 }
 
-/* â”€â”€â”€ SCI-FI ANIMATION INFRASTRUCTURE â”€â”€â”€ */
+/* === SCI-FI ANIMATION INFRASTRUCTURE === */
 
 function AuroraBackground() {
   return <div className="aurora-bg" />;
@@ -1091,7 +1098,7 @@ function Hero() {
 
 function TrustBar() {
   const items = [
-    { icon: <Truck size={22} />, title: "Free Shipping", sub: "On all orders above â‚¹999" },
+    { icon: <Truck size={22} />, title: "Free Shipping", sub: "On all orders above ₹999" },
     { icon: <Shield size={22} />, title: "Secure Payments", sub: "100% secure & trusted" },
     { icon: <RefreshCw size={22} />, title: "7 Days Return", sub: "Hassle free returns" },
     { icon: <MessageSquare size={22} />, title: "24/7 Support", sub: "We're here to help" },
@@ -1126,7 +1133,7 @@ function PopularCategories() {
           <p className="popular-cats-eyebrow">BROWSE CATEGORIES</p>
           <h2 className="popular-cats-title">Popular Categories</h2>
         </div>
-        <Link className="popular-cats-viewall" to="/shop">View All Categories â†’</Link>
+        <Link className="popular-cats-viewall" to="/shop">View All Categories &gt;</Link>
       </div>
       <div className="popular-cats-grid">
         {categories.map(({ label, sub, img, to }) => (
@@ -1137,7 +1144,7 @@ function PopularCategories() {
             <div className="popular-cat-body">
               <strong>{label}</strong>
               <span>{sub}</span>
-              <span className="popular-cat-link">Shop Now â†’</span>
+              <span className="popular-cat-link">Shop Now &gt;</span>
             </div>
           </Link>
         ))}
@@ -1188,7 +1195,7 @@ function GatewayCards() {
             <span className="gw-num">{num}</span>
             <h2>{title}</h2>
             <p>{text}</p>
-            <span className="gw-link">Explore <span>â†’</span></span>
+            <span className="gw-link">Explore <span>{'>'}</span></span>
           </Link>
         </motion.div>
       ))}
@@ -1290,7 +1297,7 @@ function QuickViewModal({ product, onClose }) {
               <p className="qv-desc">{product.shortDescription}</p>
               <div className="qty-selector"><button onClick={() => setQty(Math.max(1, qty - 1))}><Minus size={16} /></button><span>{qty}</span><button onClick={() => setQty(qty + 1)}><Plus size={16} /></button></div>
               <button className="add-quote-btn full" onClick={() => { for (let i = 0; i < qty; i++) add(product); onClose(); }}>Add to Quote</button>
-              <Link to={`/shop/${product.id}`} className="qv-detail-link" onClick={onClose}>View Full Details â†’</Link>
+              <Link to={`/shop/${product.id}`} className="qv-detail-link" onClick={onClose}>View Full Details &gt;</Link>
             </div>
           </div>
         </motion.div>
@@ -1321,8 +1328,8 @@ function FilterSidebar({ filters, setFilters, onClear, categories: cats }) {
       <aside className={`filter-sidebar glass-card ${open ? "open" : ""}`}>
         <div className="filter-header"><h3><SlidersHorizontal size={16} /> Filters</h3><button onClick={onClear}>Clear All</button></div>
         <div className="filter-group"><h4>Category</h4>{cats.map((c) => <label key={c}><input type="radio" name="cat" checked={filters.category === c} onChange={() => setFilters((f) => ({ ...f, category: c }))} />{c}</label>)}</div>
-        <div className="filter-group"><h4>Price Range</h4><div className="price-inputs"><input type="number" placeholder="Min â‚¹" value={filters.priceMin} onChange={(e) => setFilters((f) => ({ ...f, priceMin: e.target.value }))} /><span>â€“</span><input type="number" placeholder="Max â‚¹" value={filters.priceMax} onChange={(e) => setFilters((f) => ({ ...f, priceMax: e.target.value }))} /></div></div>
-        <div className="filter-group"><h4>Rating</h4>{[4, 3, 2].map((r) => <label key={r}><input type="radio" name="rating" checked={filters.minRating === r} onChange={() => setFilters((f) => ({ ...f, minRating: r }))} />â˜… {r}.0+</label>)}</div>
+        <div className="filter-group"><h4>Price Range</h4><div className="price-inputs"><input type="number" placeholder="Min ₹" value={filters.priceMin} onChange={(e) => setFilters((f) => ({ ...f, priceMin: e.target.value }))} /><span>-</span><input type="number" placeholder="Max ₹" value={filters.priceMax} onChange={(e) => setFilters((f) => ({ ...f, priceMax: e.target.value }))} /></div></div>
+        <div className="filter-group"><h4>Rating</h4>{[4, 3, 2].map((r) => <label key={r}><input type="radio" name="rating" checked={filters.minRating === r} onChange={() => setFilters((f) => ({ ...f, minRating: r }))} />\u2605 {r}.0+</label>)}</div>
         <div className="filter-group"><h4>Compatibility</h4>{compatOptions.map((c) => <label key={c}><input type="checkbox" checked={filters.compat.includes(c)} onChange={() => setFilters((f) => ({ ...f, compat: f.compat.includes(c) ? f.compat.filter((x) => x !== c) : [...f.compat, c] }))} />{c}</label>)}</div>
         <div className="filter-group"><label className="stock-toggle"><input type="checkbox" checked={filters.inStockOnly} onChange={() => setFilters((f) => ({ ...f, inStockOnly: !f.inStockOnly }))} />In Stock Only</label></div>
       </aside>
@@ -1521,7 +1528,7 @@ function ShopSection() {
               <span className="shop-deal-tag">BEST SELLER</span>
               <h3>Arduino Starter Kit</h3>
               <p>Complete kit for beginners</p>
-              <strong>â‚¹2,499 <s>â‚¹3,499</s></strong>
+              <strong>₹2,499 <s>₹3,499</s></strong>
             </div>
             <div className="shop-deal-badge">-29%</div>
           </div>
@@ -1530,7 +1537,7 @@ function ShopSection() {
               <span className="shop-deal-tag">TOP RATED</span>
               <h3>Motor Driver L298N</h3>
               <p>Dual H-Bridge controller</p>
-              <strong>â‚¹349 <s>â‚¹499</s></strong>
+              <strong>₹349 <s>₹499</s></strong>
             </div>
             <div className="shop-deal-badge">-30%</div>
           </div>
@@ -1539,7 +1546,7 @@ function ShopSection() {
               <span className="shop-deal-tag">HOT DEAL</span>
               <h3>Ultrasonic Sensor</h3>
               <p>HC-SR04 distance sensor</p>
-              <strong>â‚¹149 <s>â‚¹249</s></strong>
+              <strong>₹149 <s>₹249</s></strong>
             </div>
             <div className="shop-deal-badge">-40%</div>
           </div>
@@ -1558,9 +1565,9 @@ function ShopSection() {
           <div className="shop-filter-group">
             <p className="shop-filter-label">PRICE RANGE</p>
             <div className="shop-price-inputs">
-              <input type="number" placeholder="Min â‚¹" value={filters.priceMin} onChange={(e) => setFilters({ ...filters, priceMin: e.target.value })} />
-              <span>â€”</span>
-              <input type="number" placeholder="Max â‚¹" value={filters.priceMax} onChange={(e) => setFilters({ ...filters, priceMax: e.target.value })} />
+              <input type="number" placeholder="Min ₹" value={filters.priceMin} onChange={(e) => setFilters({ ...filters, priceMin: e.target.value })} />
+              <span>-</span>
+              <input type="number" placeholder="Max ₹" value={filters.priceMax} onChange={(e) => setFilters({ ...filters, priceMax: e.target.value })} />
             </div>
           </div>
 
@@ -1569,7 +1576,7 @@ function ShopSection() {
             <div className="shop-rating-btns">
               {[0, 3, 4, 4.5].map((r) => (
                 <button key={r} className={`shop-rating-btn ${filters.minRating === r ? "active" : ""}`} onClick={() => setFilters({ ...filters, minRating: r })}>
-                  {r === 0 ? "All" : `${r}â˜…+`}
+                  {r === 0 ? "All" : `${r}\u2605+`}
                 </button>
               ))}
             </div>
@@ -1623,14 +1630,14 @@ function ShopSection() {
                 <Filter size={16} /> Filters
               </button>
               <span className="shop-count-text">
-                Showing <strong>{start}â€“{end}</strong> of <strong>{filtered.length}</strong> products
+                Showing <strong>{start}-{end}</strong> of <strong>{filtered.length}</strong> products
               </span>
             </div>
             <div className="shop-toolbar-right">
               <select className="shop-sort-select" value={sort} onChange={(e) => { setSort(e.target.value); setPage(1); }}>
                 <option value="popular">Most Popular</option>
-                <option value="price-asc">Price: Lowâ€“High</option>
-                <option value="price-desc">Price: Highâ€“Low</option>
+                <option value="price-asc">Price: Low-High</option>
+                <option value="price-desc">Price: High-Low</option>
                 <option value="rating">Highest Rated</option>
                 <option value="newest">Newest</option>
               </select>
@@ -1694,35 +1701,195 @@ function ShopSection() {
   );
 }
 
+// === HELPER: Render stars from numeric rating ===
+const renderStars = (rating) => Array.from({length: 5}, (_, i) => i < Math.floor(rating) ? '\u2605' : '\u2606').join('');
+
+// === KIT CARD (rebuilt) ===
+function KitCardNew({ kit, onCartAdd }) {
+  const navigate = useNavigate();
+  const tierKey = (kit.tier || '').toLowerCase().split(' ')[0];
+  const diff = kit.difficulty || 3;
+  const mrp = kit.mrp || Math.round(kit.price * 1.5);
+  const discount = Math.round((1 - kit.price / mrp) * 100);
+  return (
+    <article className="kc" onClick={() => navigate(`/kits/${kit.id}`)}>
+      <div className="kc-img">
+        <img src={kit.imageUrl || kit.images?.[0] || kitInnovation} alt={kit.name} />
+        <span className={`kc-badge ${tierKey}`}>{kit.tier || 'KIT'}</span>
+      </div>
+      <div className="kc-body">
+        <div className="kc-dots">{Array.from({length:5},(_,i)=><span key={i} className={i<diff?'filled':''} />)}</div>
+        <h3 className="kc-name">{kit.name}</h3>
+        <p className="kc-desc">{kit.description}</p>
+        <span className="kc-stars">{renderStars(kit.rating || 4.5)}</span>
+        <div className="kc-bottom">
+          <div className="kc-price">
+            <strong>{'\u20B9'}{Number(kit.price).toLocaleString('en-IN')}</strong>
+            <del>{'\u20B9'}{mrp.toLocaleString('en-IN')}</del>
+          </div>
+          <button className="kc-cart" onClick={e=>{e.stopPropagation();onCartAdd&&onCartAdd(kit)}} aria-label="Add to cart"><ShoppingCart size={14}/></button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+// === FILTER SIDEBAR ===
+function KitsFilterSidebar({ filters, setFilters, onApply }) {
+  const [openSections, setOpenSections] = useState({cat:true,diff:true,age:true,price:true});
+  const toggle = (k) => setOpenSections(s => ({...s,[k]:!s[k]}));
+  const cats = [{id:'all',label:'All Kits',count:''},{id:'race',label:'Race Bots',count:'2'},{id:'arm',label:'Arm & Gripper',count:'1'},{id:'sensor',label:'Sensor Kits',count:'2'},{id:'iot',label:'IoT/Smart',count:'1'}];
+  const diffs = [{id:'beginner',label:'Beginner',color:'#22c55e'},{id:'intermediate',label:'Intermediate',color:'#f59e0b'},{id:'advanced',label:'Advanced',color:'#ef4444'}];
+  const ages = ['8-12 yrs','12-16 yrs','16+ yrs'];
+  const toggleCat = (id) => {
+    const s = new Set(filters.categories);
+    s.has(id)?s.delete(id):s.add(id);
+    setFilters(f=>({...f,categories:Array.from(s)}));
+  };
+  return (
+    <aside className="kits-sidebar">
+      <div className="ks-section">
+        <div className={`ks-heading ${openSections.cat?'open':''}`} onClick={()=>toggle('cat')}>Category <ChevronDown size={14}/></div>
+        <div className={`ks-body ${openSections.cat?'open':''}`}>
+          {cats.map(c=>(
+            <label key={c.id} className="ks-check"><input type="checkbox" checked={filters.categories.includes(c.id)} onChange={()=>toggleCat(c.id)}/><span className="ks-box"/>{c.label}{c.count&&<span className="ks-count">({c.count})</span>}</label>
+          ))}
+        </div>
+      </div>
+      <div className="ks-section">
+        <div className={`ks-heading ${openSections.diff?'open':''}`} onClick={()=>toggle('diff')}>Difficulty <ChevronDown size={14}/></div>
+        <div className={`ks-body ${openSections.diff?'open':''}`}>
+          {diffs.map(d=>(
+            <label key={d.id} className="ks-check"><input type="checkbox" checked={filters.difficulty.includes(d.id)} onChange={()=>{const s=new Set(filters.difficulty);s.has(d.id)?s.delete(d.id):s.add(d.id);setFilters(f=>({...f,difficulty:Array.from(s)}));}}/><span className="ks-box"/><span className="ks-dot" style={{background:d.color}}/>{d.label}</label>
+          ))}
+        </div>
+      </div>
+      <div className="ks-section">
+        <div className={`ks-heading ${openSections.age?'open':''}`} onClick={()=>toggle('age')}>Age Group <ChevronDown size={14}/></div>
+        <div className={`ks-body ${openSections.age?'open':''}`}>
+          {ages.map(a=>(
+            <label key={a} className="ks-radio"><input type="radio" name="age" checked={filters.age===a} onChange={()=>setFilters(f=>({...f,age:a}))}/><span className="ks-circle"/>{a}</label>
+          ))}
+        </div>
+      </div>
+      <div className="ks-section">
+        <div className={`ks-heading ${openSections.price?'open':''}`} onClick={()=>toggle('price')}>Price Range <ChevronDown size={14}/></div>
+        <div className={`ks-body ${openSections.price?'open':''}`}>
+          <div className="ks-range-track"><div className="ks-range-fill" style={{left:`${filters.priceMin/80}%`,right:`${100-filters.priceMax/80}%`}}/></div>
+          <div className="ks-range-row" style={{position:'relative',height:20}}>
+            <input type="range" min={0} max={8000} step={100} value={filters.priceMin} onChange={e=>setFilters(f=>({...f,priceMin:Math.min(+e.target.value,f.priceMax-100)}))}/>
+            <input type="range" min={0} max={8000} step={100} value={filters.priceMax} onChange={e=>setFilters(f=>({...f,priceMax:Math.max(+e.target.value,f.priceMin+100)}))}/>
+          </div>
+          <div className="ks-range-vals"><span>{'\u20B9'}{filters.priceMin.toLocaleString('en-IN')}</span><span>{'\u20B9'}{filters.priceMax.toLocaleString('en-IN')}</span></div>
+        </div>
+      </div>
+      <button className="ks-apply" onClick={onApply}>Apply Filters</button>
+    </aside>
+  );
+}
+
+// === KITS SECTION (rebuilt) ===
 function KitsSection() {
   const kits = useAdminStore((state) => state.kits);
   const loadKits = useAdminStore((state) => state.loadKits);
+  const add = useCartStore((s) => s.add);
+  const navigate = useNavigate();
+  const [toast, setToast] = useState('');
+  const [sort, setSort] = useState('newest');
+  const [viewMode, setViewMode] = useState('grid');
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [filters, setFilters] = useState({categories:[],difficulty:[],age:'',priceMin:0,priceMax:8000});
 
-  // Always load fresh kits from API on mount
-  useEffect(() => {
-    loadKits();
-  }, []);
+  useEffect(() => { loadKits(); }, []);
+
+  const showToast = (msg) => { setToast(msg); setTimeout(()=>setToast(''),1800); };
+  const handleCartAdd = (kit) => { add({...kit,category:'Kits',sku:kit.tier||'KIT'}); showToast('+1 to cart!'); };
+
+  // Filter logic
+  let filtered = [...kits];
+  if(filters.priceMin>0||filters.priceMax<8000) filtered=filtered.filter(k=>k.price>=filters.priceMin&&k.price<=filters.priceMax);
+  // Sort
+  if(sort==='price-asc') filtered.sort((a,b)=>a.price-b.price);
+  else if(sort==='price-desc') filtered.sort((a,b)=>b.price-a.price);
+  else if(sort==='rating') filtered.sort((a,b)=>(b.rating||0)-(a.rating||0));
+
+  // Active filter chips
+  const chips = [];
+  if(filters.priceMin>0||filters.priceMax<8000) chips.push({label:`${'\u20B9'}${filters.priceMin.toLocaleString('en-IN')} - ${'\u20B9'}${filters.priceMax.toLocaleString('en-IN')}`,clear:()=>setFilters(f=>({...f,priceMin:0,priceMax:8000}))});
+  filters.categories.filter(c=>c!=='all').forEach(c=>chips.push({label:c,clear:()=>setFilters(f=>({...f,categories:f.categories.filter(x=>x!==c)}))}));
+  filters.difficulty.forEach(d=>chips.push({label:d,clear:()=>setFilters(f=>({...f,difficulty:f.difficulty.filter(x=>x!==d)}))}));
+  if(filters.age) chips.push({label:filters.age,clear:()=>setFilters(f=>({...f,age:''}))});
+  const clearAll = ()=>setFilters({categories:[],difficulty:[],age:'',priceMin:0,priceMax:8000});
 
   return (
-    <section className="kits-section neon-kits" id="kits">
-      <div className="kits-premium-hero">
-        <img className="kits-hero-art" src={kitInnovation} alt="" />
-        <div className="kits-hero-overlay" />
-        <div className="kits-hero-content">
-          <p className="eyebrow">A5X ROBOTICS</p>
-          <h1>PREMIUM<br /><em>ROBOTICS</em> KITS</h1>
-          <p className="kits-hero-sub">Engineered for builders. Every component matched, tested, and documented for real-world robotics.</p>
-          <div className="kits-hero-stats">
-            <div className="glass-card"><strong>{kits.length}</strong><span>Kits Available</span></div>
-            <div className="glass-card"><strong>100%</strong><span>Tested & Matched</span></div>
-            <div className="glass-card"><strong>24hr</strong><span>Dispatch Time</span></div>
+    <div className="kits-rebuild">
+      <KitsFilterSidebar filters={filters} setFilters={setFilters} onApply={()=>{}}/>
+      <div className="kits-main">
+        {/* Toolbar */}
+        <div className="kits-toolbar">
+          <div>
+            <div className="kits-breadcrumb"><Link to="/">Home</Link> &rsaquo; <span>Kits</span></div>
+            <div className="kits-showing">Showing {filtered.length} kits</div>
+          </div>
+          <div className="kits-toolbar-right">
+            <button className="kits-filter-btn" onClick={()=>setDrawerOpen(true)}><Filter size={14}/>Filters</button>
+            <select className="kits-sort" value={sort} onChange={e=>setSort(e.target.value)}>
+              <option value="newest">Newest</option>
+              <option value="price-asc">Price: Low-High</option>
+              <option value="price-desc">Price: High-Low"</option>
+              <option value="best">Best Seller</option>
+              <option value="rating">Top Rated</option>
+            </select>
+            <button className={`kits-view-btn ${viewMode==='grid'?'active':''}`} onClick={()=>setViewMode('grid')}><Grid2X2 size={16}/></button>
+            <button className={`kits-view-btn ${viewMode==='list'?'active':''}`} onClick={()=>setViewMode('list')}><List size={16}/></button>
           </div>
         </div>
 
+        {/* Active filter chips */}
+        {chips.length>0&&(
+          <div className="kits-chips">
+            {chips.map((c,i)=><span key={i} className="kits-chip" onClick={c.clear}>{c.label}<span className="kits-chip-x">&times;</span></span>)}
+            <button className="kits-clear" onClick={clearAll}>Clear all</button>
+          </div>
+        )}
+
+        {/* Featured Banner */}
+        <div className={`kits-grid-wrap ${viewMode==='list'?'list-view':''}`}>
+          <div className="kits-featured" onClick={()=>navigate('/kits/robo-race')}>
+            <img className="kf-img" src="/robo-race/assets/robo-scooter.png" alt="Robo Race Kit"/>
+            <div className="kf-mid">
+              <div className="kf-label">{'\u2B50'} Featured Kit</div>
+              <h3 className="kf-name">ROBO RACE</h3>
+              <p className="kf-tag">Build it. Wire it. Code it. Race it.</p>
+              <div className="kf-chips"><span>ESP32</span><span>L298N</span><span>Chassis</span><span>Buck Converter</span></div>
+              <div className="kf-price"><del>{'\u20B9'}6,000</del><strong>{'\u20B9'}3,499</strong></div>
+            </div>
+            <div className="kf-right">
+              <span className="kf-badge">Launch Offer</span>
+              <button className="kf-cta" onClick={e=>{e.stopPropagation();navigate('/kits/robo-race')}}>Build It &rarr;</button>
+            </div>
+          </div>
+
+          {/* Kit Cards */}
+          {filtered.map(kit=><KitCardNew key={kit.id} kit={kit} onCartAdd={handleCartAdd}/>)}
+        </div>
       </div>
-      <div className="kits-grid">{kits.map((kit) => <KitCard key={kit.id} kit={kit} />)}</div>
-      <div className="custom-kit"><img src={robotHands} alt="" /><div><h3>Need a custom kit?</h3><p>Tell us your build goal, classroom size, or competition spec. We will bundle the right components.</p><ButtonLink to="/contact">Request Custom Build</ButtonLink></div></div>
-    </section>
+
+      {/* Toast */}
+      {toast&&<div className="kits-toast">{toast}</div>}
+
+      {/* Mobile filter drawer */}
+      {drawerOpen&&(
+        <>
+          <div className="kits-drawer-overlay" onClick={()=>setDrawerOpen(false)}/>
+          <div className="kits-drawer">
+            <div className="kits-drawer-handle"/>
+            <button className="kits-drawer-close" onClick={()=>setDrawerOpen(false)}><X size={20}/></button>
+            <KitsFilterSidebar filters={filters} setFilters={setFilters} onApply={()=>setDrawerOpen(false)}/>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -1732,313 +1899,172 @@ function KitDetailPage() {
   const kits = useAdminStore((state) => state.kits);
   const kit = kits.find((k) => k.id === id);
   const add = useCartStore((state) => state.add);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [showVideo, setShowVideo] = useState(false);
-  const [dragStart, setDragStart] = useState(null);
-  
-  // Use uploaded images from kit.images array, fallback to imageUrl or default
-  const galleryImages = kit?.images && kit.images.length > 0 
-    ? kit.images 
-    : kit?.imageUrl 
-      ? [kit.imageUrl] 
-      : [a5xCarKit];
-  
-  // Debug logging
+  const [activeImg, setActiveImg] = useState(0);
+  const [activeTab, setActiveTab] = useState(0);
+  const [cartState, setCartState] = useState('idle'); // idle | loading | success
+  const [showMobileBar, setShowMobileBar] = useState(false);
+
+  const galleryImages = kit?.images?.length > 0 ? kit.images : kit?.imageUrl ? [kit.imageUrl] : [kitInnovation];
+  const mrp = kit?.mrp || Math.round((kit?.price || 0) * 1.5);
+  const discount = kit ? Math.round((1 - kit.price / mrp) * 100) : 0;
+  const savings = mrp - (kit?.price || 0);
+  const tierKey = (kit?.tier || '').toLowerCase().split(' ')[0];
+  const diff = kit?.difficulty || 3;
+
   useEffect(() => {
-    console.log('=== KIT DETAIL PAGE DEBUG ===');
-    console.log('Kit ID:', id);
-    console.log('Kit object:', kit);
-    console.log('Kit images array:', kit?.images);
-    console.log('Kit images length:', kit?.images?.length);
-    console.log('Kit imageUrl:', kit?.imageUrl);
-    console.log('Gallery images:', galleryImages);
-    console.log('Gallery images length:', galleryImages.length);
-    console.log('=== END DEBUG ===');
-  }, [kit, galleryImages]);
-  
-  useEffect(() => {
-    const t = setInterval(() => setActiveSlide((s) => (s + 1) % galleryImages.length), 3000);
-    return () => clearInterval(t);
-  }, [galleryImages.length]);
-  
-  const nextSlide = () => {
-    setActiveSlide((s) => (s + 1) % galleryImages.length);
+    const onScroll = () => setShowMobileBar(window.scrollY > 500);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const handleAddToCart = () => {
+    setCartState('loading');
+    setTimeout(() => {
+      add({ ...kit, category: 'Kits', sku: kit.tier || 'KIT' });
+      setCartState('success');
+      setTimeout(() => setCartState('idle'), 1500);
+    }, 400);
   };
-  
-  const prevSlide = () => {
-    setActiveSlide((s) => (s - 1 + galleryImages.length) % galleryImages.length);
-  };
-  
-  const handleMouseDown = (e) => {
-    setDragStart(e.clientX);
-  };
-  
-  const handleMouseUp = (e) => {
-    if (dragStart === null) return;
-    const diff = e.clientX - dragStart;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        prevSlide();
-      } else {
-        nextSlide();
-      }
-    }
-    setDragStart(null);
-  };
-  
-  const handleTouchStart = (e) => {
-    setDragStart(e.touches[0].clientX);
-  };
-  
-  const handleTouchEnd = (e) => {
-    if (dragStart === null) return;
-    const diff = e.changedTouches[0].clientX - dragStart;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        prevSlide();
-      } else {
-        nextSlide();
-      }
-    }
-    setDragStart(null);
-  };
-  
-  if (!kit) return <main className="page"><section style={{textAlign:'center',paddingTop:'120px'}}><h1>Kit Not Found</h1><button className="btn" onClick={() => navigate('/kits')}>Back to Kits</button></section></main>;
-  
-  const hasVideo = kit.videoUrl && kit.videoUrl.trim() !== '';
-  
+
+  if (!kit) return <main className="kd-page" style={{textAlign:'center',paddingTop:160}}><h1 style={{color:'#fff',fontFamily:'Orbitron'}}>Kit Not Found</h1><button className="kd-add-cart" style={{maxWidth:200,margin:'24px auto'}} onClick={()=>navigate('/kits')}>Back to Kits</button></main>;
+
+  const components = kit.includes || kit.components || ['ESP32','L298N Motor Driver','Chassis Frame','Wheels','Buck Converter','Wiring Harness'];
+  const skills = kit.skills || ['Motor Control','PCB Basics','Arduino Coding','Sensor Logic','Wireless Control'];
+  const learningSteps = kit.learningSteps || ['Understand the circuit diagram','Assemble chassis and mount motors','Wire the motor driver to ESP32','Upload control firmware','Test and calibrate movement','Race and iterate!'];
+  const reviews = kit.reviews || [
+    {name:'Anika M.',initials:'AM',rating:5,text:'My son built this in one weekend. The instructions were clear and the components are solid quality.',date:'2 weeks ago',verified:true},
+    {name:'Rohan K.',initials:'RK',rating:4,text:'Great kit for learning. The ESP32 integration is smooth. Would love more advanced challenges.',date:'1 month ago',verified:true},
+    {name:'Sara P.',initials:'SP',rating:5,text:'Best robotics kit we have purchased. The build quality is excellent.',date:'3 weeks ago',verified:true}
+  ];
+  const tabLabels = ['Overview','What\'s in the Box','Learn','Reviews'];
+  const relatedKits = kits.filter(k => k.id !== kit.id).slice(0, 3);
+
   return (
-    <main className="page kit-detail-page">
-      <section className="kit-detail-hero">
-        <div 
-          className="kit-detail-gallery"
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          style={{cursor: dragStart !== null ? 'grabbing' : 'grab', userSelect: 'none'}}
-        >
-          <AnimatePresence mode="wait">
-            <motion.img key={activeSlide} src={galleryImages[activeSlide]} alt={kit.name} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5 }} draggable={false} />
-          </AnimatePresence>
-          
-          {/* Previous Button */}
-          <button
-            onClick={prevSlide}
-            style={{
-              position: 'absolute',
-              left: '20px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'rgba(0, 229, 255, 0.9)',
-              border: 'none',
-              borderRadius: '50%',
-              width: '50px',
-              height: '50px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              zIndex: 10,
-              transition: 'all 0.3s ease',
-              color: '#000'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0, 229, 255, 1)'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0, 229, 255, 0.9)'}
-          >
-            <ChevronLeft size={28} />
-          </button>
-          
-          {/* Next Button */}
-          <button
-            onClick={nextSlide}
-            style={{
-              position: 'absolute',
-              right: '20px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'rgba(0, 229, 255, 0.9)',
-              border: 'none',
-              borderRadius: '50%',
-              width: '50px',
-              height: '50px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              zIndex: 10,
-              transition: 'all 0.3s ease',
-              color: '#000'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0, 229, 255, 1)'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0, 229, 255, 0.9)'}
-          >
-            <ChevronRight size={28} />
-          </button>
-          
-          <div className="kit-gallery-dots">
-            {galleryImages.slice(0, 8).map((_, i) => <button key={i} className={i === activeSlide % 8 ? 'active' : ''} onClick={() => setActiveSlide(i)} />)}
+    <main className="kd-page">
+      <div className="kd-hero">
+        {/* Image Gallery */}
+        <div className="kd-gallery">
+          <div className="kd-main-img">
+            <img src={galleryImages[activeImg]} alt={kit.name} />
+            {galleryImages.length > 1 && <>
+              <button className="kd-arrow left" onClick={() => setActiveImg(i => (i - 1 + galleryImages.length) % galleryImages.length)}><ChevronLeft size={18}/></button>
+              <button className="kd-arrow right" onClick={() => setActiveImg(i => (i + 1) % galleryImages.length)}><ChevronRight size={18}/></button>
+            </>}
           </div>
-          <div className="kit-gallery-glow" />
-          {hasVideo && (
-            <button 
-              className="kit-video-play-btn" 
-              onClick={() => setShowVideo(true)}
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                background: 'rgba(255,255,255,0.9)',
-                border: 'none',
-                borderRadius: '50%',
-                width: '80px',
-                height: '80px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                zIndex: 10,
-                transition: 'all 0.3s ease'
-              }}
-            >
-              <Play size={32} style={{marginLeft: '4px'}} />
-            </button>
+          <div className="kd-thumbs">
+            {galleryImages.slice(0, 4).map((img, i) => (
+              <div key={i} className={`kd-thumb ${i === activeImg ? 'active' : ''}`} onClick={() => setActiveImg(i)}>
+                <img src={img} alt="" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Info Panel */}
+        <div className="kd-info">
+          <div className="kd-breadcrumb"><Link to="/">Home</Link> &rsaquo; <Link to="/kits">Kits</Link> &rsaquo; {kit.name}</div>
+          <span className={`kd-badge ${tierKey}`}>{kit.tier || 'KIT'}</span>
+          <h1 className="kd-title">{kit.name}</h1>
+          <p className="kd-tagline">{kit.description}</p>
+          <div className="kd-divider" />
+          <div className="kd-rating">
+            <span className="kd-stars">{renderStars(kit.rating || 4.5)}</span>
+            <span className="kd-rating-text">{kit.rating || 4.5}/5 ({kit.reviewCount || reviews.length} reviews)</span>
+          </div>
+          <div className="kd-price-block">
+            <span className="kd-price-now">{'\u20B9'}{Number(kit.price).toLocaleString('en-IN')}</span>
+            <span className="kd-price-was">{'\u20B9'}{mrp.toLocaleString('en-IN')}</span>
+            <span className="kd-save">Save {'\u20B9'}{savings.toLocaleString('en-IN')} ({discount}% off)</span>
+          </div>
+          <div className="kd-divider" />
+          <div className="kd-stock"><span className="kd-stock-dot" /> In Stock &mdash; Ships in 2&ndash;3 days</div>
+          <button className={`kd-add-cart ${cartState==='success'?'success':''}`} onClick={handleAddToCart} disabled={cartState==='loading'}>
+            {cartState==='loading' ? <><RefreshCw size={16} style={{animation:'spin 1s linear infinite'}}/> Adding...</> : cartState==='success' ? <><Check size={16}/> Added to Cart!</> : <>Add to Cart &middot; {'\u20B9'}{Number(kit.price).toLocaleString('en-IN')}</>}
+          </button>
+          <button className="kd-ghost" onClick={()=>navigate('/contact')}>Request Custom Version</button>
+          <div className="kd-divider" />
+          <div className="kd-trust">
+            <span className="kd-trust-item"><Truck size={14}/> Free delivery above {'\u20B9'}999</span>
+            <span className="kd-trust-item"><RefreshCw size={14}/> 7-day returns</span>
+            <span className="kd-trust-item"><Check size={14}/> Genuine A5X parts</span>
+          </div>
+          <div className="kd-tags">
+            <span className="kd-tag">Age: {kit.ageGroup || '12-16 yrs'}</span>
+            <span className="kd-tag">Level: {kit.level || (diff <= 2 ? 'Beginner' : diff <= 3 ? 'Intermediate' : 'Advanced')}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="kd-tabs-wrap">
+        <div className="kd-tab-bar">{tabLabels.map((t,i) => <button key={t} className={`kd-tab ${i===activeTab?'active':''}`} onClick={()=>setActiveTab(i)}>{t}</button>)}</div>
+        <div className="kd-tab-content">
+          {activeTab === 0 && (
+            <div className="kd-overview-grid">
+              <div className="kd-overview-card"><Cpu size={24}/><h4>What You'll Build</h4><p>A fully functional robot with motor control, wireless connectivity, and sensor integration.</p></div>
+              <div className="kd-overview-card"><User size={24}/><h4>Who It's For</h4><p>Students, hobbyists, and young makers aged {kit.ageGroup || '12-16'} looking to learn real robotics.</p></div>
+              <div className="kd-overview-card"><Brain size={24}/><h4>What You'll Learn</h4><p>Circuit design, motor control, microcontroller programming, and debugging skills.</p></div>
+            </div>
+          )}
+          {activeTab === 1 && (
+            <div className="kd-comp-grid">
+              {components.map((c, i) => (
+                <div key={i} className="kd-comp"><CircuitBoard size={18}/><div><h5>{typeof c === 'string' ? c : c.name}</h5><p>{typeof c === 'string' ? 'Included in kit' : c.description || 'Included in kit'}</p></div></div>
+              ))}
+            </div>
+          )}
+          {activeTab === 2 && (
+            <div className="kd-learn">
+              <div><h4 style={{color:'#fff',marginBottom:12,fontFamily:'Inter'}}>Skills You'll Gain</h4><div className="kd-skills">{skills.map(s=><span key={s} className="kd-skill">{s}</span>)}</div></div>
+              <div>
+                <div className="kd-steps">{learningSteps.map((s,i)=><div key={i} className="kd-step"><span className="kd-step-num">{i+1}</span><p>{s}</p></div>)}</div>
+                <div className="kd-build-time">Estimated Build Time: 3&ndash;4 hours</div>
+              </div>
+            </div>
+          )}
+          {activeTab === 3 && (
+            <div>
+              <div className="kd-rev-summary">
+                <span className="kd-rev-big">{kit.rating || 4.7}</span>
+                <div style={{textAlign:'center'}}><div className="kd-stars" style={{fontSize:18}}>{renderStars(kit.rating || 4.7)}</div><div style={{color:'#888',fontSize:12,marginTop:4}}>Based on {kit.reviewCount || reviews.length} reviews</div></div>
+                <div className="kd-rev-bars">
+                  {[5,4,3,2,1].map(n=><div key={n} className="kd-rev-bar"><label>{n}{'\u2605'}</label><div className="kd-rev-bar-track"><div className="kd-rev-bar-fill" style={{width:`${n===5?60:n===4?25:n===3?10:n===2?3:2}%`}}/></div></div>)}
+                </div>
+              </div>
+              {reviews.map((r,i) => (
+                <div key={i} className="kd-rev-card">
+                  <div className="kd-rev-head">
+                    <span className="kd-rev-avatar">{r.initials}</span>
+                    <span className="kd-rev-name">{r.name}</span>
+                    {r.verified && <span className="kd-rev-verified">Verified Purchase</span>}
+                    <span className="kd-rev-date">{r.date}</span>
+                  </div>
+                  <div className="kd-stars" style={{marginBottom:6}}>{renderStars(r.rating)}</div>
+                  <p className="kd-rev-text">{r.text}</p>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-        <div className="kit-detail-info">
-          <span className={`tier ${kit.tier.toLowerCase().split(' ')[0]}`}>{kit.tier}</span>
-          <h1>{kit.name}</h1>
-          <p className="kit-detail-desc">{kit.description}</p>
-          <div className="kit-detail-price">{inr(Number(kit.price))}</div>
-          <div className="kit-detail-rating">{'â˜…'.repeat(Math.round(kit.rating))} <span>{kit.rating}/5</span></div>
-          {hasVideo && (
-            <button 
-              className="btn ghost" 
-              onClick={() => setShowVideo(true)}
-              style={{marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem'}}
-            >
-              <PlayCircle size={20} /> Watch Demo Video
-            </button>
-          )}
-          <h3>What's Included</h3>
-          <div className="kit-detail-includes">{kit.includes.map((item) => <div key={item} className="glass-card"><CheckCircle size={16} />{item}</div>)}</div>
-          <button className="btn" onClick={() => add({ ...kit, category: 'Kits', sku: kit.tier })} style={{marginBottom: '1rem'}}>Add to Cart â€” {inr(Number(kit.price))}</button>
-          <ButtonLink to="/contact" ghost>Request Custom Version</ButtonLink>
-        </div>
-      </section>
-      
-      {/* Video Section - Below Image Gallery */}
-      {hasVideo && (
-        <section style={{
-          maxWidth: '1200px',
-          margin: '4rem auto',
-          padding: '0 2rem'
-        }}>
-          <h2 style={{
-            fontSize: '2rem',
-            fontWeight: '700',
-            marginBottom: '2rem',
-            textAlign: 'center',
-            color: '#00e5ff'
-          }}>Kit Demo Video</h2>
-          <div style={{
-            position: 'relative',
-            width: '100%',
-            paddingBottom: '56.25%', // 16:9 aspect ratio
-            background: '#000',
-            borderRadius: '12px',
-            overflow: 'hidden',
-            boxShadow: '0 8px 32px rgba(0, 229, 255, 0.3)'
-          }}>
-            <video 
-              controls 
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain'
-              }}
-            >
-              <source src={kit.videoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+      </div>
+
+      {/* Related kits */}
+      {relatedKits.length > 0 && (
+        <div className="kd-related">
+          <h3>Frequently Bought Together</h3>
+          <div className="kd-related-grid">
+            {relatedKits.map(k => <KitCardNew key={k.id} kit={k} onCartAdd={() => { add({...k,category:'Kits',sku:k.tier||'KIT'}); }} />)}
           </div>
-        </section>
+        </div>
       )}
-      
-      {/* Video Modal */}
-      <AnimatePresence>
-        {showVideo && hasVideo && (
-          <motion.div 
-            className="video-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowVideo(false)}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0,0,0,0.95)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '2rem'
-            }}
-          >
-            <motion.div 
-              className="video-modal-content"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                position: 'relative',
-                width: '100%',
-                maxWidth: '1200px',
-                background: '#000',
-                borderRadius: '12px',
-                overflow: 'hidden'
-              }}
-            >
-              <button
-                onClick={() => setShowVideo(false)}
-                style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  right: '1rem',
-                  background: 'rgba(255,255,255,0.9)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '40px',
-                  height: '40px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  zIndex: 10
-                }}
-              >
-                <X size={24} />
-              </button>
-              <video 
-                controls 
-                autoPlay 
-                style={{width: '100%', height: 'auto', display: 'block'}}
-              >
-                <source src={kit.videoUrl} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+      {/* Mobile sticky bar */}
+      {showMobileBar && (
+        <div className="kd-mobile-bar">
+          <div><strong style={{color:'#00e5c8',fontSize:18}}>{'\u20B9'}{Number(kit.price).toLocaleString('en-IN')}</strong> <del style={{color:'#666',fontSize:12}}>{'\u20B9'}{mrp.toLocaleString('en-IN')}</del></div>
+          <button className="kd-add-cart" onClick={handleAddToCart}>Add to Cart</button>
+        </div>
+      )}
     </main>
   );
 }
@@ -2061,7 +2087,7 @@ function HowItWorks() {
 
 function Testimonials() {
   const quotes = [["AM", "Anika M.", "Engineering Student", "The kit list finally made sense. I could build the rover without mystery parts."], ["RK", "Rohan K.", "Lab Coordinator", "Bulk quotes are clean and the components are documented enough for class use."], ["SP", "Sara P.", "Maker", "The L298N and sensor bundles saved me from compatibility guesswork."]];
-  return <section className="testimonials" style={{ backgroundImage: `linear-gradient(rgba(5,8,16,.78), rgba(5,8,16,.84)), url(${darkSpheres})` }}><h2>What Makers Say</h2><div>{quotes.map(([initials, name, role, quote]) => <article key={name}><b>{initials}</b><h3>{name}</h3><p>{role}</p><span>â˜…â˜…â˜…â˜…â˜…</span><blockquote>{quote}</blockquote></article>)}</div></section>;
+  return <section className="testimonials" style={{ backgroundImage: `linear-gradient(rgba(5,8,16,.78), rgba(5,8,16,.84)), url(${darkSpheres})` }}><h2>What Makers Say</h2><div>{quotes.map(([initials, name, role, quote]) => <article key={name}><b>{initials}</b><h3>{name}</h3><p>{role}</p><span>\u2605\u2605\u2605\u2605\u2605</span><blockquote>{quote}</blockquote></article>)}</div></section>;
 }
 
 function LearnPreview() {
@@ -2131,7 +2157,7 @@ function LearnPage() {
       {/* Featured Course */}
       {featured && (
         <div className="learn-featured-section">
-          <p className="learn-section-label">â­ FEATURED COURSE</p>
+          <p className="learn-section-label">\u2b50 FEATURED COURSE</p>
           <div className="learn-featured-card">
             <div className="learn-featured-img">
               <img src={featured.thumbnailUrl || learnGrid} alt={featured.title} />
@@ -2395,9 +2421,9 @@ function VideoPlayerPage() {
       {/* Breadcrumb */}
       <div className="watch-breadcrumb">
         <Link to="/learn">Learn</Link>
-        <span>â€º</span>
+        <span>{'>'}</span>
         <Link to={`/learn/${course.id}/${videos[0]?.id}`}>{course.title}</Link>
-        <span>â€º</span>
+        <span>{'>'}</span>
         <span>{video.title}</span>
       </div>
 
@@ -2451,7 +2477,7 @@ function VideoPlayerPage() {
           {/* Related Products */}
           {products.length > 0 && (
             <div className="watch-products">
-              <h3 className="watch-section-title">ðŸ›’ Products Used in This Lesson</h3>
+              <h3 className="watch-section-title">›' Products Used in This Lesson</h3>
               <div className="watch-products-grid">
                 {products.map((p) => <ProductCard key={p.id} product={p} compact />)}
               </div>
@@ -2638,7 +2664,7 @@ function ProductDetailPage() {
                 <tbody>
                   {product.bulkPricing.map((bp) => (
                     <tr key={bp.min}>
-                      <td>{bp.min}â€“{bp.max === 999 ? "âˆž" : bp.max} pcs</td>
+                      <td>{bp.min}-{bp.max === 999 ? "\u2713" : bp.max} pcs</td>
                       <td>{inr(bp.price)}</td>
                       <td className="save-amount">{inr(product.price - bp.price)}</td>
                     </tr>
@@ -2705,7 +2731,7 @@ function ProductDetailPage() {
               <Zap size={20} />
               <div>
                 <strong>Free Shipping</strong>
-                <span>On orders above â‚¹999</span>
+                <span>On orders above ₹999</span>
               </div>
             </div>
           </div>
@@ -3131,318 +3157,231 @@ function LoginPage() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, signup, isAuthenticated } = useAuthStore();
+  const redirectTo = location.state?.from || '/';
 
-  // Redirect if already logged in
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/');
-    }
-  }, [isAuthenticated, navigate]);
+    if (isAuthenticated) navigate(redirectTo);
+  }, [isAuthenticated, navigate, redirectTo]);
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: '' });
+  };
+
+  const validate = () => {
+    const errs = {};
+    if (!formData.email) errs.email = 'Email is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errs.email = 'Invalid email format';
+    if (!formData.password) errs.password = 'Password is required';
+    else if (formData.password.length < 8) errs.password = 'Must be at least 8 characters';
+    if (!isLogin) {
+      if (!formData.name) errs.name = 'Full name is required';
+      if (!formData.confirmPassword) errs.confirmPassword = 'Please confirm your password';
+      else if (formData.password !== formData.confirmPassword) errs.confirmPassword = 'Passwords do not match';
+    }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
     setLoading(true);
-
-    if (!isLogin && formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
-      setLoading(false);
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      alert('Password must be at least 8 characters long');
-      setLoading(false);
-      return;
-    }
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
-      
-      // Sanitize username for signup - remove special characters except hyphens and underscores
-      const sanitizedUsername = formData.name 
-        ? formData.name.replace(/[^a-zA-Z0-9_-]/g, '') 
+      const sanitizedUsername = formData.name
+        ? formData.name.replace(/[^a-zA-Z0-9_-]/g, '')
         : formData.email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
-      
-      const payload = isLogin 
+
+      const payload = isLogin
         ? { email: formData.email, password: formData.password }
         : { username: sanitizedUsername, email: formData.email, password: formData.password };
 
-      console.log('LoginPage - Auth request payload:', payload);
-
-      const response = await fetch(`${API_BASE}${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await response.json();
-      console.log('LoginPage - Auth response:', data);
+      // Retry logic for Render cold starts / MongoDB timeouts
+      let response, data;
+      const maxRetries = 2;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          response = await fetch(`${API_BASE}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          data = await response.json();
+          
+          // If MongoDB timed out, retry after waking it up
+          const errText = data.error || data.message || '';
+          if (errText.includes('buffering timed out') && attempt < maxRetries) {
+            setErrors({ form: `Server warming up... retrying (${attempt + 1}/${maxRetries})` });
+            // Wake up MongoDB with a health ping
+            await fetch(`${API_BASE}/api/health`).catch(() => {});
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
+          }
+          break; // Success or non-timeout error, stop retrying
+        } catch (fetchErr) {
+          if (attempt < maxRetries) {
+            setErrors({ form: `Connecting to server... (${attempt + 1}/${maxRetries})` });
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
+          }
+          throw fetchErr;
+        }
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || data.details?.[0]?.message || 'Authentication failed');
+        const errorMsg = data.error || data.message || data.details?.[0]?.message || 'Authentication failed';
+        if (data.code === 'USER_EXISTS' || errorMsg.toLowerCase().includes('already registered')) {
+          setIsLogin(true);
+          setErrors({ form: 'This email is already registered. Please sign in instead.' });
+          setLoading(false);
+          return;
+        }
+        throw new Error(errorMsg);
       }
 
-      // Save user data and token
-      const userData = {
-        id: data.user.id,
-        name: data.user.username,
-        email: data.user.email,
-        role: data.user.role,
-        token: data.token
-      };
-
-      if (isLogin) {
-        login(userData);
-      } else {
-        signup(userData);
-      }
-
-      // Save token to localStorage
+      const userData = { id: data.user.id, name: data.user.username, email: data.user.email, role: data.user.role, token: data.token };
+      if (isLogin) login(userData); else signup(userData);
       localStorage.setItem('a5x-token', data.token);
-
-      // Redirect to home page
-      navigate('/');
+      navigate(redirectTo);
     } catch (error) {
-      alert(error.message || 'Something went wrong. Please try again.');
+      setErrors({ form: error.message || 'Something went wrong. Please try again.' });
     } finally {
       setLoading(false);
     }
   };
 
+  const GoogleIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+    </svg>
+  );
+
   return (
-    <main style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr', background: '#0a0e1a', fontFamily: 'Inter, sans-serif', position: 'relative', overflow: 'hidden' }}>
-      {/* Left Side - Form */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 40px', position: 'relative', zIndex: 2 }}>
-        <div style={{ width: '100%', maxWidth: '480px' }}>
-          {/* Logo */}
-          <div style={{ marginBottom: '56px' }}>
-            <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '36px', fontWeight: 900, background: 'linear-gradient(135deg, #fff 0%, #00f5ff 50%, #0066FF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 20px rgba(0,245,255,0.5))', letterSpacing: '2px' }}>A5X</span>
-              <small style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 800, color: 'rgba(0,245,255,0.8)', letterSpacing: '2.5px', marginTop: '8px' }}>ROBOTICS</small>
-            </Link>
+    <main className="signin-page">
+      {/* ----  LEFT PANEL: Form ----  */}
+      <div className="signin-left">
+        <div className="signin-left-inner signin-fade-in">
+          <Link to="/" className="signin-logo">
+            <span className="signin-logo-a5x">A5X</span>
+            <span className="signin-logo-sub">ROBOTICS</span>
+          </Link>
+
+          <div className="signin-avatar">
+            <User size={22} />
           </div>
 
-          {/* Form Card */}
-          <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '24px', padding: '48px 44px', backdropFilter: 'blur(20px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,255,0.1)' }}>
-            {/* Header */}
-            <div style={{ marginBottom: '36px' }}>
-              <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: '34px', fontWeight: 800, color: '#fff', marginBottom: '10px', letterSpacing: '-0.02em' }}>
-                {isLogin ? 'Welcome back' : 'Create account'}
-              </h1>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
-                {isLogin ? 'Enter your credentials to continue' : 'Sign up to get started with A5X'}
-              </p>
+          <h1 className="signin-heading">{isLogin ? 'Welcome home' : 'Create account'}</h1>
+          <p className="signin-subtitle">{isLogin ? 'Please enter your details.' : 'Fill in your information to get started.'}</p>
+
+          {errors.form && (
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#dc2626', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <X size={14} /> {errors.form}
+            </div>
+          )}
+
+          <form className="signin-form" onSubmit={handleSubmit}>
+            {!isLogin && (
+              <div className="signin-field">
+                <label className="signin-label">Full Name</label>
+                <div className="signin-input-wrap">
+                  <input className="signin-input" name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" />
+                  <User size={16} className="signin-input-icon" />
+                </div>
+                {errors.name && <span className="signin-field-error">{errors.name}</span>}
+              </div>
+            )}
+
+            <div className="signin-field">
+              <label className="signin-label">Email</label>
+              <div className="signin-input-wrap">
+                <input className="signin-input" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="you@email.com" />
+                <svg className="signin-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              </div>
+              {errors.email && <span className="signin-field-error">{errors.email}</span>}
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
-              {!isLogin && (
-                <div>
-                  <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, color: '#00d4ff', marginBottom: '10px', display: 'block' }}>Full Name</label>
-                  <input
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    required={!isLogin}
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '14px', color: '#fff', padding: '15px 18px', fontSize: '15px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)'; }}
-                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; e.target.style.boxShadow = 'none'; }}
-                  />
-                </div>
-              )}
-
-              <div>
-                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, color: '#00d4ff', marginBottom: '10px', display: 'block' }}>Email</label>
-                <input
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="your@email.com"
-                  required
-                  style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '14px', color: '#fff', padding: '15px 18px', fontSize: '15px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
-                  onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)'; }}
-                  onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; e.target.style.boxShadow = 'none'; }}
-                />
+            <div className="signin-field">
+              <label className="signin-label">Password</label>
+              <div className="signin-input-wrap">
+                <input className="signin-input" name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} placeholder="Password" />
+                <svg className="signin-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <button type="button" className="signin-input-toggle" onClick={() => setShowPassword(!showPassword)}>
+                  <Eye size={16} />
+                </button>
               </div>
-
-              <div>
-                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, color: '#00d4ff', marginBottom: '10px', display: 'block' }}>Password</label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
-                    required
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '14px', color: '#fff', padding: '15px 18px', paddingRight: '50px', fontSize: '15px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)'; }}
-                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; e.target.style.boxShadow = 'none'; }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }}
-                    onMouseEnter={(e) => e.target.style.color = '#00d4ff'}
-                    onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.5)'}
-                  >
-                    <Eye size={19} />
-                  </button>
-                </div>
-              </div>
-
-              {!isLogin && (
-                <div>
-                  <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, color: '#00d4ff', marginBottom: '10px', display: 'block' }}>Confirm Password</label>
-                  <input
-                    name="confirmPassword"
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
-                    required={!isLogin}
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '14px', color: '#fff', padding: '15px 18px', fontSize: '15px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)'; }}
-                    onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; e.target.style.boxShadow = 'none'; }}
-                  />
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                style={{ width: '100%', background: loading ? 'rgba(0,212,255,0.3)' : 'linear-gradient(135deg, #00d4ff 0%, #0066FF 100%)', border: 'none', borderRadius: '14px', color: '#fff', padding: '17px', fontSize: '16px', fontWeight: 700, fontFamily: 'Inter, sans-serif', cursor: loading ? 'not-allowed' : 'pointer', marginTop: '12px', transition: 'all 0.3s ease', boxShadow: loading ? 'none' : '0 4px 24px rgba(0,212,255,0.5)' }}
-                onMouseEnter={(e) => !loading && (e.target.style.transform = 'translateY(-2px)', e.target.style.boxShadow = '0 6px 32px rgba(0,212,255,0.6)')}
-                onMouseLeave={(e) => !loading && (e.target.style.transform = 'translateY(0)', e.target.style.boxShadow = '0 4px 24px rgba(0,212,255,0.5)')}
-              >
-                {loading ? (
-                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                    <RefreshCw size={19} style={{ animation: 'spin 1s linear infinite' }} />
-                    Processing...
-                  </span>
-                ) : (
-                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                    {isLogin ? <><User size={19} />Sign In</> : <><Rocket size={19} />Create Account</>}
-                  </span>
-                )}
-              </button>
-
-              {/* Divider */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '8px 0' }}>
-                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.12)' }} />
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>or continue with</span>
-                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.12)' }} />
-              </div>
-
-              {/* Google OAuth Button */}
-              <button
-                type="button"
-                onClick={() => { window.location.href = `${API_BASE}/api/auth/google`; }}
-                style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.2)', borderRadius: '14px', color: '#fff', padding: '15px', fontSize: '15px', fontWeight: 600, fontFamily: 'Inter, sans-serif', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', transition: 'all 0.3s ease' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-              >
-                {/* Google SVG Icon */}
-                <svg width="20" height="20" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                Continue with Google
-              </button>
-            </form>
-
-            {/* Toggle Login/Signup */}
-            <div style={{ textAlign: 'center', marginTop: '28px', paddingTop: '28px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '12px' }}>
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
-              </p>
-              <button
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setFormData({ name: '', email: '', password: '', confirmPassword: '' });
-                }}
-                style={{ background: 'transparent', border: '1.5px solid rgba(0,212,255,0.35)', borderRadius: '12px', color: '#00d4ff', padding: '11px 28px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '14px', transition: 'all 0.3s ease' }}
-                onMouseEnter={(e) => { e.target.style.background = 'rgba(0,212,255,0.12)'; e.target.style.borderColor = '#00d4ff'; }}
-                onMouseLeave={(e) => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(0,212,255,0.35)'; }}
-              >
-                {isLogin ? 'Sign Up' : 'Sign In'}
-              </button>
+              {errors.password && <span className="signin-field-error">{errors.password}</span>}
             </div>
-          </div>
 
-          {/* Footer Note */}
-          <div style={{ textAlign: 'center', marginTop: '28px' }}>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
-              By continuing, you agree to our<br />Terms & Privacy Policy
-            </p>
+            {!isLogin && (
+              <div className="signin-field">
+                <label className="signin-label">Confirm Password</label>
+                <div className="signin-input-wrap">
+                  <input className="signin-input" name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} placeholder="Confirm password" />
+                  <svg className="signin-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                {errors.confirmPassword && <span className="signin-field-error">{errors.confirmPassword}</span>}
+              </div>
+            )}
+
+            {isLogin && (
+              <div className="signin-options-row">
+                <label className="signin-remember">
+                  <input type="checkbox" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)} />
+                  Remember me
+                </label>
+                <a href="#" className="signin-forgot" onClick={(e) => e.preventDefault()}>Forgot password?</a>
+              </div>
+            )}
+
+            <button type="submit" className="signin-btn" disabled={loading}>
+              {loading ? (
+                <><RefreshCw size={16} className="signin-btn-spinner" /> Processing...</>
+              ) : (
+                isLogin ? 'Login' : 'Create Account'
+              )}
+            </button>
+
+            <div className="signin-divider">
+              <div className="signin-divider-line" />
+              <span className="signin-divider-text">or</span>
+              <div className="signin-divider-line" />
+            </div>
+
+            <button type="button" className="signin-google-btn" onClick={() => { setErrors({ form: 'Google Sign-In is not configured yet. Please use email & password.' }); }} title="Google OAuth coming soon">
+              <GoogleIcon />
+              Continue with Google
+            </button>
+          </form>
+
+          <div className="signin-toggle">
+            <span className="signin-toggle-text">
+              {isLogin ? "Don't have an account?" : 'Already have an account?'}
+            </span>
+            <button className="signin-toggle-link" onClick={() => { setIsLogin(!isLogin); setFormData({ name: '', email: '', password: '', confirmPassword: '' }); setErrors({}); }}>
+              {isLogin ? 'Sign up' : 'Sign in'}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Right Side - Visual with Image */}
-      <div className="login-visual-side" style={{ background: '#0a0e1a', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-        {/* Background Image */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${loginImage})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.6 }} />
-        
-        {/* Gradient Overlay - lighter */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(10,14,26,0.5) 0%, rgba(15,23,42,0.4) 50%, rgba(10,14,26,0.6) 100%)' }} />
-        
-        {/* Animated circles - more subtle */}
-        <div style={{ position: 'absolute', top: '10%', left: '10%', width: '350px', height: '350px', background: 'radial-gradient(circle, rgba(0,212,255,0.15) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite' }} />
-        <div style={{ position: 'absolute', bottom: '15%', right: '10%', width: '450px', height: '450px', background: 'radial-gradient(circle, rgba(0,102,255,0.1) 0%, transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite 2s' }} />
-        
-        {/* Content */}
-        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '60px' }}>
-          <div style={{ marginBottom: '40px' }}>
-            <Rocket size={90} style={{ color: '#00d4ff', filter: 'drop-shadow(0 0 30px rgba(0,212,255,0.7))' }} />
-          </div>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '42px', fontWeight: 800, color: '#fff', marginBottom: '20px', lineHeight: 1.2, letterSpacing: '-0.02em' }}>
-            Build the Future<br />with Robotics
-          </h2>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '17px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, maxWidth: '440px', margin: '0 auto' }}>
-            Join thousands of makers and innovators creating amazing projects with A5X Robotics
-          </p>
-          
-          {/* Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginTop: '48px', maxWidth: '500px', margin: '48px auto 0' }}>
-            <div style={{ background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '16px', padding: '20px 16px', backdropFilter: 'blur(10px)' }}>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '28px', fontWeight: 800, color: '#00d4ff', marginBottom: '4px' }}>500+</div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Products</div>
-            </div>
-            <div style={{ background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '16px', padding: '20px 16px', backdropFilter: 'blur(10px)' }}>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '28px', fontWeight: 800, color: '#00d4ff', marginBottom: '4px' }}>10K+</div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Makers</div>
-            </div>
-            <div style={{ background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: '16px', padding: '20px 16px', backdropFilter: 'blur(10px)' }}>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '28px', fontWeight: 800, color: '#00d4ff', marginBottom: '4px' }}>24hr</div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Delivery</div>
-            </div>
-          </div>
+      {/* ----  RIGHT PANEL: Mascot ----  */}
+      <div className="signin-right">
+        <img src={axieMascot} alt="Axie - A5X Robotics Mascot" className="signin-mascot" />
+        <div className="signin-brand-overlay">
+          <p className="signin-brand-label">A5X CONTROL</p>
+          <h2 className="signin-brand-heading">Build smarter<br />robotics kits.</h2>
         </div>
       </div>
-
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
-          50% { transform: translateY(-20px) scale(1.05); opacity: 1; }
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @media (max-width: 1024px) {
-          main { grid-template-columns: 1fr !important; }
-          .login-visual-side { display: none !important; }
-        }
-      `}</style>
     </main>
   );
 }
@@ -3454,6 +3393,7 @@ function AuthModal() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [formError, setFormError] = useState('');
   const { login, signup } = useAuthStore();
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -3461,23 +3401,22 @@ function AuthModal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setFormError('');
 
     if (!isLogin && formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      setFormError('Passwords do not match!');
       setLoading(false);
       return;
     }
 
     if (formData.password.length < 8) {
-      alert('Password must be at least 8 characters long');
+      setFormError('Password must be at least 8 characters long');
       setLoading(false);
       return;
     }
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
-      
-      // Sanitize username for signup - remove special characters except hyphens and underscores
       const sanitizedUsername = formData.name 
         ? formData.name.replace(/[^a-zA-Z0-9_-]/g, '') 
         : formData.email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
@@ -3486,22 +3425,47 @@ function AuthModal() {
         ? { email: formData.email, password: formData.password }
         : { username: sanitizedUsername, email: formData.email, password: formData.password };
 
-      console.log('AuthModal - Auth request payload:', payload);
-
-      const response = await fetch(`${API_BASE}${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await response.json();
-      console.log('AuthModal - Auth response:', data);
-
-      if (!response.ok) {
-        throw new Error(data.error || data.details?.[0]?.message || 'Authentication failed');
+      // Retry logic for Render cold starts / MongoDB timeouts
+      let response, data;
+      const maxRetries = 2;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          response = await fetch(`${API_BASE}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          data = await response.json();
+          
+          const errText = data.error || data.message || '';
+          if (errText.includes('buffering timed out') && attempt < maxRetries) {
+            setFormError(`Server warming up... retrying (${attempt + 1}/${maxRetries})`);
+            await fetch(`${API_BASE}/api/health`).catch(() => {});
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
+          }
+          break;
+        } catch (fetchErr) {
+          if (attempt < maxRetries) {
+            setFormError(`Connecting to server... (${attempt + 1}/${maxRetries})`);
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
+          }
+          throw fetchErr;
+        }
       }
 
-      // Save user data and token
+      if (!response.ok) {
+        const errorMsg = data.error || data.message || data.details?.[0]?.message || 'Authentication failed';
+        if (data.code === 'USER_EXISTS' || errorMsg.toLowerCase().includes('already registered')) {
+          setIsLogin(true);
+          setFormError('This email is already registered. Please sign in instead.');
+          setLoading(false);
+          return;
+        }
+        throw new Error(errorMsg);
+      }
+
       const userData = {
         id: data.user.id,
         name: data.user.username,
@@ -3510,21 +3474,13 @@ function AuthModal() {
         token: data.token
       };
 
-      if (isLogin) {
-        login(userData);
-      } else {
-        signup(userData);
-      }
-
-      // Save token to localStorage
+      if (isLogin) login(userData); else signup(userData);
       localStorage.setItem('a5x-token', data.token);
 
       close();
-      if (redirectPath) {
-        navigate(redirectPath);
-      }
+      if (redirectPath) navigate(redirectPath);
     } catch (error) {
-      alert(error.message || 'Something went wrong. Please try again.');
+      setFormError(error.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -3533,79 +3489,48 @@ function AuthModal() {
   if (!isOpen) return null;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', overflowY: 'auto' }} onClick={close}>
-      <div style={{ background: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0,212,255,0.3)', borderRadius: '24px', padding: '40px 36px', maxWidth: '460px', width: '100%', position: 'relative', boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,212,255,0.2)', maxHeight: '90vh', overflowY: 'auto', margin: 'auto' }} onClick={(e) => e.stopPropagation()}>
-        {/* Close Button */}
-        <button onClick={close} style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center', transition: 'color 0.2s', zIndex: 1 }} onMouseEnter={(e) => e.target.style.color = '#00d4ff'} onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.5)'}>
-          <X size={24} />
-        </button>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={close}>
+      <div style={{ background: '#eef0fb', borderRadius: '20px', padding: '40px 36px', maxWidth: '440px', width: '100%', position: 'relative', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', maxHeight: '90vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
+        <button onClick={close} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: 4 }}><X size={20} /></button>
 
-        {/* Header */}
-        <div style={{ marginBottom: '28px', textAlign: 'center' }}>
-          <div style={{ marginBottom: '16px' }}>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '32px', fontWeight: 900, background: 'linear-gradient(135deg, #fff 0%, #00f5ff 50%, #0066FF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 16px rgba(0,245,255,0.5))', letterSpacing: '2px' }}>A5X</span>
-          </div>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '26px', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>
-            {isLogin ? 'Welcome back' : 'Create account'}
-          </h2>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.6)' }}>
-            {isLogin ? 'Login to continue shopping' : 'Sign up to get started'}
-          </p>
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg, #2B52F5, #4f46e5)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 4px 16px rgba(43,82,245,0.3)' }}><User size={22} color="#fff" /></div>
+          <h2 style={{ fontFamily: 'Inter,sans-serif', fontSize: 24, fontWeight: 800, color: '#111827', marginBottom: 6 }}>{isLogin ? 'Welcome back' : 'Create account'}</h2>
+          <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 14, color: '#6b7280' }}>{isLogin ? 'Please enter your details.' : 'Fill in your information.'}</p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {!isLogin && (
             <div>
-              <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Full Name</label>
-              <input name="name" value={formData.name} onChange={handleChange} placeholder="Enter your full name" required={!isLogin} style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
+              <label style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6, display: 'block' }}>Full Name</label>
+              <input name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" required={!isLogin} style={{ width: '100%', background: '#fff', border: '1.5px solid #d1d5db', borderRadius: 10, color: '#111827', padding: '12px 14px', fontSize: 14, fontFamily: 'Inter,sans-serif', outline: 'none', boxSizing: 'border-box' }} onFocus={e => { e.target.style.borderColor = '#2B52F5'; e.target.style.boxShadow = '0 0 0 3px rgba(43,82,245,0.12)'; }} onBlur={e => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }} />
             </div>
           )}
-
           <div>
-            <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Email</label>
-            <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" required style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
+            <label style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6, display: 'block' }}>Email</label>
+            <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="you@email.com" required style={{ width: '100%', background: '#fff', border: '1.5px solid #d1d5db', borderRadius: 10, color: '#111827', padding: '12px 14px', fontSize: 14, fontFamily: 'Inter,sans-serif', outline: 'none', boxSizing: 'border-box' }} onFocus={e => { e.target.style.borderColor = '#2B52F5'; e.target.style.boxShadow = '0 0 0 3px rgba(43,82,245,0.12)'; }} onBlur={e => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }} />
           </div>
-
           <div>
-            <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Password</label>
+            <label style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6, display: 'block' }}>Password</label>
             <div style={{ position: 'relative' }}>
-              <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', paddingRight: '48px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00d4ff'} onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.5)'}>
-                <Eye size={18} />
-              </button>
+              <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} placeholder="Min 8 characters" required style={{ width: '100%', background: '#fff', border: '1.5px solid #d1d5db', borderRadius: 10, color: '#111827', padding: '12px 14px', paddingRight: 44, fontSize: 14, fontFamily: 'Inter,sans-serif', outline: 'none', boxSizing: 'border-box' }} onFocus={e => { e.target.style.borderColor = '#2B52F5'; e.target.style.boxShadow = '0 0 0 3px rgba(43,82,245,0.12)'; }} onBlur={e => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }} />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: 2 }}><Eye size={16} /></button>
             </div>
           </div>
-
           {!isLogin && (
             <div>
-              <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#00d4ff', marginBottom: '8px', display: 'block' }}>Confirm Password</label>
-              <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required={!isLogin} style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(0,212,255,0.25)', borderRadius: '12px', color: '#fff', padding: '14px 16px', fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', transition: 'all 0.3s ease' }} onFocus={(e) => { e.target.style.borderColor = '#00d4ff'; e.target.style.background = 'rgba(0,212,255,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(0,212,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }} />
+              <label style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6, display: 'block' }}>Confirm Password</label>
+              <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} placeholder="Re-enter password" required={!isLogin} style={{ width: '100%', background: '#fff', border: '1.5px solid #d1d5db', borderRadius: 10, color: '#111827', padding: '12px 14px', fontSize: 14, fontFamily: 'Inter,sans-serif', outline: 'none', boxSizing: 'border-box' }} onFocus={e => { e.target.style.borderColor = '#2B52F5'; e.target.style.boxShadow = '0 0 0 3px rgba(43,82,245,0.12)'; }} onBlur={e => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }} />
             </div>
           )}
-
-          <button type="submit" disabled={loading} style={{ width: '100%', background: loading ? 'rgba(0,212,255,0.3)' : 'linear-gradient(135deg, #00d4ff 0%, #0066FF 100%)', border: 'none', borderRadius: '12px', color: '#fff', padding: '16px', fontSize: '15px', fontWeight: 700, fontFamily: 'Inter, sans-serif', cursor: loading ? 'not-allowed' : 'pointer', marginTop: '8px', transition: 'all 0.3s ease', boxShadow: loading ? 'none' : '0 4px 24px rgba(0,212,255,0.5)' }} onMouseEnter={(e) => !loading && (e.target.style.transform = 'translateY(-2px)', e.target.style.boxShadow = '0 6px 32px rgba(0,212,255,0.6)')} onMouseLeave={(e) => !loading && (e.target.style.transform = 'translateY(0)', e.target.style.boxShadow = '0 4px 24px rgba(0,212,255,0.5)')}>
-            {loading ? (
-              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} />
-                Processing...
-              </span>
-            ) : (
-              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                {isLogin ? <><User size={18} />Sign In</> : <><Rocket size={18} />Create Account</>}
-              </span>
-            )}
+          <button type="submit" disabled={loading} style={{ width: '100%', background: loading ? '#93a8f8' : '#2B52F5', border: 'none', borderRadius: 10, color: '#fff', padding: '13px 16px', fontSize: 15, fontWeight: 700, fontFamily: 'Inter,sans-serif', cursor: loading ? 'not-allowed' : 'pointer', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: '0 4px 16px rgba(43,82,245,0.3)', transition: 'all 0.3s ease' }}>
+            {loading ? <><RefreshCw size={16} style={{ animation: 'spin 1s linear infinite' }} /> Processing...</> : (isLogin ? 'Login' : 'Create Account')}
           </button>
         </form>
 
-        {/* Toggle */}
-        <div style={{ textAlign: 'center', marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginBottom: '10px' }}>
-            {isLogin ? "Don't have an account?" : "Already have an account?"}
-          </p>
-          <button onClick={() => { setIsLogin(!isLogin); setFormData({ name: '', email: '', password: '', confirmPassword: '' }); }} style={{ background: 'transparent', border: '1.5px solid rgba(0,212,255,0.35)', borderRadius: '10px', color: '#00d4ff', padding: '9px 22px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '13px', transition: 'all 0.3s ease' }} onMouseEnter={(e) => { e.target.style.background = 'rgba(0,212,255,0.12)'; e.target.style.borderColor = '#00d4ff'; }} onMouseLeave={(e) => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(0,212,255,0.35)'; }}>
-            {isLogin ? 'Sign Up' : 'Sign In'}
-          </button>
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <span style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, color: '#6b7280' }}>{isLogin ? "Don't have an account?" : 'Already have an account?'}</span>
+          <button onClick={() => { setIsLogin(!isLogin); setFormData({ name: '', email: '', password: '', confirmPassword: '' }); }} style={{ background: 'none', border: 'none', color: '#2B52F5', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter,sans-serif', fontSize: 13, marginLeft: 4 }}>{isLogin ? 'Sign up' : 'Sign in'}</button>
         </div>
       </div>
     </div>
@@ -3616,23 +3541,16 @@ function ShopPage() { return <main className="shop-page-main"><ShopSection /></m
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuthStore();
-  const { open } = useAuthModalStore();
   const location = useLocation();
 
-  useEffect(() => {
-    if (!isAuthenticated && location.pathname !== '/') {
-      open(location.pathname);
-    }
-  }, [isAuthenticated, location.pathname, open]);
-
-  if (!isAuthenticated && location.pathname !== '/') {
-    return <Navigate to="/" replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   return children;
 }
 
-function KitsPage() { return <main className="kits-page-wrap"><KitsSection /></main>; }
+function KitsPage() { return <KitsSection />; }
 function PricingPage() { return <main><PricingSection /></main>; }
 function AboutPage() {
   const stats = [
@@ -3655,35 +3573,35 @@ function AboutPage() {
     {
       name: "Ansh Raj Baghel",
       role: "Co-Founder & Full-Stack Lead",
-      desc: "ðŸ’» Turns caffeine into clean code. The backbone of every digital magic we create. âœ¨",
+      desc: "' Turns caffeine into clean code. The backbone of every digital magic we create. ",
       photo: teamAnsh,
       initial: "A"
     },
     {
       name: "Anupam Mishra",
       role: "Co-Founder & AI/ML Software Lead",
-      desc: "Predicts the future before algorithms even learn it. Brains + Machine = Innovation. ðŸ¤– âœ¨",
+      desc: "Predicts the future before algorithms even learn it. Brains + Machine = Innovation. -- ",
       photo: teamAnupam,
       initial: "A"
     },
     {
       name: "Chris Alex Francis",
       role: "Co-Founder & IoT + Robotics Lead",
-      desc: "Makes ideas move, blink & fly. If it's hardware, Chris already cracked it. âš¡ ðŸ¤–",
+      desc: "Makes ideas move, blink & fly. If it's hardware, Chris already cracked it.  --",
       photo: teamChris,
       initial: "C"
     },
     {
       name: "Amit Payasi",
       role: "Co-Founder & Hardware Lead",
-      desc: "ðŸ”§ Soldering, circuits, sensors â€” if it's noisy & technical, Amit loves it. ðŸ”¥ ðŸ’¡",
+      desc: " Soldering, circuits, sensors - if it's noisy & technical, Amit loves it.  '¡",
       photo: teamAmit,
       initial: "A"
     },
     {
       name: "Aditya Mishra",
       role: "Co-Founder & Software Dev",
-      desc: "ðŸ§  Writes code so smooth, even bugs give up. UI? Logic? Speed? He owns it. âš¡ ðŸ’»",
+      desc: "  Writes code so smooth, even bugs give up. UI? Logic? Speed? He owns it.  '",
       photo: teamAditya,
       initial: "A"
     },
@@ -3736,7 +3654,7 @@ function AboutPage() {
           <div className="about-mission-text">
             <p className="about-eyebrow">OUR MISSION</p>
             <h2>Robotics for <em>Everyone</em></h2>
-            <p>We started A5X Industries because we saw a gap â€” students and makers in India had brilliant ideas but couldn't find quality components at fair prices. We're here to change that.</p>
+            <p>We started A5X Industries because we saw a gap - students and makers in India had brilliant ideas but couldn't find quality components at fair prices. We're here to change that.</p>
             <p>From a single Arduino to a complete robotics lab setup, we provide everything you need to bring your ideas to life. Our team of engineers personally tests every product we sell.</p>
             <Link to="/shop" className="btn" style={{ marginTop: '24px', display: 'inline-flex' }}>Explore Products</Link>
           </div>
@@ -3896,7 +3814,7 @@ function ContactPage() {
   if (submitted) return (
     <main className="contact-page">
       <section className="contact-form glass-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-        <div style={{ fontSize: '64px', marginBottom: '20px' }}>âœ…</div>
+        <div style={{ fontSize: '64px', marginBottom: '20px' }}>(OK)</div>
         <h2 style={{ color: 'var(--brand-cyan)', marginBottom: '12px' }}>Message Sent!</h2>
         <p style={{ color: 'var(--brand-steel)', marginBottom: '28px' }}>We'll get back to you within 24 hours.</p>
         <button className="btn" onClick={() => setSubmitted(false)}>Send Another Message</button>
@@ -4183,7 +4101,7 @@ function CheckoutPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
       >
-        {/* â”€â”€ LEFT: FORM â”€â”€ */}
+        {/* == LEFT: FORM == */}
         <div className="checkout-form glass-card">
           <div className="checkout-header">
             <Shield size={28} color="#00ff88" />
@@ -4199,15 +4117,15 @@ function CheckoutPage() {
                 <h3>Contact Information</h3>
               </div>
               <div className="input-group">
-                <span className="input-prefix-icon">ðŸ‘¤</span>
+                <span className="input-prefix-icon"></span>
                 <input type="text" name="customerName" placeholder="Full Name" value={formData.customerName} onChange={handleChange} required />
               </div>
               <div className="input-group">
-                <span className="input-prefix-icon">ðŸ“§</span>
+                <span className="input-prefix-icon">"§</span>
                 <input type="email" name="customerEmail" placeholder="Email Address" value={formData.customerEmail} onChange={handleChange} required />
               </div>
               <div className="input-group">
-                <span className="input-prefix-icon">ðŸ“±</span>
+                <span className="input-prefix-icon">"±</span>
                 <input
                   type="tel"
                   name="customerPhone"
@@ -4232,26 +4150,26 @@ function CheckoutPage() {
                 <h3>Shipping Address</h3>
               </div>
               <div className="input-group">
-                <span className="input-prefix-icon">ðŸ </span>
+                <span className="input-prefix-icon"> </span>
                 <input type="text" name="street" placeholder="Street Address" value={formData.street} onChange={handleChange} required />
               </div>
               <div className="form-row">
                 <div className="input-group">
-                  <span className="input-prefix-icon">ðŸ™ï¸</span>
+                  <span className="input-prefix-icon"></span>
                   <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} required />
                 </div>
                 <div className="input-group">
-                  <span className="input-prefix-icon">ðŸ“</span>
+                  <span className="input-prefix-icon">"</span>
                   <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleChange} required />
                 </div>
               </div>
               <div className="form-row">
                 <div className="input-group">
-                  <span className="input-prefix-icon">ðŸ“®</span>
+                  <span className="input-prefix-icon">"®</span>
                   <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} required />
                 </div>
                 <div className="input-group">
-                  <span className="input-prefix-icon">ðŸ—ºï¸</span>
+                  <span className="input-prefix-icon">"ï¸</span>
                   <input type="text" name="landmark" placeholder="Landmark (Optional)" value={formData.landmark} onChange={handleChange} />
                 </div>
               </div>
@@ -4306,7 +4224,7 @@ function CheckoutPage() {
                       )}
                     </div>
                     <div className={`qr-timer ${qrTimer <= 30 ? 'urgent' : ''}`}>
-                      <span>â± QR expires in </span>
+                      <span> QR expires in </span>
                       <strong>{qrMins}:{qrSecs}</strong>
                     </div>
                     <p className="qr-note">After payment, place your order below</p>
@@ -4318,7 +4236,7 @@ function CheckoutPage() {
                         onChange={e => setPaymentConfirmed(e.target.checked)}
                         disabled={qrExpired}
                       />
-                      <span>I have completed the payment âœ…</span>
+                      <span>I have completed the payment (OK)</span>
                     </label>
                   </motion.div>
                 )}
@@ -4347,7 +4265,7 @@ function CheckoutPage() {
               whileTap={{ scale: 0.98 }}
               title={formData.paymentMethod === 'online' && upiId && !paymentConfirmed ? 'Please scan QR and confirm payment first' : ''}
             >
-              {loading ? <><div className="spinner" />Processing...</> : <><Shield size={18} />Place Secure Order â€” {inr(subtotal())}</>}
+              {loading ? <><div className="spinner" />Processing...</> : <><Shield size={18} />Place Secure Order - {inr(subtotal())}</>}
             </motion.button>
 
             <div className="secure-badge">
@@ -4357,7 +4275,7 @@ function CheckoutPage() {
           </form>
         </div>
 
-        {/* â”€â”€ RIGHT: ORDER SUMMARY â”€â”€ */}
+        {/* == RIGHT: ORDER SUMMARY == */}
         <div className="order-summary glass-card">
           <div className="summary-header">
             <ShoppingCart size={20} />
@@ -4370,7 +4288,7 @@ function CheckoutPage() {
                 <img src={item.imageUrl || a5xCarKit} alt={item.name} />
                 <div className="item-details">
                   <p className="item-name">{item.name}</p>
-                  <p className="item-qty">Qty: {item.qty} Ã— {inr(item.price)}</p>
+                  <p className="item-qty">Qty: {item.qty}  x  {inr(item.price)}</p>
                 </div>
                 <p className="item-total">{inr(item.price * item.qty)}</p>
               </motion.div>
@@ -4462,13 +4380,13 @@ function AdminOrders() {
       const data = await response.json();
 
       if (response.ok) {
-        // Update local state immediately â€” no need to refetch
+        // Update local state immediately - no need to refetch
         setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status } : o));
         setSelectedOrder(prev => prev ? { ...prev, status } : null);
-        const label = status === 'confirmed' ? 'confirmed âœ… â€” confirmation email sent to customer'
-          : status === 'shipped' ? 'marked as shipped ðŸšš â€” shipping email sent'
-          : status === 'delivered' ? 'marked as delivered ðŸŽ‰'
-          : 'cancelled âŒ';
+        const label = status === 'confirmed' ? 'confirmed (OK) - confirmation email sent to customer'
+          : status === 'shipped' ? 'marked as shipped šš - shipping email sent'
+          : status === 'delivered' ? 'marked as delivered Ž‰'
+          : 'cancelled ';
         alert(`Order ${label}`);
       } else {
         alert(data.error || 'Failed to update order');
@@ -4567,7 +4485,7 @@ function AdminOrders() {
                     <img src={item.imageUrl || a5xCarKit} alt={item.name} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />
                     <div>
                       <p><strong>{item.name}</strong></p>
-                      <p>Qty: {item.quantity} Ã— {inr(item.price)}</p>
+                      <p>Qty: {item.quantity}  x  {inr(item.price)}</p>
                     </div>
                     <p><strong>{inr(item.price * item.quantity)}</strong></p>
                   </div>
@@ -4599,7 +4517,7 @@ function AdminOrders() {
                     >
                       {updatingId === selectedOrder._id + 'confirmed'
                         ? <><div className="spinner" style={{ borderTopColor: '#0a0a0f' }} />Confirming...</>
-                        : <>âœ… Confirm Order</>}
+                        : <>(OK) Confirm Order</>}
                     </button>
                   )}
                   {selectedOrder.status === 'confirmed' && (
@@ -4611,7 +4529,7 @@ function AdminOrders() {
                     >
                       {updatingId === selectedOrder._id + 'shipped'
                         ? <><div className="spinner" style={{ borderTopColor: '#fff' }} />Updating...</>
-                        : <>ðŸšš Mark as Shipped</>}
+                        : <>šš Mark as Shipped</>}
                     </button>
                   )}
                   {selectedOrder.status === 'shipped' && (
@@ -4623,7 +4541,7 @@ function AdminOrders() {
                     >
                       {updatingId === selectedOrder._id + 'delivered'
                         ? <><div className="spinner" style={{ borderTopColor: '#0a0a0f' }} />Updating...</>
-                        : <>ðŸŽ‰ Mark as Delivered</>}
+                        : <>Ž‰ Mark as Delivered</>}
                     </button>
                   )}
                   {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
@@ -4635,7 +4553,7 @@ function AdminOrders() {
                     >
                       {updatingId === selectedOrder._id + 'cancelled'
                         ? <><div className="spinner" style={{ borderTopColor: '#fff' }} />Cancelling...</>
-                        : <>âŒ Cancel Order</>}
+                        : <> Cancel Order</>}
                     </button>
                   )}
                 </div>
@@ -4732,19 +4650,19 @@ function Footer() {
           </form>
           <div className="footer-contact-info">
             <div className="footer-contact-item">
-              <span className="footer-contact-icon">ðŸ“§</span>
+              <span className="footer-contact-icon">"§</span>
               <a href="mailto:a5x.industries@gmail.com" style={{color:'inherit',textDecoration:'none'}}>a5x.industries@gmail.com</a>
             </div>
             <div className="footer-contact-item">
-              <span className="footer-contact-icon">ðŸ“±</span>
+              <span className="footer-contact-icon">"±</span>
               <a href="tel:+918269858259" style={{color:'inherit',textDecoration:'none'}}>+91 82698 58259</a>
             </div>
             <div className="footer-contact-item">
-              <span className="footer-contact-icon">ðŸ“±</span>
+              <span className="footer-contact-icon">"±</span>
               <a href="tel:+919340212224" style={{color:'inherit',textDecoration:'none'}}>+91 93402 12224</a>
             </div>
             <div className="footer-contact-item">
-              <span className="footer-contact-icon">ðŸ“</span>
+              <span className="footer-contact-icon">"</span>
               <span>India</span>
             </div>
           </div>
@@ -4765,7 +4683,7 @@ function Footer() {
             <Link to="/contact">Cookie Policy</Link>
           </div>
           <p className="footer-made-with">
-            Made with <span style={{color:'#ef4444'}}>â™¥</span> for makers
+            Made with <span style={{color:'#ef4444'}}>&hearts;</span> for makers
           </p>
         </div>
       </div>
@@ -4895,8 +4813,61 @@ function AdminLayout() {
 
 function AdminDashboard() {
   const { products, kits, courses } = useAdminStore();
-  const stats = [["Total Products", products.length], ["Total Kits", kits.length], ["Total Courses", courses.length], ["Total Videos", courses.reduce((sum, course) => sum + (course.videos?.length || 0), 0)]];
-  return <AdminPage title="Dashboard"><div className="stat-cards">{stats.map(([label, value]) => <article key={label}><strong>{value}</strong><span>{label}</span></article>)}</div><div className="quick-actions"><Link to="/admin/products/new">+ Add Product</Link><Link to="/admin/kits/new">+ Add Kit</Link><Link to="/admin/courses/new">+ Add Course</Link></div><AdminProducts compact /></AdminPage>;
+  const totalVideos = courses.reduce((sum, c) => sum + (c.videos?.length || 0), 0);
+  const totalRevenue = products.reduce((sum, p) => sum + (p.price || 0), 0);
+  const lowStock = products.filter(p => p.stockCount <= 10 && p.inStock).length;
+  
+  const stats = [
+    ["Total Products", products.length, <Package size={20} />, "+12%"],
+    ["Robotics Kits", kits.length, <Cpu size={20} />, "+8%"],
+    ["Courses", courses.length, <PlayCircle size={20} />, "+15%"],
+    ["Total Videos", totalVideos, <ListVideo size={20} />, "+5%"]
+  ];
+
+  return (
+    <AdminPage title="Dashboard">
+      <div className="stat-cards">
+        {stats.map(([label, value, icon, trend]) => (
+          <article key={label}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(0,212,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00d4ff' }}>
+                {icon}
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '3px 8px', borderRadius: 6 }}>{trend}</span>
+            </div>
+            <strong>{value}</strong>
+            <span>{label}</span>
+          </article>
+        ))}
+      </div>
+
+      {/* Quick Stats Row */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }}>
+        <div style={{ background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.12)', borderRadius: 12, padding: '16px 18px' }}>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>Est. Catalog Value</span>
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#00d4ff', marginTop: 4, fontFamily: 'Inter, sans-serif' }}>
+            {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(totalRevenue)}
+          </div>
+        </div>
+        <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 12, padding: '16px 18px' }}>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>Low Stock Items</span>
+          <div style={{ fontSize: 22, fontWeight: 800, color: lowStock > 0 ? '#ef4444' : '#10b981', marginTop: 4, fontFamily: 'Inter, sans-serif' }}>{lowStock}</div>
+        </div>
+        <div style={{ background: 'rgba(124,58,237,0.06)', border: '1px solid rgba(124,58,237,0.15)', borderRadius: 12, padding: '16px 18px' }}>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>Categories</span>
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#a855f7', marginTop: 4, fontFamily: 'Inter, sans-serif' }}>{new Set(products.map(p => p.category)).size}</div>
+        </div>
+      </div>
+
+      <div className="quick-actions">
+        <Link to="/admin/products/new"><Plus size={14} /> Add Product</Link>
+        <Link to="/admin/kits/new"><Plus size={14} /> Add Kit</Link>
+        <Link to="/admin/courses/new"><Plus size={14} /> Add Course</Link>
+      </div>
+      
+      <AdminProducts compact />
+    </AdminPage>
+  );
 }
 
 function AdminPage({ title, children }) { return <section className="admin-page"><p>Admin / {title}</p><h1>{title}</h1>{children}</section>; }
@@ -4928,11 +4899,11 @@ function BulkProductUpload() {
       if (values.length >= 3 && /^\d+$/.test(values[0])) {
         const rowNum = values[0];
         const description = values[1];
-        const priceStr = values[2]?.replace(/[â‚¹,\s]/g, '');
+        const priceStr = values[2]?.replace(/[₹,\s]/g, '');
         const price = parseFloat(priceStr);
         const qty = values[3] ? parseInt(values[3]) : 10;
         
-        console.log(`Row ${rowNum}: ${description} - â‚¹${price} x ${qty}`);
+        console.log(`Row ${rowNum}: ${description} - ₹${price} x ${qty}`);
         
         if (description && price > 0) {
           products.push({
@@ -4971,9 +4942,9 @@ function BulkProductUpload() {
         for (let j = 0; j < values.length; j++) {
           const val = values[j];
           
-          // Check if this looks like a price (contains â‚¹ or is a number)
-          if (/â‚¹|^\d+\.?\d*$/.test(val)) {
-            const priceStr = val.replace(/[â‚¹,\s]/g, '');
+          // Check if this looks like a price (contains ₹ or is a number)
+          if (/₹|^\d+\.?\d*$/.test(val)) {
+            const priceStr = val.replace(/[₹,\s]/g, '');
             const parsedPrice = parseFloat(priceStr);
             if (parsedPrice > 0 && parsedPrice < 10000) {
               price = parsedPrice;
@@ -4981,7 +4952,7 @@ function BulkProductUpload() {
           }
           
           // Check if this looks like a product name (longer text)
-          if (val.length > 5 && !/^\d+\.?\d*$/.test(val) && !val.includes('â‚¹')) {
+          if (val.length > 5 && !/^\d+\.?\d*$/.test(val) && !val.includes('₹')) {
             name = val;
           }
           
@@ -4995,7 +4966,7 @@ function BulkProductUpload() {
         }
         
         if (name && price > 0) {
-          console.log(`Found: ${name} - â‚¹${price}`);
+          console.log(`Found: ${name} - ₹${price}`);
           products.push({
             id: uid(),
             name: name,
@@ -5154,7 +5125,7 @@ function BulkProductUpload() {
             try {
               // Load your 62 products from second invoice
               const invoice2Products = [
-                {name:"LEDs 5 color each 120pcs",price:0.90,qty:600},{name:"RGB LED",price:4.00,qty:150},{name:"GL-12 830 Points Solderless Breadboard",price:65.00,qty:15},{name:"Solderless Breadboard Half Size 400 Point",price:47.00,qty:18},{name:"Purf Board(6x4 Inch)",price:35.00,qty:24},{name:"11.1V 2200mAh 3S 80C Lithium-Polymer Rechargeable Battery",price:1589.00,qty:4},{name:"18650 3.7V 2000mAh Li-ion Battery",price:52.00,qty:36},{name:"9v Battery with connector",price:24.00,qty:20},{name:"RESISTOR Kit 30 values 600 pcs",price:420.00,qty:2},{name:"CAPACITOR Kit 20 values 400 pcs with electrolite capacitor",price:530.00,qty:2},{name:"200 RPM 12v DC Center Shaft metal Gear Motor",price:155.00,qty:33},{name:"TowerPro SG90 9g Micro Servo Motor â€“ 180 Degree Rotation",price:97.00,qty:20},{name:"N20 12V 400 Rpm Micro Metal Gear Motor",price:240.00,qty:10},{name:"300 RPM Dual Shaft BO Motor + Wheel",price:72.00,qty:28},{name:"diode kits 10 values each 10",price:3.00,qty:100},{name:"transistor kits 5 values each 10 pcs",price:7.00,qty:50},{name:"Test Leads Alligator Clip 1 pair",price:10.00,qty:24},{name:"9v Battery Connector + DC Jack(Battery Connector Cap)",price:14.00,qty:20},{name:"HOOKUP WIRES ( MULTI COLOUR ROLL) 10m each 5 color",price:30.00,qty:50},{name:"MALE TO MALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"MALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"FEMALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"BERG STRIP (PIN HEADER) MALE",price:8.00,qty:50},{name:"BERG STRIP (PIN HEADER) FEMALE",price:12.00,qty:50},{name:"Arduino Nano R3 Board Soldered",price:210.00,qty:6},{name:"Arduino Uno R3 SMD CH340G ATmega328p Development Board",price:240.00,qty:14},{name:"Arduino Mega 2560 R3",price:1250.00,qty:2},{name:"ESP32 Wifi & Bluetooth Development Board 38 Pin",price:350.00,qty:18},{name:"NodeMcu ESP8266 V3 Lua CH340 Wifi Dev. Board",price:220.00,qty:10},{name:"ESP32 CAM WiFi Module with OV3660 Camera Module 3MP",price:610.00,qty:3},{name:"Cable for Arduino UNO/MEGA (USB A to B)-30cm",price:40.00,qty:5},{name:"Nano USB Cable - 1 Meter ( USB To MiniUSB)",price:60.00,qty:5},{name:"Micro USB Cable for ESP32/NodeMCU -1 Meter",price:60.00,qty:5},{name:"Type C to USB Cable 2.0 (1 m)",price:60.00,qty:5},{name:"1602 (16x2) LCD Display with I2C/IIC interface",price:170.00,qty:6},{name:"DC-DC ADJUSTABLE VOLT. REGULATOR LM2596 3A",price:65.00,qty:6},{name:"DC to DC Step Up Boost Converter 4A XL6009",price:69.00,qty:6},{name:"3-6V Mini Submersible Water Pump",price:60.00,qty:6},{name:"35mm Piezoelectric Sensor WITH WIRE",price:30.00,qty:15},{name:"MAX7219 8x8 LED Dot Matrix Display Module",price:155.00,qty:4},{name:"HC-05 6pin Bluetooth Module with Button ORIGINAL",price:270.00,qty:3},{name:"TM1637 4-Digit LED Display Red",price:68.00,qty:3},{name:"Laser Diode Module",price:35.00,qty:12},{name:"Photo-resistor LDR Light Sensor Module 3 Pin",price:36.00,qty:15},{name:"4x4 Matrix Membrane Keypad 16 Key Switch Module",price:60.00,qty:4},{name:"DUAL AXIS XY / PS2 JOYSTICK MODULE",price:45.00,qty:6},{name:"Active Buzzer Module 3.3-5V for Arduino",price:21.00,qty:8},{name:"2A Dual L298N Motor Driver Module",price:122.00,qty:20},{name:"Motor Driver TB6612FNG Module",price:160.00,qty:14},{name:"L293D Motor Driver Shield For Arduino",price:150.00,qty:2},{name:"Dual DC Motor Driver bts7960 43A H bridge PWM",price:360.00,qty:8},{name:"ISD1820 Sound Board Recording Recorder Playback Module",price:160.00,qty:3},{name:"TIMER IC LM 555",price:15.00,qty:3},{name:"BUTTON SWITCH SET 5 tpye each 10",price:8.00,qty:50},{name:"TTP223B Capacitive Single Touch Sensor Module",price:38.00,qty:12},{name:"IR OBSTICLE SENSOR MODULE",price:45.00,qty:29},{name:"GY-521 MPU6050 Module â€“ Triple Axis Accelerometer And Gyro Module",price:180.00,qty:3},{name:"MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2",price:130.00,qty:12},{name:"TCRT5000 IR Sensor Module",price:52.00,qty:10},{name:"Ultrasonic distance Ranging module detector sensor HC-SR04",price:65.00,qty:12},{name:"PIR Motion Sensor",price:67.00,qty:6},{name:"Pulse Sensor - Heart Rate Detector",price:150.00,qty:4}
+                {name:"LEDs 5 color each 120pcs",price:0.90,qty:600},{name:"RGB LED",price:4.00,qty:150},{name:"GL-12 830 Points Solderless Breadboard",price:65.00,qty:15},{name:"Solderless Breadboard Half Size 400 Point",price:47.00,qty:18},{name:"Purf Board(6x4 Inch)",price:35.00,qty:24},{name:"11.1V 2200mAh 3S 80C Lithium-Polymer Rechargeable Battery",price:1589.00,qty:4},{name:"18650 3.7V 2000mAh Li-ion Battery",price:52.00,qty:36},{name:"9v Battery with connector",price:24.00,qty:20},{name:"RESISTOR Kit 30 values 600 pcs",price:420.00,qty:2},{name:"CAPACITOR Kit 20 values 400 pcs with electrolite capacitor",price:530.00,qty:2},{name:"200 RPM 12v DC Center Shaft metal Gear Motor",price:155.00,qty:33},{name:"TowerPro SG90 9g Micro Servo Motor - 180 Degree Rotation",price:97.00,qty:20},{name:"N20 12V 400 Rpm Micro Metal Gear Motor",price:240.00,qty:10},{name:"300 RPM Dual Shaft BO Motor + Wheel",price:72.00,qty:28},{name:"diode kits 10 values each 10",price:3.00,qty:100},{name:"transistor kits 5 values each 10 pcs",price:7.00,qty:50},{name:"Test Leads Alligator Clip 1 pair",price:10.00,qty:24},{name:"9v Battery Connector + DC Jack(Battery Connector Cap)",price:14.00,qty:20},{name:"HOOKUP WIRES ( MULTI COLOUR ROLL) 10m each 5 color",price:30.00,qty:50},{name:"MALE TO MALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"MALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"FEMALE TO FEMALE JUMPER WIRES - 20 CM",price:1.80,qty:600},{name:"BERG STRIP (PIN HEADER) MALE",price:8.00,qty:50},{name:"BERG STRIP (PIN HEADER) FEMALE",price:12.00,qty:50},{name:"Arduino Nano R3 Board Soldered",price:210.00,qty:6},{name:"Arduino Uno R3 SMD CH340G ATmega328p Development Board",price:240.00,qty:14},{name:"Arduino Mega 2560 R3",price:1250.00,qty:2},{name:"ESP32 Wifi & Bluetooth Development Board 38 Pin",price:350.00,qty:18},{name:"NodeMcu ESP8266 V3 Lua CH340 Wifi Dev. Board",price:220.00,qty:10},{name:"ESP32 CAM WiFi Module with OV3660 Camera Module 3MP",price:610.00,qty:3},{name:"Cable for Arduino UNO/MEGA (USB A to B)-30cm",price:40.00,qty:5},{name:"Nano USB Cable - 1 Meter ( USB To MiniUSB)",price:60.00,qty:5},{name:"Micro USB Cable for ESP32/NodeMCU -1 Meter",price:60.00,qty:5},{name:"Type C to USB Cable 2.0 (1 m)",price:60.00,qty:5},{name:"1602 (16x2) LCD Display with I2C/IIC interface",price:170.00,qty:6},{name:"DC-DC ADJUSTABLE VOLT. REGULATOR LM2596 3A",price:65.00,qty:6},{name:"DC to DC Step Up Boost Converter 4A XL6009",price:69.00,qty:6},{name:"3-6V Mini Submersible Water Pump",price:60.00,qty:6},{name:"35mm Piezoelectric Sensor WITH WIRE",price:30.00,qty:15},{name:"MAX7219 8x8 LED Dot Matrix Display Module",price:155.00,qty:4},{name:"HC-05 6pin Bluetooth Module with Button ORIGINAL",price:270.00,qty:3},{name:"TM1637 4-Digit LED Display Red",price:68.00,qty:3},{name:"Laser Diode Module",price:35.00,qty:12},{name:"Photo-resistor LDR Light Sensor Module 3 Pin",price:36.00,qty:15},{name:"4x4 Matrix Membrane Keypad 16 Key Switch Module",price:60.00,qty:4},{name:"DUAL AXIS XY / PS2 JOYSTICK MODULE",price:45.00,qty:6},{name:"Active Buzzer Module 3.3-5V for Arduino",price:21.00,qty:8},{name:"2A Dual L298N Motor Driver Module",price:122.00,qty:20},{name:"Motor Driver TB6612FNG Module",price:160.00,qty:14},{name:"L293D Motor Driver Shield For Arduino",price:150.00,qty:2},{name:"Dual DC Motor Driver bts7960 43A H bridge PWM",price:360.00,qty:8},{name:"ISD1820 Sound Board Recording Recorder Playback Module",price:160.00,qty:3},{name:"TIMER IC LM 555",price:15.00,qty:3},{name:"BUTTON SWITCH SET 5 tpye each 10",price:8.00,qty:50},{name:"TTP223B Capacitive Single Touch Sensor Module",price:38.00,qty:12},{name:"IR OBSTICLE SENSOR MODULE",price:45.00,qty:29},{name:"GY-521 MPU6050 Module - Triple Axis Accelerometer And Gyro Module",price:180.00,qty:3},{name:"MQ GAS SENSOR mq2, mq3, each 3 mq9 and mq135 each 2",price:130.00,qty:12},{name:"TCRT5000 IR Sensor Module",price:52.00,qty:10},{name:"Ultrasonic distance Ranging module detector sensor HC-SR04",price:65.00,qty:12},{name:"PIR Motion Sensor",price:67.00,qty:6},{name:"Pulse Sensor - Heart Rate Detector",price:150.00,qty:4}
               ];
               
               const products = invoice2Products.map(item => ({
@@ -5373,7 +5344,7 @@ function ProductForm() {
     }
   }
   
-  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}>{error && <div style={{padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px'}}>{error}</div>}<input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || `A5X-${Date.now().toString(36).toUpperCase()}`} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price (â‚¹)*" required /><input name="mrp" type="number" defaultValue={product?.mrp} placeholder="MRP (â‚¹)*" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} placeholder="Min Quantity" /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" />
+  return <AdminPage title={product ? "Edit Product" : "Add Product"}><form className="admin-form" onSubmit={submit}>{error && <div style={{padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px'}}>{error}</div>}<input name="name" defaultValue={product?.name} placeholder="Product Name*" required /><input name="sku" defaultValue={product?.sku || `A5X-${Date.now().toString(36).toUpperCase()}`} placeholder="SKU*" required /><select name="category" defaultValue={product?.category || "MicroController"}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select><input name="price" type="number" defaultValue={product?.price} placeholder="Price (₹)*" required /><input name="mrp" type="number" defaultValue={product?.mrp} placeholder="MRP (₹)*" required /><input name="minQty" type="number" defaultValue={product?.minQty || 1} placeholder="Min Quantity" /><label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label><div style={{marginTop: '16px', marginBottom: '16px'}}><p style={{marginBottom: '8px', fontWeight: 600, color: '#0066FF'}}>Delivery Type:</p><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} /><Package size={16} style={{color: '#718096'}} /> All (Show in both filters)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} /><Zap size={16} style={{color: '#0066FF'}} /> Quick Delivery (1 Day)</label><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}><input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} /><Truck size={16} style={{color: '#718096'}} /> Scheduled Delivery (1 Week)</label></div><textarea name="description" placeholder="Short Description" />
     
     <h4 style={{marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff'}}>Product Images (Max 5)</h4>
     <div style={{marginBottom: '1rem'}}>
@@ -5457,7 +5428,7 @@ function ProductForm() {
                 fontWeight: '700'
               }}
             >
-              Ã—
+               x 
             </button>
           </div>
         ))}
@@ -5649,7 +5620,7 @@ function KitForm() {
                 fontWeight: '700'
               }}
             >
-              Ã—
+               x 
             </button>
           </div>
         ))}
@@ -5701,7 +5672,7 @@ function AdminCourses() {
               </p>
               {course.youtubeUrl && (
                 <a href={course.youtubeUrl} target="_blank" rel="noopener noreferrer" className="admin-course-yt-link">
-                  ðŸ”— YouTube Link
+                   YouTube Link
                 </a>
               )}
             </div>
@@ -5816,11 +5787,11 @@ function CourseForm() {
         </div>
 
         <div className="admin-form-group">
-          <label className="admin-label">ðŸŽ¬ YouTube Video Link (Direct Watch Link)</label>
+          <label className="admin-label"> YouTube Video Link (Direct Watch Link)</label>
           <input
             name="youtubeUrl"
             defaultValue={course?.youtubeUrl}
-            placeholder="https://www.youtube.com/watch?v=... (students click Watch Now â†’ opens this)"
+            placeholder="https://www.youtube.com/watch?v=... (students click Watch Now > opens this)"
           />
           <small style={{ color: 'var(--brand-steel)', fontSize: '12px', marginTop: '4px' }}>
             Paste your YouTube video URL here. When students click "Watch Now", this link will open directly.
@@ -5858,7 +5829,7 @@ function CourseForm() {
                   <img src={video.thumbnailUrl || a5xCarKit} alt="" className="admin-video-thumb" />
                   <div className="admin-video-info">
                     <strong>{video.title}</strong>
-                    <span>{video.videoUrl ? 'ðŸ”— YouTube Link' : 'ðŸ“ No video'} â€¢ {seconds(video.duration || 0)}</span>
+                    <span>{video.videoUrl ? ' YouTube Link' : 'No video'} - {seconds(video.duration || 0)}</span>
                   </div>
                 </div>
               ))}
@@ -5942,7 +5913,7 @@ function AdminVideoUpload() {
         </div>
 
         <div className="admin-form-group">
-          <label className="admin-label">ðŸŽ¬ YouTube Video URL *</label>
+          <label className="admin-label"> YouTube Video URL *</label>
           <input
             name="videoUrl"
             placeholder="https://www.youtube.com/watch?v=..."
@@ -5956,7 +5927,7 @@ function AdminVideoUpload() {
                 alt="YouTube thumbnail"
                 style={{ width: '100%', borderRadius: '10px' }}
               />
-              <p style={{ color: '#10b981', fontSize: '13px', marginTop: '6px' }}>âœ… YouTube video detected! ID: {youtubeId}</p>
+              <p style={{ color: '#10b981', fontSize: '13px', marginTop: '6px' }}>(OK) YouTube video detected! ID: {youtubeId}</p>
             </div>
           )}
         </div>
@@ -6092,24 +6063,24 @@ function AdminContacts() {
                 </div>
                 <div className="contact-detail-fields">
                   <div className="contact-field">
-                    <span className="contact-field-label">ðŸ“§ Email</span>
-                    <a href={`mailto:${selected.email}`} className="contact-field-value contact-link">{selected.email || 'â€”'}</a>
+                    <span className="contact-field-label">"§ Email</span>
+                    <a href={`mailto:${selected.email}`} className="contact-field-value contact-link">{selected.email || '-'}</a>
                   </div>
                   <div className="contact-field">
-                    <span className="contact-field-label">ðŸ“± Phone</span>
-                    <a href={`tel:${selected.phone}`} className="contact-field-value contact-link">{selected.phone || 'â€”'}</a>
+                    <span className="contact-field-label">"± Phone</span>
+                    <a href={`tel:${selected.phone}`} className="contact-field-value contact-link">{selected.phone || '-'}</a>
                   </div>
                   <div className="contact-field">
-                    <span className="contact-field-label">ðŸ¢ Organization</span>
-                    <span className="contact-field-value">{selected.organization || 'â€”'}</span>
+                    <span className="contact-field-label"> Organization</span>
+                    <span className="contact-field-value">{selected.organization || '-'}</span>
                   </div>
                   <div className="contact-field">
-                    <span className="contact-field-label">ðŸ“… Date</span>
+                    <span className="contact-field-label">"… Date</span>
                     <span className="contact-field-value">{new Date(selected.createdAt).toLocaleString('en-IN')}</span>
                   </div>
                 </div>
                 <div className="contact-message-box">
-                  <p className="contact-field-label">ðŸ’¬ Message</p>
+                  <p className="contact-field-label">'¬ Message</p>
                   <p className="contact-message-text">{selected.message}</p>
                 </div>
                 <div className="contact-reply-actions">
@@ -6163,7 +6134,7 @@ function AdminSettings() {
         <textarea placeholder="SEO description" />
 
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 24, paddingTop: 24 }}>
-          <h3 style={{ marginBottom: 12, color: '#00ff88', fontSize: 16 }}>ðŸ’³ UPI Payment Settings</h3>
+          <h3 style={{ marginBottom: 12, color: '#00ff88', fontSize: 16 }}>'³ UPI Payment Settings</h3>
           <p style={{ fontSize: 13, opacity: 0.6, marginBottom: 12 }}>
             Enter your UPI ID. Customers who select "Online Payment" at checkout will see a QR code to scan.
           </p>
@@ -6190,14 +6161,32 @@ function AdminSettings() {
         </div>
 
         <button type="submit" style={{ marginTop: 16 }}>
-          {saved ? 'âœ… Saved!' : 'Save Settings'}
+          {saved ? '(OK) Saved!' : 'Save Settings'}
         </button>
       </form>
     </AdminPage>
   );
 }
 
-// â”€â”€ SCROLL TO TOP ON ROUTE CHANGE â”€â”€
+// -- ROBO RACE PAGE (iframe integration) --
+function RoboRacePage() {
+  return (
+    <main style={{ minHeight: '100vh', background: '#0a0e1a', padding: 0 }}>
+      <div style={{ textAlign: 'center', padding: '100px 20px 20px' }}>
+        <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: '42px', fontWeight: 800, color: '#fff', marginBottom: 8, letterSpacing: '-0.02em' }}>Robo Race</h1>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', color: 'rgba(255,255,255,0.6)', marginBottom: 32 }}>Build, code, and race your A5X robot</p>
+      </div>
+      <iframe
+        src="/robo-race/robo_soccer.html"
+        title="Robo Race - A5X Robotics"
+        style={{ width: '100%', height: 'calc(100vh - 200px)', border: 'none', borderRadius: '16px 16px 0 0', maxWidth: '1400px', margin: '0 auto', display: 'block' }}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+      />
+    </main>
+  );
+}
+
+// == SCROLL TO TOP ON ROUTE CHANGE ==
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -6232,6 +6221,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
           <Route path="/kits" element={<ProtectedRoute><KitsPage /></ProtectedRoute>} />
+          <Route path="/kits/robo-race" element={<RoboRacePage />} />
           <Route path="/kits/:id" element={<ProtectedRoute><KitDetailPage /></ProtectedRoute>} />
           <Route path="/learn" element={<ProtectedRoute><LearnPage /></ProtectedRoute>} />
           <Route path="/learn/:courseId" element={<ProtectedRoute><LearnPage /></ProtectedRoute>} />
@@ -6241,6 +6231,7 @@ function App() {
           <Route path="/contact" element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
           <Route path="/quote" element={<ProtectedRoute><QuotePage /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+          <Route path="/robo-race" element={<RoboRacePage />} />
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
