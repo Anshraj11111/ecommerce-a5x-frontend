@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { createRoot } from "react-dom/client";
+import { useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 // Styles
 import "./styles.css";
@@ -15,8 +14,6 @@ import { API_BASE } from "./config/constants";
 
 // Stores
 import useAdminStore from "./stores/useAdminStore";
-import useAuthStore from "./stores/useAuthStore";
-import useAuthModalStore from "./stores/useAuthModalStore";
 
 // Layout components
 import MainLayout from "./components/layout/MainLayout";
@@ -24,7 +21,6 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 import ScrollToTop from "./components/common/ScrollToTop";
 
 // Auth components
-import AuthModal from "./components/auth/AuthModal";
 import GoogleAuthSuccess from "./components/auth/GoogleAuthSuccess";
 
 // Pages
