@@ -18,24 +18,92 @@ function KitsSection() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [selectedAge, setSelectedAge] = useState('');
+  const [priceRange, setPriceRange] = useState([0, 15000]);
+  const [sortBy, setSortBy] = useState('newest');
+  const [viewMode, setViewMode] = useState('grid');
 
   useEffect(() => { loadKits(); }, []);
 
+  // Derive max price from actual kits
+  const maxPrice = kits.length > 0 ? Math.max(...kits.map(k => Number(k.price) || 0), 15000) : 15000;
+
+  // Category → tier mapping
+  const categoryTierMap = {
+    starter: ['STARTER KIT'],
+    pro: ['PRO KIT'],
+    elite: ['ELITE KIT'],
+  };
+
+  // Difficulty → tier mapping
+  const difficultyTierMap = {
+    beginner: ['STARTER KIT'],
+    intermediate: ['PRO KIT'],
+    advanced: ['ELITE KIT'],
+  };
+
+  // Age → tier mapping
+  const ageTierMap = {
+    '8-12 yrs': ['STARTER KIT'],
+    '12-16 yrs': ['PRO KIT'],
+    '16+ yrs': ['ELITE KIT'],
+  };
+
+  // Compute filtered + sorted kits
+  const filteredKits = kits
+    .filter(kit => {
+      const tier = (kit.tier || '').toUpperCase();
+      // Category filter
+      if (selectedCategory !== 'all') {
+        const allowed = categoryTierMap[selectedCategory];
+        if (allowed && !allowed.includes(tier)) return false;
+      }
+      // Difficulty filter
+      if (selectedDifficulty) {
+        const allowed = difficultyTierMap[selectedDifficulty];
+        if (allowed && !allowed.includes(tier)) return false;
+      }
+      // Age filter
+      if (selectedAge) {
+        const allowed = ageTierMap[selectedAge];
+        if (allowed && !allowed.includes(tier)) return false;
+      }
+      // Price filter
+      const price = Number(kit.price) || 0;
+      if (price < priceRange[0] || price > priceRange[1]) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'price-asc') return Number(a.price) - Number(b.price);
+      if (sortBy === 'price-desc') return Number(b.price) - Number(a.price);
+      if (sortBy === 'rating') return Number(b.rating) - Number(a.rating);
+      // newest — default (API returns newest first)
+      return 0;
+    });
+
+  // Live counts based on current kits
   const categories = [
-    { id: 'all', name: 'All Kits', count: 12 },
-    { id: 'race', name: 'Race Bots', count: 3 },
-    { id: 'arm', name: 'Arm & Gripper', count: 4 },
-    { id: 'sensor', name: 'Sensor Kits', count: 5 },
-    { id: 'iot', name: 'IoT/Smart', count: 8 }
+    { id: 'all', name: 'All Kits', count: kits.length },
+    { id: 'starter', name: 'Starter Kit', count: kits.filter(k => k.tier?.toUpperCase() === 'STARTER KIT').length },
+    { id: 'pro', name: 'Pro Kit', count: kits.filter(k => k.tier?.toUpperCase() === 'PRO KIT').length },
+    { id: 'elite', name: 'Elite Kit', count: kits.filter(k => k.tier?.toUpperCase() === 'ELITE KIT').length },
   ];
 
   const difficulties = [
     { id: 'beginner', name: 'Beginner', class: 'beginner' },
     { id: 'intermediate', name: 'Intermediate', class: 'intermediate' },
-    { id: 'advanced', name: 'Advanced', class: 'advanced' }
+    { id: 'advanced', name: 'Advanced', class: 'advanced' },
   ];
 
   const ageGroups = ['8-12 yrs', '12-16 yrs', '16+ yrs'];
+
+  const resetFilters = () => {
+    setSelectedCategory('all');
+    setSelectedDifficulty('');
+    setSelectedAge('');
+    setPriceRange([0, maxPrice]);
+  };
+
+  const hasActiveFilters = selectedCategory !== 'all' || selectedDifficulty || selectedAge || priceRange[1] < maxPrice;
 
   return (
     <main className="kits-page-main" style={{ backgroundImage: `url(${kitBg})` }}>
@@ -46,7 +114,7 @@ function KitsSection() {
             <h3>Category</h3>
             <div className="category-list">
               {categories.map((category) => (
-                <div 
+                <div
                   key={category.id}
                   className={`category-item ${selectedCategory === category.id ? 'active' : ''}`}
                   onClick={() => setSelectedCategory(category.id)}
@@ -62,7 +130,7 @@ function KitsSection() {
             <h3>Difficulty</h3>
             <div className="difficulty-list">
               {difficulties.map((difficulty) => (
-                <div 
+                <div
                   key={difficulty.id}
                   className={`difficulty-item ${selectedDifficulty === difficulty.id ? 'active' : ''}`}
                   onClick={() => setSelectedDifficulty(selectedDifficulty === difficulty.id ? '' : difficulty.id)}
@@ -78,7 +146,7 @@ function KitsSection() {
             <h3>Age Group</h3>
             <div className="age-list">
               {ageGroups.map((age) => (
-                <div 
+                <div
                   key={age}
                   className={`age-item ${selectedAge === age ? 'active' : ''}`}
                   onClick={() => setSelectedAge(selectedAge === age ? '' : age)}
@@ -91,34 +159,60 @@ function KitsSection() {
 
           <div className="sidebar-section">
             <h3>Price Range</h3>
-            <div className="price-range">
-              <div className="price-slider">
-                <div className="slider-track"></div>
-                <div className="slider-thumb left"></div>
-                <div className="slider-thumb right"></div>
-              </div>
-              <div className="price-labels">
-                <span>₹0</span>
-                <span>₹15,000</span>
+            <div style={{ padding: '0 4px' }}>
+              <input
+                type="range"
+                min={0}
+                max={maxPrice}
+                step={100}
+                value={priceRange[1]}
+                onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                style={{ width: '100%', accentColor: '#00e5ff', cursor: 'pointer' }}
+              />
+              <div className="price-labels" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
+                <span style={{ color: '#8A9BB5', fontSize: '13px' }}>₹{priceRange[0].toLocaleString()}</span>
+                <span style={{ color: '#00e5ff', fontSize: '13px', fontWeight: '600' }}>₹{priceRange[1].toLocaleString()}</span>
               </div>
             </div>
           </div>
 
-          <button className="apply-filters-btn">Apply Filters</button>
+          {hasActiveFilters && (
+            <button
+              className="apply-filters-btn"
+              onClick={resetFilters}
+              style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444' }}
+            >
+              Clear Filters
+            </button>
+          )}
         </aside>
 
         {/* Main Content */}
         <div className="kits-content">
-          {/* Header Controls - Moved to Right */}
+          {/* Header Controls */}
           <div className="kits-header">
             <div className="breadcrumb-header">
               <span>Home</span> &gt; <span>Kits</span>
+              {hasActiveFilters && (
+                <span style={{ color: '#00e5ff', marginLeft: '8px', fontSize: '13px' }}>
+                  · {filteredKits.length} result{filteredKits.length !== 1 ? 's' : ''}
+                </span>
+              )}
             </div>
             <div className="view-controls">
-              <span>Newest</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#e8e8f0', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontSize: '13px' }}
+              >
+                <option value="newest">Newest</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="rating">Top Rated</option>
+              </select>
               <div className="view-icons">
-                <button className="view-btn active" title="Grid View">⊞</button>
-                <button className="view-btn" title="List View">☰</button>
+                <button className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`} title="Grid View" onClick={() => setViewMode('grid')}>⊞</button>
+                <button className={`view-btn ${viewMode === 'list' ? 'active' : ''}`} title="List View" onClick={() => setViewMode('list')}>☰</button>
               </div>
             </div>
           </div>
@@ -151,22 +245,26 @@ function KitsSection() {
             </div>
           </div>
 
-          {/* Kits Grid */}
-          <div className="kits-grid">
-            {kits.map((kit) => <KitCard key={kit.id} kit={kit} />)}
-          </div>
+          {/* Kits Grid / List */}
+          {filteredKits.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '4rem 2rem', color: '#8A9BB5' }}>
+              <div style={{ fontSize: '48px', marginBottom: '1rem' }}>🔍</div>
+              <h3 style={{ color: '#e8e8f0', marginBottom: '0.5rem' }}>No kits match your filters</h3>
+              <p style={{ marginBottom: '1.5rem' }}>Try adjusting or clearing your filters</p>
+              <button
+                onClick={resetFilters}
+                style={{ padding: '10px 24px', background: '#00e5ff', border: 'none', borderRadius: '8px', color: '#000', fontWeight: '600', cursor: 'pointer' }}
+              >
+                Clear All Filters
+              </button>
+            </div>
+          ) : (
+            <div className={viewMode === 'list' ? 'kits-list' : 'kits-grid'}>
+              {filteredKits.map((kit) => <KitCard key={kit.id} kit={kit} listView={viewMode === 'list'} />)}
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Custom Kit Section */}
-      {/* <div className="custom-kit">
-        <img src={robotHands} alt="Custom Robotics Kit" />
-        <div>
-          <h3>Need a Custom Robot Kit?</h3>
-          <p>Tell us your build goal, classroom size, or competition spec. We will bundle the right components for your robotics project.</p>
-          <ButtonLink to="/contact" className="btn">Request Custom Build</ButtonLink>
-        </div>
-      </div> */}
     </main>
   );
 }
