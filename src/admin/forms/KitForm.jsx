@@ -104,6 +104,13 @@ function KitForm() {
         
         <input name="rating" type="number" step=".1" defaultValue={kit?.rating || 4.8} placeholder="Rating" />
 
+        <h4 style={{ marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff' }}>Age Group</h4>
+        <select name="ageGroup" defaultValue={kit?.ageGroup || "8-12 yrs"}>
+          <option value="8-12 yrs">8-12 yrs (Kids / Beginners)</option>
+          <option value="12-16 yrs">12-16 yrs (Teens / Intermediate)</option>
+          <option value="16+ yrs">16+ yrs (Advanced / Adults)</option>
+        </select>
+
         <h4 style={{ marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff' }}>Kit Images (Max 10)</h4>
         <input type="file" accept="image/*" multiple onChange={handleImageChange} style={{ padding: '12px', border: '2px dashed rgba(0,229,255,0.3)', borderRadius: '8px', background: 'rgba(0,229,255,0.05)', color: '#fff', cursor: 'pointer', width: '100%' }} />
 

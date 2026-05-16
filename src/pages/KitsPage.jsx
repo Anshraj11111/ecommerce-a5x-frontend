@@ -41,12 +41,8 @@ function KitsSection() {
     advanced: ['ELITE KIT'],
   };
 
-  // Age → tier mapping
-  const ageTierMap = {
-    '8-12 yrs': ['STARTER KIT'],
-    '12-16 yrs': ['PRO KIT'],
-    '16+ yrs': ['ELITE KIT'],
-  };
+  // Age → tier mapping (kept for reference)
+  // '8-12 yrs' → Starter, '12-16 yrs' → Pro, '16+ yrs' → Elite
 
   // Compute filtered + sorted kits
   const filteredKits = kits
@@ -64,8 +60,7 @@ function KitsSection() {
       }
       // Age filter
       if (selectedAge) {
-        const allowed = ageTierMap[selectedAge];
-        if (allowed && !allowed.includes(tier)) return false;
+        if ((kit.ageGroup || '') !== selectedAge) return false;
       }
       // Price filter
       const price = Number(kit.price) || 0;
