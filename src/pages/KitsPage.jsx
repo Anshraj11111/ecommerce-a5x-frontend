@@ -10,6 +10,7 @@ import { inr } from "../config/constants";
 import a5xCarKit from "../assets/a5x-car-kit.jpg";
 import { API_BASE } from "../config/constants";
 import robotHands from "../assets/robot-hands.jpg";
+import kitBg from "../assets/kitbg.jpeg";
 
 function KitsSection() {
   const kits = useAdminStore((state) => state.kits);
@@ -37,7 +38,7 @@ function KitsSection() {
   const ageGroups = ['8-12 yrs', '12-16 yrs', '16+ yrs'];
 
   return (
-    <main className="kits-page-main">
+    <main className="kits-page-main" style={{ backgroundImage: `url(${kitBg})` }}>
       <div className="kits-layout">
         {/* Left Sidebar */}
         <aside className="kits-sidebar">
