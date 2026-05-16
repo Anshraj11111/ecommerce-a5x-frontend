@@ -23,15 +23,6 @@ function KitCard({ kit }) {
         {/* Description - max 2 lines, truncated */}
         <p className="kit-card-v2-desc">{kit.description}</p>
 
-        {/* Tags */}
-        {kit.includes && kit.includes.length > 0 && (
-          <div className="kit-card-v2-tags">
-            {kit.includes.slice(0, 3).map((item) => (
-              <span key={item}>{item}</span>
-            ))}
-          </div>
-        )}
-
         {/* Footer: price + button */}
         <div className="kit-card-v2-footer">
           <div className="kit-card-v2-price">{inr(Number(kit.price))}</div>

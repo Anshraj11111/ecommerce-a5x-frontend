@@ -10338,3 +10338,24 @@ input, select, textarea {
     padding-right: 16px;
   }
 }
+
+
+/* ═══ KIT DETAIL GALLERY ZOOM ═══ */
+.kit-detail-gallery {
+  overflow: hidden;
+  position: relative;
+}
+.kit-detail-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  will-change: transform;
+}
+/* Prevent nav buttons from being hidden under zoom overlay */
+.kit-detail-gallery button {
+  z-index: 10 !important;
+}
+.kit-detail-gallery .kit-gallery-dots {
+  z-index: 10 !important;
+}

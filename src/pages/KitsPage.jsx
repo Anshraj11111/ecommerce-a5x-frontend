@@ -184,6 +184,8 @@ function KitDetailPage() {
   const [reviewForm, setReviewForm] = useState({ name: '', email: '', rating: 5, comment: '' });
   const [reviews, setReviews] = useState([]);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [zoomed, setZoomed] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
 
   const galleryImages = kit?.images && kit.images.length > 0
     ? kit.images
@@ -193,7 +195,7 @@ function KitDetailPage() {
   const recommendedKits = kits.filter(k => k.id !== id && k.isPublished).slice(0, 3);
 
   useEffect(() => {
-    const t = setInterval(() => setActiveSlide((s) => (s + 1) % galleryImages.length), 3000);
+    const t = setInterval(() => setActiveSlide((s) => (s + 1) % galleryImages.length), 15000);
     return () => clearInterval(t);
   }, [galleryImages.length]);
 
@@ -264,6 +266,13 @@ function KitDetailPage() {
     setDragStart(null);
   };
 
+  const handleZoomMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomPos({ x, y });
+  };
+
   if (!kit) return (
     <main className="page">
       <section style={{ textAlign: 'center', paddingTop: '120px' }}>
@@ -292,8 +301,25 @@ function KitDetailPage() {
       <section className="kit-detail-hero">
         <div className="kit-detail-gallery" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ cursor: dragStart !== null ? 'grabbing' : 'grab', userSelect: 'none' }}>
           <AnimatePresence mode="wait">
-            <motion.img key={activeSlide} src={galleryImages[activeSlide]} alt={kit.name} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5 }} draggable={false} />
+            <motion.img key={activeSlide} src={galleryImages[activeSlide]} alt={kit.name} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5 }} draggable={false}
+              style={zoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`, transform: 'scale(2.2)', transition: 'transform 0.1s ease', cursor: 'zoom-out' } : { cursor: 'zoom-in' }}
+            />
           </AnimatePresence>
+          {/* Zoom overlay - captures mouse events when zoomed */}
+          <div
+            style={{ position: 'absolute', inset: 0, zIndex: zoomed ? 8 : 0, overflow: 'hidden' }}
+            onMouseEnter={() => setZoomed(true)}
+            onMouseLeave={() => { setZoomed(false); }}
+            onMouseMove={handleZoomMove}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+          />
+          {/* Zoom hint */}
+          {!zoomed && (
+            <div style={{ position: 'absolute', bottom: '60px', right: '12px', background: 'rgba(0,0,0,0.6)', color: 'rgba(255,255,255,0.8)', fontSize: '11px', padding: '4px 8px', borderRadius: '4px', pointerEvents: 'none', zIndex: 6 }}>
+              🔍 Hover to zoom
+            </div>
+          )}
           <button onClick={prevSlide} style={{ ...navBtnStyle, left: '20px' }}><ChevronLeft size={28} /></button>
           <button onClick={nextSlide} style={{ ...navBtnStyle, right: '20px' }}><ChevronRight size={28} /></button>
           <div className="kit-gallery-dots">

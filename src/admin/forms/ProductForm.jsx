@@ -1,10 +1,30 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Package, Truck, Zap } from "lucide-react";
 import useAdminStore from "../../stores/useAdminStore";
 import { useFileUpload } from "../../hooks/useFileUpload";
 import AdminPage from "../AdminPage";
 import { categories } from "../../config/constants";
+
+// Compress image to max 1200px wide, JPEG 80% — keeps base64 payload small
+function compressImage(file, maxWidth = 1200, quality = 0.8) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 function ProductForm() {
   const { id } = useParams();
@@ -17,14 +37,11 @@ function ProductForm() {
   const [images, setImages] = useState(product?.images || []);
   const [imagePreviews, setImagePreviews] = useState(product?.images || []);
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files).slice(0, 5);
-    const readers = files.map(file => new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (ev) => resolve(ev.target.result);
-      reader.readAsDataURL(file);
-    }));
-    Promise.all(readers).then(results => { setImagePreviews(results); setImages(results); });
+  const handleImageChange = async (e) => {
+    const files = Array.from(e.target.files).slice(0, 10);
+    const compressed = await Promise.all(files.map(f => compressImage(f)));
+    setImagePreviews(compressed);
+    setImages(compressed);
   };
 
   const removeImage = (index) => {
@@ -104,7 +121,7 @@ function ProductForm() {
         <input name="compatibility" defaultValue={product?.compatibility?.join(", ")} placeholder="Compatible platforms (comma-separated, e.g., Arduino, ESP32)" />
         <input name="software" defaultValue={product?.software?.join(", ")} placeholder="Software requirements (comma-separated)" />
 
-        <h4 style={{ marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff' }}>Product Images (Max 5)</h4>
+        <h4 style={{ marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff' }}>Product Images (Max 10)</h4>
         <input type="file" accept="image/*" multiple onChange={handleImageChange} style={{ padding: '12px', border: '2px dashed rgba(0,229,255,0.3)', borderRadius: '8px', background: 'rgba(0,229,255,0.05)', color: '#fff', cursor: 'pointer', width: '100%' }} />
 
         {imagePreviews.length > 0 && (
