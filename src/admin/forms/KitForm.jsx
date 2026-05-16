@@ -39,6 +39,9 @@ function KitForm() {
       ...kit, ...data,
       price: Number(data.price), rating: Number(data.rating || 4.8),
       includes: data.includes ? data.includes.split(",").map((item) => item.trim()).filter(Boolean) : [],
+      features: data.features ? data.features.split(",").map((item) => item.trim()).filter(Boolean) : [],
+      compatibility: data.compatibility ? data.compatibility.split(",").map((item) => item.trim()).filter(Boolean) : [],
+      software: data.software ? data.software.split(",").map((item) => item.trim()).filter(Boolean) : [],
       imageUrl: images[0] || kit?.imageUrl || data.imageUrl || "",
       images: images.length > 0 ? images : (kit?.images || []),
       videoUrl: videoUpload.previewUrl || kit?.videoUrl || "",
@@ -66,7 +69,20 @@ function KitForm() {
         </select>
         <input name="price" type="number" defaultValue={kit?.price} placeholder="Price (₹)*" required />
         <textarea name="description" defaultValue={kit?.description} placeholder="Description" />
+        <textarea name="overview" defaultValue={kit?.overview} placeholder="Detailed Overview (for Overview tab)" />
+        <input name="features" defaultValue={kit?.features?.join(", ")} placeholder="Key Features (comma-separated)" />
         <input name="includes" defaultValue={kit?.includes?.join(", ")} placeholder="Includes (comma-separated)" />
+        
+        <h4 style={{ marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff' }}>Technical Specifications</h4>
+        <input name="dimensions" defaultValue={kit?.dimensions} placeholder="Dimensions (e.g., 25cm x 20cm x 15cm)" />
+        <input name="weight" defaultValue={kit?.weight} placeholder="Weight (e.g., 1.2 kg)" />
+        <input name="power" defaultValue={kit?.power} placeholder="Power Requirements (e.g., 5V DC, 2A)" />
+        <input name="temperature" defaultValue={kit?.temperature} placeholder="Operating Temperature (e.g., -10°C to +60°C)" />
+        
+        <h4 style={{ marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff' }}>Compatibility</h4>
+        <input name="compatibility" defaultValue={kit?.compatibility?.join(", ")} placeholder="Compatible Platforms (comma-separated, e.g., Arduino, Raspberry Pi)" />
+        <input name="software" defaultValue={kit?.software?.join(", ")} placeholder="Software Requirements (comma-separated)" />
+        
         <input name="rating" type="number" step=".1" defaultValue={kit?.rating || 4.8} placeholder="Rating" />
 
         <h4 style={{ marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff' }}>Kit Images (Max 5)</h4>

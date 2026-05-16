@@ -106,12 +106,15 @@ function LoginPage() {
                   background: '#f1f5f9', 
                   border: '1px solid #d1d5db', 
                   borderRadius: '8px', 
-                  color: '#1f2937', 
+                  color: '#1f2937 !important', 
                   padding: '12px 16px', 
-                  fontSize: '14px', 
-                  fontFamily: 'Inter, sans-serif', 
+                  fontSize: '16px', 
+                  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', 
+                  fontWeight: '500',
                   outline: 'none',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
+                  WebkitTextFillColor: '#1f2937',
+                  WebkitAppearance: 'none'
                 }} 
               />
             </div>
@@ -131,13 +134,16 @@ function LoginPage() {
                     background: '#f1f5f9', 
                     border: '1px solid #d1d5db', 
                     borderRadius: '8px', 
-                    color: '#1f2937', 
+                    color: '#1f2937 !important', 
                     padding: '12px 16px', 
                     paddingRight: '45px',
-                    fontSize: '14px', 
-                    fontFamily: 'Inter, sans-serif', 
+                    fontSize: '16px', 
+                    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', 
+                    fontWeight: '500',
                     outline: 'none',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    WebkitTextFillColor: '#1f2937',
+                    WebkitAppearance: 'none'
                   }} 
                 />
                 <button 

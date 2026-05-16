@@ -118,7 +118,7 @@ function ImageShowcase() {
   return (
     <motion.section className="image-showcase" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer}>
       {showcaseItems.map((item, i) => (
-        <motion.div key={item.label} className="showcase-item holo-shimmer scan-lines corner-brackets float-sine" variants={scrollReveal} whileHover={{ scale: 1.02 }} style={{ animationDelay: `${i * 0.4}s` }}>
+        <motion.div key={item.label} className="showcase-item holo-shimmer scan-lines corner-brackets" variants={scrollReveal} whileHover={{ scale: 1.02 }} style={{ animationDelay: `${i * 0.4}s` }}>
           <motion.img src={item.img} alt={item.label} initial={{ scale: 1.15 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 1.2, ease: [.22,1,.36,1] }} />
           <div className="showcase-overlay" />
           <div className="showcase-content">

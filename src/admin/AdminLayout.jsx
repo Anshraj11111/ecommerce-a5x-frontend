@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Layers, LogOut, MessageSquare, Package, PlayCircle, Settings, ShoppingCart } from "lucide-react";
+import { LayoutDashboard, Layers, LogOut, MessageSquare, Package, PlayCircle, Settings, ShoppingCart, Star } from "lucide-react";
 import { CustomCursor } from "../components/common/AnimationComponents";
 
 function AdminLayout() {
@@ -11,6 +11,7 @@ function AdminLayout() {
     [Layers, "Kits", "/admin/kits"],
     [PlayCircle, "Courses & Videos", "/admin/courses"],
     [ShoppingCart, "Orders", "/admin/orders"],
+    [Star, "Reviews", "/admin/reviews"],
     [MessageSquare, "Contacts", "/admin/contacts"],
     [Settings, "Settings", "/admin/settings"]
   ];

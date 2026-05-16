@@ -48,6 +48,7 @@ import AdminKits from "./admin/AdminKits";
 import AdminCourses from "./admin/AdminCourses";
 import AdminOrders from "./admin/AdminOrders";
 import AdminContacts from "./admin/AdminContacts";
+import AdminReviews from "./admin/AdminReviews";
 import AdminSettings from "./admin/AdminSettings";
 import ProductForm from "./admin/forms/ProductForm";
 import KitForm from "./admin/forms/KitForm";
@@ -103,6 +104,7 @@ function App() {
             <Route path="/admin/courses/:id" element={<CourseForm />} />
             <Route path="/admin/courses/:id/videos/new" element={<AdminVideoUpload />} />
             <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/reviews" element={<AdminReviews />} />
             <Route path="/admin/contacts" element={<AdminContacts />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle, ChevronLeft, ChevronRight, Play, PlayCircle, X } from "lucide-react";
+import { CheckCircle, ChevronLeft, ChevronRight, Play, PlayCircle, X, Star } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import useAdminStore from "../stores/useAdminStore";
 import useCartStore from "../stores/useCartStore";
@@ -8,6 +8,7 @@ import ButtonLink from "../components/common/ButtonLink";
 import KitCard from "../components/common/KitCard";
 import { inr } from "../config/constants";
 import a5xCarKit from "../assets/a5x-car-kit.jpg";
+import { API_BASE } from "../config/constants";
 import robotHands from "../assets/robot-hands.jpg";
 
 function KitsSection() {
@@ -178,15 +179,71 @@ function KitDetailPage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [showVideo, setShowVideo] = useState(false);
   const [dragStart, setDragStart] = useState(null);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [reviewForm, setReviewForm] = useState({ name: '', email: '', rating: 5, comment: '' });
+  const [reviews, setReviews] = useState([]);
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   const galleryImages = kit?.images && kit.images.length > 0
     ? kit.images
     : kit?.imageUrl ? [kit.imageUrl] : [a5xCarKit];
 
+  // Get recommended kits (exclude current kit)
+  const recommendedKits = kits.filter(k => k.id !== id && k.isPublished).slice(0, 3);
+
   useEffect(() => {
     const t = setInterval(() => setActiveSlide((s) => (s + 1) % galleryImages.length), 3000);
     return () => clearInterval(t);
   }, [galleryImages.length]);
+
+  // Load reviews for this kit
+  useEffect(() => {
+    if (kit) {
+      // Fetch reviews from API
+      fetch(`${API_BASE}/api/reviews/kit/${kit.id}`)
+        .then(res => res.json())
+        .then(data => setReviews(data))
+        .catch(err => {
+          console.error('Failed to load reviews:', err);
+          // No fallback data - show empty state
+          setReviews([]);
+        });
+    }
+  }, [kit]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    setSubmittingReview(true);
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/reviews/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          kitId: kit.id,
+          ...reviewForm
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Review submitted successfully!');
+        setReviewForm({ name: '', email: '', rating: 5, comment: '' });
+        // Optionally refresh reviews to show updated count
+        // fetchReviews();
+      } else {
+        alert(data.error || 'Failed to submit review');
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Error submitting review. Please try again.');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const nextSlide = () => setActiveSlide((s) => (s + 1) % galleryImages.length);
   const prevSlide = () => setActiveSlide((s) => (s - 1 + galleryImages.length) % galleryImages.length);
@@ -217,6 +274,17 @@ function KitDetailPage() {
 
   const hasVideo = kit.videoUrl && kit.videoUrl.trim() !== '';
   const navBtnStyle = { position: 'absolute', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,229,255,0.9)', border: 'none', borderRadius: '50%', width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, color: '#000' };
+
+  const tabStyle = (isActive) => ({
+    padding: '12px 24px',
+    background: isActive ? 'rgba(0,229,255,0.1)' : 'transparent',
+    border: isActive ? '1px solid rgba(0,229,255,0.3)' : '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '8px',
+    color: isActive ? '#00e5ff' : '#8A9BB5',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    fontWeight: isActive ? '600' : '400'
+  });
 
   return (
     <main className="page kit-detail-page">
@@ -259,6 +327,202 @@ function KitDetailPage() {
           <ButtonLink to="/contact" ghost>Request Custom Version</ButtonLink>
         </div>
       </section>
+
+      {/* Tabs Section */}
+      <section style={{ maxWidth: '1200px', margin: '4rem auto', padding: '0 2rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
+          <button onClick={() => setActiveTab('overview')} style={tabStyle(activeTab === 'overview')}>Overview</button>
+          <button onClick={() => setActiveTab('specifications')} style={tabStyle(activeTab === 'specifications')}>Specifications</button>
+          <button onClick={() => setActiveTab('compatibility')} style={tabStyle(activeTab === 'compatibility')}>Compatibility</button>
+          <button onClick={() => setActiveTab('reviews')} style={tabStyle(activeTab === 'reviews')}>Reviews</button>
+        </div>
+
+        {/* Tab Content */}
+        <div style={{ minHeight: '300px' }}>
+          {activeTab === 'overview' && (
+            <div>
+              <h3 style={{ color: '#00e5ff', marginBottom: '1rem' }}>Product Description</h3>
+              <p style={{ color: '#8A9BB5', lineHeight: '1.6', marginBottom: '2rem' }}>
+                {kit.overview || kit.description || 'This is a comprehensive robotics kit designed for learning and experimentation. Perfect for students, hobbyists, and professionals looking to build innovative projects.'}
+              </p>
+              <h3 style={{ color: '#00e5ff', marginBottom: '1rem' }}>Key Features</h3>
+              <ul style={{ color: '#8A9BB5', lineHeight: '1.8' }}>
+                {kit.features ? kit.features.map((feature, i) => <li key={i}>{feature}</li>) : (
+                  <>
+                    <li>High-quality components sourced from trusted manufacturers</li>
+                    <li>Comprehensive instruction manual with step-by-step guidance</li>
+                    <li>Compatible with popular development platforms</li>
+                    <li>Suitable for both beginners and advanced users</li>
+                  </>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {activeTab === 'specifications' && (
+            <div>
+              <h3 style={{ color: '#00e5ff', marginBottom: '1rem' }}>Technical Specifications</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(0,229,255,0.1)' }}>
+                  <h4 style={{ color: '#00e5ff', marginBottom: '0.5rem' }}>Dimensions</h4>
+                  <p style={{ color: '#8A9BB5' }}>{kit.dimensions || '25cm x 20cm x 15cm'}</p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(0,229,255,0.1)' }}>
+                  <h4 style={{ color: '#00e5ff', marginBottom: '0.5rem' }}>Weight</h4>
+                  <p style={{ color: '#8A9BB5' }}>{kit.weight || '1.2 kg'}</p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(0,229,255,0.1)' }}>
+                  <h4 style={{ color: '#00e5ff', marginBottom: '0.5rem' }}>Power Requirements</h4>
+                  <p style={{ color: '#8A9BB5' }}>{kit.power || '5V DC, 2A'}</p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(0,229,255,0.1)' }}>
+                  <h4 style={{ color: '#00e5ff', marginBottom: '0.5rem' }}>Operating Temperature</h4>
+                  <p style={{ color: '#8A9BB5' }}>{kit.temperature || '-10°C to +60°C'}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'compatibility' && (
+            <div>
+              <h3 style={{ color: '#00e5ff', marginBottom: '1rem' }}>Platform Compatibility</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                {(kit.compatibility || ['Arduino', 'Raspberry Pi', 'ESP32', 'Micro:bit']).map((platform, i) => (
+                  <div key={i} style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(0,229,255,0.1)', textAlign: 'center' }}>
+                    <CheckCircle size={24} style={{ color: '#00e5ff', marginBottom: '0.5rem' }} />
+                    <p style={{ color: '#8A9BB5', margin: 0 }}>{platform}</p>
+                  </div>
+                ))}
+              </div>
+              <h3 style={{ color: '#00e5ff', marginBottom: '1rem' }}>Software Requirements</h3>
+              <ul style={{ color: '#8A9BB5', lineHeight: '1.8' }}>
+                {kit.software ? kit.software.map((sw, i) => <li key={i}>{sw}</li>) : (
+                  <>
+                    <li>Arduino IDE 1.8.0 or higher</li>
+                    <li>Python 3.7+ (for Raspberry Pi projects)</li>
+                    <li>Compatible with Windows, macOS, and Linux</li>
+                  </>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {activeTab === 'reviews' && (
+            <div>
+              <h3 style={{ color: '#00e5ff', marginBottom: '1rem' }}>Customer Reviews</h3>
+              
+              {/* Existing Reviews */}
+              <div style={{ marginBottom: '3rem' }}>
+                {reviews.filter(r => r.approved).length === 0 ? (
+                  <div style={{ 
+                    textAlign: 'center', 
+                    padding: '3rem', 
+                    background: 'rgba(255,255,255,0.05)', 
+                    borderRadius: '12px', 
+                    border: '1px solid rgba(0,229,255,0.1)' 
+                  }}>
+                    <Star size={48} style={{ color: '#8A9BB5', marginBottom: '1rem', opacity: 0.5 }} />
+                    <h3 style={{ color: '#8A9BB5', marginBottom: '0.5rem' }}>No Reviews Yet</h3>
+                    <p style={{ color: '#6b7280', margin: 0 }}>Be the first to review this kit!</p>
+                  </div>
+                ) : (
+                  reviews.filter(r => r.approved).map((review) => (
+                    <div key={review.id} style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '8px', border: '1px solid rgba(0,229,255,0.1)', marginBottom: '1rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <h4 style={{ color: '#00e5ff', margin: 0 }}>{review.name}</h4>
+                        <div style={{ color: '#f59e0b' }}>{'★'.repeat(review.rating)}</div>
+                      </div>
+                      <p style={{ color: '#8A9BB5', margin: 0, lineHeight: '1.6' }}>{review.comment}</p>
+                      <small style={{ color: '#6b7280', marginTop: '0.5rem', display: 'block' }}>{new Date(review.createdAt || review.date).toLocaleDateString()}</small>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Review Form */}
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2rem', borderRadius: '12px', border: '1px solid rgba(0,229,255,0.1)' }}>
+                <h3 style={{ color: '#00e5ff', marginBottom: '1.5rem' }}>Share Your Experience</h3>
+                <p style={{ color: '#8A9BB5', marginBottom: '1.5rem' }}>Help others make informed decisions</p>
+                
+                <form onSubmit={handleReviewSubmit} style={{ display: 'grid', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <input
+                      type="text"
+                      placeholder="Your Name"
+                      value={reviewForm.name}
+                      onChange={(e) => setReviewForm({...reviewForm, name: e.target.value})}
+                      required
+                      style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,229,255,0.2)', borderRadius: '8px', color: 'white', fontFamily: 'Inter, sans-serif' }}
+                    />
+                    <input
+                      type="email"
+                      placeholder="Your Email"
+                      value={reviewForm.email}
+                      onChange={(e) => setReviewForm({...reviewForm, email: e.target.value})}
+                      required
+                      style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,229,255,0.2)', borderRadius: '8px', color: 'white', fontFamily: 'Inter, sans-serif' }}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label style={{ color: '#8A9BB5', marginBottom: '0.5rem', display: 'block' }}>Rating</label>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      {[1,2,3,4,5].map(star => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setReviewForm({...reviewForm, rating: star})}
+                          style={{ background: 'none', border: 'none', fontSize: '24px', color: star <= reviewForm.rating ? '#f59e0b' : '#6b7280', cursor: 'pointer' }}
+                        >
+                          ★
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <textarea
+                    placeholder="Share your experience with this kit..."
+                    value={reviewForm.comment}
+                    onChange={(e) => setReviewForm({...reviewForm, comment: e.target.value})}
+                    required
+                    rows={4}
+                    style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,229,255,0.2)', borderRadius: '8px', color: 'white', fontFamily: 'Inter, sans-serif', resize: 'vertical' }}
+                  />
+                  
+                  <button
+                    type="submit"
+                    disabled={submittingReview}
+                    style={{ padding: '12px 24px', background: submittingReview ? '#6b7280' : '#00e5ff', border: 'none', borderRadius: '8px', color: '#000', fontWeight: '600', cursor: submittingReview ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif' }}
+                  >
+                    {submittingReview ? 'Submitting...' : 'Submit Review'}
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Recommended Kits Section */}
+      {recommendedKits.length > 0 && (
+        <section style={{ maxWidth: '1200px', margin: '4rem auto', padding: '0 2rem' }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '2rem', textAlign: 'center', color: '#00e5ff' }}>Recommended Kits</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+            {recommendedKits.map((recKit) => (
+              <div key={recKit.id} className="glass-card" style={{ padding: '1.5rem', cursor: 'pointer', transition: 'all 0.3s ease' }} onClick={() => navigate(`/kits/${recKit.id}`)}>
+                <img src={recKit.imageUrl || a5xCarKit} alt={recKit.name} style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem' }} />
+                <span className={`tier ${recKit.tier.toLowerCase().split(' ')[0]}`} style={{ fontSize: '12px', marginBottom: '0.5rem' }}>{recKit.tier}</span>
+                <h3 style={{ color: '#00e5ff', marginBottom: '0.5rem' }}>{recKit.name}</h3>
+                <p style={{ color: '#8A9BB5', fontSize: '14px', marginBottom: '1rem' }}>{recKit.description.substring(0, 100)}...</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ color: '#00e5ff', fontWeight: '700', fontSize: '18px' }}>{inr(Number(recKit.price))}</div>
+                  <div style={{ color: '#f59e0b' }}>{'★'.repeat(Math.round(recKit.rating))}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {hasVideo && (
         <section style={{ maxWidth: '1200px', margin: '4rem auto', padding: '0 2rem' }}>
