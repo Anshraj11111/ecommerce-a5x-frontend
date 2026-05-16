@@ -1,17 +1,30 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+// Lazy import to avoid circular deps — resolved at call time
+let _showToast = null;
+export function setToastFn(fn) { _showToast = fn; }
+
 const useCartStore = create(persist((set, get) => ({
   open: false,
   items: [],
   toggle: () => set((s) => ({ open: !s.open })),
-  add: (product) => set((s) => {
-    const existing = s.items.find((i) => i.id === product.id);
-    if (existing) {
-      return { items: s.items.map((i) => i.id === product.id ? { ...i, qty: i.qty + 1 } : i) };
+  add: (product) => {
+    set((s) => {
+      const existing = s.items.find((i) => i.id === product.id);
+      if (existing) {
+        return { items: s.items.map((i) => i.id === product.id ? { ...i, qty: i.qty + 1 } : i) };
+      }
+      return { items: [...s.items, { ...product, qty: 1 }] };
+    });
+    // Fire toast after state update
+    if (_showToast) {
+      _showToast({
+        message: `${product.name ? product.name.substring(0, 30) + (product.name.length > 30 ? '…' : '') : 'Item'} added to cart`,
+        type: "success",
+      });
     }
-    return { items: [...s.items, { ...product, qty: 1 }] };
-  }),
+  },
   remove: (id) => set((s) => ({ items: s.items.filter((i) => i.id !== id) })),
   inc: (id) => set((s) => ({ items: s.items.map((i) => i.id === id ? { ...i, qty: i.qty + 1 } : i) })),
   dec: (id) => set((s) => ({ items: s.items.map((i) => i.id === id && i.qty > 1 ? { ...i, qty: i.qty - 1 } : i).filter((i) => i.qty > 0) })),

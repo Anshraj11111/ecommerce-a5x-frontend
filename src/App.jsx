@@ -14,11 +14,14 @@ import { API_BASE } from "./config/constants";
 
 // Stores
 import useAdminStore from "./stores/useAdminStore";
+import useToastStore from "./stores/useToastStore";
+import { setToastFn } from "./stores/useCartStore";
 
 // Layout components
 import MainLayout from "./components/layout/MainLayout";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import ScrollToTop from "./components/common/ScrollToTop";
+import CartToast from "./components/common/CartToast";
 
 // Auth components
 import GoogleAuthSuccess from "./components/auth/GoogleAuthSuccess";
@@ -58,8 +61,11 @@ import AdminVideoUpload from "./admin/forms/AdminVideoUpload";
 function App() {
   const loadProducts = useAdminStore((s) => s.loadProducts);
   const loadKits = useAdminStore((s) => s.loadKits);
+  const showToast = useToastStore((s) => s.showToast);
 
   useEffect(() => {
+    // Wire toast function into cart store once on mount
+    setToastFn(showToast);
     fetch(`${API_BASE}/api/health`).catch(() => {});
     loadProducts();
     loadKits();
@@ -68,6 +74,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <CartToast />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
