@@ -38,6 +38,7 @@ function KitForm() {
     const payload = {
       ...kit, ...data,
       price: Number(data.price), rating: Number(data.rating || 4.8),
+      mrp: Number(data.mrp || data.price),
       includes: data.includes ? data.includes.split(",").map((item) => item.trim()).filter(Boolean) : [],
       features: data.features ? data.features.split(",").map((item) => item.trim()).filter(Boolean) : [],
       compatibility: data.compatibility ? data.compatibility.split(",").map((item) => item.trim()).filter(Boolean) : [],
@@ -68,6 +69,7 @@ function KitForm() {
           <option>ELITE KIT</option>
         </select>
         <input name="price" type="number" defaultValue={kit?.price} placeholder="Price (₹)*" required />
+        <input name="mrp" type="number" defaultValue={kit?.mrp || kit?.price} placeholder="MRP (₹)* (original price before discount)" required />
         <textarea name="description" defaultValue={kit?.description} placeholder="Description" />
         <textarea name="overview" defaultValue={kit?.overview} placeholder="Detailed Overview (for Overview tab)" />
         <input name="features" defaultValue={kit?.features?.join(", ")} placeholder="Key Features (comma-separated)" />

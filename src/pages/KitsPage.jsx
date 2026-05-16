@@ -312,6 +312,14 @@ function KitDetailPage() {
           <h1>{kit.name}</h1>
           <p className="kit-detail-desc">{kit.description}</p>
           <div className="kit-detail-price">{inr(Number(kit.price))}</div>
+          {kit.mrp && Number(kit.mrp) > Number(kit.price) && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <s style={{ color: '#6b7280', fontSize: '18px' }}>{inr(Number(kit.mrp))}</s>
+              <span style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e', padding: '2px 8px', borderRadius: '4px', fontSize: '13px', fontWeight: '700' }}>
+                {Math.round((1 - kit.price / kit.mrp) * 100)}% OFF
+              </span>
+            </div>
+          )}
           <div className="kit-detail-rating">{'★'.repeat(Math.round(kit.rating))} <span>{kit.rating}/5</span></div>
           {hasVideo && (
             <button className="btn ghost" onClick={() => setShowVideo(true)} style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

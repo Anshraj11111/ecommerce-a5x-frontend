@@ -44,7 +44,11 @@ function ProductForm() {
       minQty: Number(data.minQty || 1), rating: Number(data.rating || 4.7),
       inStock: data.inStock === "on", quickDelivery: quickDeliveryValue,
       imageUrl: images[0] || product?.imageUrl || upload.previewUrl || "",
-      images: images.length > 0 ? images : (product?.images || [])
+      images: images.length > 0 ? images : (product?.images || []),
+      features: data.features ? data.features.split(",").map(f => f.trim()).filter(Boolean) : (product?.features || []),
+      compatibility: data.compatibility ? data.compatibility.split(",").map(c => c.trim()).filter(Boolean) : (product?.compatibility || []),
+      software: data.software ? data.software.split(",").map(s => s.trim()).filter(Boolean) : (product?.software || []),
+      shortDescription: data.description || product?.shortDescription || ""
     };
     try {
       if (product) { await updateProduct(product.id, payload); } else { await addProduct(payload); }
@@ -87,6 +91,18 @@ function ProductForm() {
         </div>
 
         <textarea name="description" placeholder="Short Description" />
+        <textarea name="overview" defaultValue={product?.overview} placeholder="Detailed Overview (for Overview tab)" />
+        <input name="features" defaultValue={product?.features?.join(", ")} placeholder="Key Features (comma-separated)" />
+
+        <h4 style={{ marginTop: '1.5rem', marginBottom: '0.5rem', color: '#00e5ff' }}>Technical Specifications</h4>
+        <input name="dimensions" defaultValue={product?.dimensions} placeholder="Dimensions (e.g., 5cm x 3cm x 1cm)" />
+        <input name="weight" defaultValue={product?.weight} placeholder="Weight (e.g., 25g)" />
+        <input name="power" defaultValue={product?.power} placeholder="Power (e.g., 5V DC, 500mA)" />
+        <input name="temperature" defaultValue={product?.temperature} placeholder="Operating Temp (e.g., -10°C to +60°C)" />
+
+        <h4 style={{ marginTop: '1.5rem', marginBottom: '0.5rem', color: '#00e5ff' }}>Compatibility</h4>
+        <input name="compatibility" defaultValue={product?.compatibility?.join(", ")} placeholder="Compatible platforms (comma-separated, e.g., Arduino, ESP32)" />
+        <input name="software" defaultValue={product?.software?.join(", ")} placeholder="Software requirements (comma-separated)" />
 
         <h4 style={{ marginTop: '2rem', marginBottom: '1rem', color: '#00e5ff' }}>Product Images (Max 5)</h4>
         <input type="file" accept="image/*" multiple onChange={handleImageChange} style={{ padding: '12px', border: '2px dashed rgba(0,229,255,0.3)', borderRadius: '8px', background: 'rgba(0,229,255,0.05)', color: '#fff', cursor: 'pointer', width: '100%' }} />
