@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Package, Truck, Zap } from "lucide-react";
 import useAdminStore from "../../stores/useAdminStore";
-import useFileUpload from "../../hooks/useFileUpload";
+import { useFileUpload } from "../../hooks/useFileUpload";
 import AdminPage from "../AdminPage";
 import { categories } from "../../config/constants";
 

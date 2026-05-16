@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function useWatchProgress(course) {
+export function useWatchProgress(course) {
   const key = "a5x-watch-progress";
   const [data, setData] = useState(() => JSON.parse(localStorage.getItem(key) || "{}"));
   const save = (next) => { setData(next); localStorage.setItem(key, JSON.stringify(next)); };
@@ -11,5 +11,3 @@ function useWatchProgress(course) {
     getCourseProgress: () => course && videos.length ? Math.round(((data[course.id] || []).length / videos.length) * 100) : 0
   };
 }
-
-export default useWatchProgress;

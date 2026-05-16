@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A5X Robo Race Car</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Orbitron:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./robo_soccer.css" />
+  </head>
+  <body>
+    <main class="commercial" data-build-scene>
+      <!-- Floating "Order Now" pill — appears after 100px scroll -->
+      <a class="floating-order" href="#final" id="floatingOrder">Order Now</a>
+
+      <div class="world" aria-hidden="true">
+        <span class="scan scan-a"></span>
+        <span class="scan scan-b"></span>
+        <span class="scan scan-c"></span>
+        <span class="blueprint-ring ring-a"></span>
+        <span class="blueprint-ring ring-b"></span>
+        <span class="blueprint-ring ring-c"></span>
+        <span class="track-line track-line-a"></span>
+        <span class="track-line track-line-b"></span>
+      </div>
+
+      <button class="scroll-cue" type="button" aria-label="Scroll down to build the bot">
+        <span>Scroll down to build the bot</span>
+        <i aria-hidden="true"></i>
+      </button>
+      <div class="scroll-meter" aria-hidden="true"><span></span></div>
+
+      <aside class="kit-panel" aria-label="Robo race kit contents">
+        <p>What your child learns</p>
+        <span><strong>ESP32 control core</strong><small>How code becomes real movement, timing, signals, and wireless control.</small></span>
+        <span><strong>L298N motor driver</strong><small>How a tiny command safely controls motors forward, backward, and turning.</small></span>
+        <span><strong>Buck power converter</strong><small>Why robots need stable voltage, power planning, and protected electronics.</small></span>
+        <span><strong>Race chassis + wheels</strong><small>How grip, balance, friction, and design change speed and performance.</small></span>
+      </aside>
+
+      <aside class="price-card" aria-label="Limited price offer">
+        <p>Launch Offer</p>
+        <div><del>6000</del><strong>3499</strong><span>only</span></div>
+        <small>Complete robo race kit</small>
+      </aside>
+
+      <div class="robo-wall" aria-hidden="true">
+        <span>ROBO RACE</span>
+        <span>ROBO RACE</span>
+        <span>ROBO RACE</span>
+        <span>ROBO RACE</span>
+        <span>ROBO RACE</span>
+        <span>ROBO RACE</span>
+      </div>
+
+      <div class="assembly-ticker" aria-hidden="true">
+        <span>Chassis locked</span>
+        <span>Motors armed</span>
+        <span>ESP32 online</span>
+        <span>Driver linked</span>
+        <span>Voltage stable</span>
+        <span>Race mode ready</span>
+      </div>
+
+      <section class="story story-open" aria-label="Robo race commercial story">
+        <p class="eyebrow">Curiosity kit / build mode</p>
+        <h1>Give Curiosity Wheels.</h1>
+        <p class="lead">
+          Not another toy. A real robo race car your child builds, wires, codes,
+          and watches come alive.
+        </p>
+        <div class="micro-stats" aria-label="Build highlights">
+          <span>6 core parts</span>
+          <span>1 race-ready bot</span>
+          <span>Real robotics learning</span>
+        </div>
+      </section>
+
+      <section class="story story-build" aria-label="Robo race components">
+        <p class="eyebrow">Assembly sequence</p>
+        <h2>They Don’t Just Play. They Build.</h2>
+        <p>
+          Chassis, motor, ESP32, L298N, wheels, and buck converter come together
+          in one smooth build. They learn wiring, coding, motor control, power,
+          debugging, and how real robots turn instructions into motion.
+        </p>
+      </section>
+
+      <section class="story story-final" id="final" aria-label="Robo race final reveal">
+        <p class="eyebrow">Race mode armed</p>
+        <h2>This Is the Bot They’ll Brag About.</h2>
+        <p>
+          For curious kids who ask “how does it work?” and parents who want the
+          answer to be something they can actually build.
+        </p>
+        <div class="final-offer"><del>6000</del><strong>3499</strong><span>only</span></div>
+        <a class="primary" href="./index.html">Buy the Robo Race Kit</a>
+      </section>
+
+      <div class="component component-chassis">Chassis</div>
+      <div class="component component-motor">Motors</div>
+      <div class="component component-esp">ESP32</div>
+      <div class="component component-driver">L298N</div>
+      <div class="component component-wheels">Wheels</div>
+      <div class="component component-buck">Buck Converter</div>
+
+      <figure class="hands hands-frame" aria-hidden="true">
+        <img src="./assets/hands-frame.png" alt="" />
+      </figure>
+      <figure class="hands hand-base" aria-hidden="true">
+        <img src="./assets/hand-base.png" alt="" />
+      </figure>
+      <figure class="car" aria-label="A5X robo race car">
+        <img src="./assets/robo-scooter.png" alt="A5X Robo Race robotics car kit" />
+      </figure>
+    </main>
+    <script src="./robo_soccer.js"></script>
+    <script>
+      // Show floating order button after 100px scroll
+      const fab = document.getElementById('floatingOrder');
+      if (fab) {
+        window.addEventListener('scroll', () => {
+          fab.classList.toggle('visible', window.scrollY > 100);
+        }, { passive: true });
+      }
+    </script>
+  </body>
+</html>

@@ -48,11 +48,10 @@ function AdminLogin() {
       <main className="admin-login">
         <form onSubmit={submit}>
           <h1>A5X Admin</h1>
-          <input name="email" type="email" placeholder="admin@a5xrobotics.com" required disabled={loading} defaultValue="admin@a5xrobotics.com" />
-          <input name="password" type="password" placeholder="Password" required disabled={loading} defaultValue="Admin@123456" />
+          <input name="email" type="email" placeholder="Email" required disabled={loading} />
+          <input name="password" type="password" placeholder="Password" required disabled={loading} />
           <button disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
           {error && <p className="error-message" style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
-          <small style={{ marginTop: '1rem', opacity: 0.7 }}>Default: admin@a5xrobotics.com / Admin@123456</small>
         </form>
       </main>
     </>

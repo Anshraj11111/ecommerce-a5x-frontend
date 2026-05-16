@@ -4,13 +4,14 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import CartDrawer from "../cart/CartDrawer";
 import AuthModal from "../auth/AuthModal";
-import { AuroraBackground, TwinkleField, FloatingOrbs, CustomCursor } from "../common/AnimationComponents";
+import AxieWidget from "../ai/AxieWidget";
+import { AuroraBackground, TwinkleField, FloatingOrbs, CustomCursor } from "../effects/BackgroundEffects";
 
 function MainLayout() {
   const location = useLocation();
   const hideNavbar = location.pathname === '/login';
-  const showCursor = true;
-
+  const showCursor = true; // Always show cursor
+  
   return (
     <>
       <AuroraBackground />
@@ -22,6 +23,7 @@ function MainLayout() {
       {!hideNavbar && <Footer />}
       <CartDrawer />
       <AuthModal />
+      <AxieWidget />
     </>
   );
 }

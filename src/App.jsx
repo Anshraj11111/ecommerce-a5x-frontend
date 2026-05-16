@@ -30,6 +30,7 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import WishlistPage from "./pages/WishlistPage";
 import LoginPage from "./pages/LoginPage";
 import KitsPage, { KitDetailPage } from "./pages/KitsPage";
+import RoboRacePage from "./pages/RoboRacePage";
 import LearnPage, { VideoPlayerPage } from "./pages/LearnPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
@@ -76,6 +77,7 @@ function App() {
           <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
           <Route path="/kits" element={<ProtectedRoute><KitsPage /></ProtectedRoute>} />
           <Route path="/kits/:id" element={<ProtectedRoute><KitDetailPage /></ProtectedRoute>} />
+          <Route path="/robo-race" element={<ProtectedRoute><RoboRacePage /></ProtectedRoute>} />
           <Route path="/learn" element={<ProtectedRoute><LearnPage /></ProtectedRoute>} />
           <Route path="/learn/:courseId" element={<ProtectedRoute><LearnPage /></ProtectedRoute>} />
           <Route path="/learn/:courseId/:videoId" element={<ProtectedRoute><VideoPlayerPage /></ProtectedRoute>} />

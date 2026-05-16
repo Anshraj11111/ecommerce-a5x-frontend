@@ -8,7 +8,7 @@ import useCartStore from "../../stores/useCartStore";
 import useWishlistStore from "../../stores/useWishlistStore";
 import useAuthStore from "../../stores/useAuthStore";
 import useAuthModalStore from "../../stores/useAuthModalStore";
-import useScrolled from "../../hooks/useScrolled";
+import { useScrolled } from "../../hooks/useScrolled";
 
 function Navbar() {
   const scrolled = useScrolled();
@@ -31,6 +31,7 @@ function Navbar() {
     { label: "Home", to: "/" },
     { label: "Shop", to: "/shop", dropdown: ["All Products", "Microcontrollers", "Sensors", "Motor Drivers"] },
     { label: "Kits", to: "/kits", dropdown: ["Starter Kit", "Pro Kits", "Elite Kits"] },
+   
     { label: "Learn", to: "/learn", dropdown: ["All Courses", "Robotics", "IoT"] },
     { label: "About", to: "/about" },
     { label: "Contact", to: "/contact" },

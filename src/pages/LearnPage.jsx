@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Check, ChevronLeft, ChevronRight, ListVideo, Play, Upload } from "lucide-react";
 import useAdminStore from "../stores/useAdminStore";
 import ProductCard from "../components/common/ProductCard";
-import useWatchProgress from "../hooks/useWatchProgress";
+import { useWatchProgress } from "../hooks/useWatchProgress";
 import { courseCategories, seconds } from "../config/constants";
 import learnGrid from "../assets/learn-grid.jpg";
 import a5xCarKit from "../assets/a5x-car-kit.jpg";

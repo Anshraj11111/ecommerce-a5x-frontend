@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-function useScrolled() {
+export function useScrolled() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -10,5 +10,3 @@ function useScrolled() {
   }, []);
   return scrolled;
 }
-
-export default useScrolled;

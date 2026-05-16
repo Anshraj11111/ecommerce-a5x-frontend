@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function useFileUpload({ types = [], maxMb = 5 } = {}) {
+export function useFileUpload({ types = [], maxMb = 5 } = {}) {
   const [state, setState] = useState({ progress: 0, previewUrl: "", storedKey: "", error: "", duration: 0 });
   const upload = (file) => {
     if (!file) return;
@@ -10,6 +10,7 @@ function useFileUpload({ types = [], maxMb = 5 } = {}) {
     const storedKey = `a5x-upload-${Date.now()}-${file.name}`;
     setState({ progress: 12, previewUrl: "", storedKey, error: "", duration: 0 });
     
+    // Convert image to Base64 for database storage
     const reader = new FileReader();
     reader.onloadstart = () => {
       setState((current) => ({ ...current, progress: 20 }));
@@ -24,6 +25,7 @@ function useFileUpload({ types = [], maxMb = 5 } = {}) {
       const base64String = e.target.result;
       setState({ progress: 100, previewUrl: base64String, storedKey, error: "", duration: 0 });
       
+      // If video, get duration
       if (file.type.includes("video")) {
         const video = document.createElement("video");
         video.preload = "metadata";
@@ -35,9 +37,8 @@ function useFileUpload({ types = [], maxMb = 5 } = {}) {
       setState({ progress: 0, previewUrl: "", storedKey: "", error: "Upload failed", duration: 0 });
     };
     
+    // Read file as Base64
     reader.readAsDataURL(file);
   };
   return { ...state, upload };
 }
-
-export default useFileUpload;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle, ChevronLeft, ChevronRight, Play, PlayCircle, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,41 +8,164 @@ import ButtonLink from "../components/common/ButtonLink";
 import KitCard from "../components/common/KitCard";
 import { inr } from "../config/constants";
 import a5xCarKit from "../assets/a5x-car-kit.jpg";
-import kitInnovation from "../assets/kit-innovation.jpg";
 import robotHands from "../assets/robot-hands.jpg";
 
 function KitsSection() {
   const kits = useAdminStore((state) => state.kits);
   const loadKits = useAdminStore((state) => state.loadKits);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
+  const [selectedAge, setSelectedAge] = useState('');
 
   useEffect(() => { loadKits(); }, []);
 
+  const categories = [
+    { id: 'all', name: 'All Kits', count: 12 },
+    { id: 'race', name: 'Race Bots', count: 3 },
+    { id: 'arm', name: 'Arm & Gripper', count: 4 },
+    { id: 'sensor', name: 'Sensor Kits', count: 5 },
+    { id: 'iot', name: 'IoT/Smart', count: 8 }
+  ];
+
+  const difficulties = [
+    { id: 'beginner', name: 'Beginner', class: 'beginner' },
+    { id: 'intermediate', name: 'Intermediate', class: 'intermediate' },
+    { id: 'advanced', name: 'Advanced', class: 'advanced' }
+  ];
+
+  const ageGroups = ['8-12 yrs', '12-16 yrs', '16+ yrs'];
+
   return (
-    <section className="kits-section neon-kits" id="kits">
-      <div className="kits-premium-hero">
-        <img className="kits-hero-art" src={kitInnovation} alt="" />
-        <div className="kits-hero-overlay" />
-        <div className="kits-hero-content">
-          <p className="eyebrow">A5X ROBOTICS</p>
-          <h1>PREMIUM<br /><em>ROBOTICS</em> KITS</h1>
-          <p className="kits-hero-sub">Engineered for builders. Every component matched, tested, and documented for real-world robotics.</p>
-          <div className="kits-hero-stats">
-            <div className="glass-card"><strong>{kits.length}</strong><span>Kits Available</span></div>
-            <div className="glass-card"><strong>100%</strong><span>Tested & Matched</span></div>
-            <div className="glass-card"><strong>24hr</strong><span>Dispatch Time</span></div>
+    <main className="kits-page-main">
+      <div className="kits-layout">
+        {/* Left Sidebar */}
+        <aside className="kits-sidebar">
+          <div className="sidebar-section">
+            <h3>Category</h3>
+            <div className="category-list">
+              {categories.map((category) => (
+                <div 
+                  key={category.id}
+                  className={`category-item ${selectedCategory === category.id ? 'active' : ''}`}
+                  onClick={() => setSelectedCategory(category.id)}
+                >
+                  <span>{category.name}</span>
+                  <span className="count">({category.count})</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <h3>Difficulty</h3>
+            <div className="difficulty-list">
+              {difficulties.map((difficulty) => (
+                <div 
+                  key={difficulty.id}
+                  className={`difficulty-item ${selectedDifficulty === difficulty.id ? 'active' : ''}`}
+                  onClick={() => setSelectedDifficulty(selectedDifficulty === difficulty.id ? '' : difficulty.id)}
+                >
+                  <span className={`dot ${difficulty.class}`}></span>
+                  <span>{difficulty.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <h3>Age Group</h3>
+            <div className="age-list">
+              {ageGroups.map((age) => (
+                <div 
+                  key={age}
+                  className={`age-item ${selectedAge === age ? 'active' : ''}`}
+                  onClick={() => setSelectedAge(selectedAge === age ? '' : age)}
+                >
+                  {age}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <h3>Price Range</h3>
+            <div className="price-range">
+              <div className="price-slider">
+                <div className="slider-track"></div>
+                <div className="slider-thumb left"></div>
+                <div className="slider-thumb right"></div>
+              </div>
+              <div className="price-labels">
+                <span>₹0</span>
+                <span>₹15,000</span>
+              </div>
+            </div>
+          </div>
+
+          <button className="apply-filters-btn">Apply Filters</button>
+        </aside>
+
+        {/* Main Content */}
+        <div className="kits-content">
+          {/* Header Controls - Moved to Right */}
+          <div className="kits-header">
+            <div className="breadcrumb-header">
+              <span>Home</span> &gt; <span>Kits</span>
+            </div>
+            <div className="view-controls">
+              <span>Newest</span>
+              <div className="view-icons">
+                <button className="view-btn active" title="Grid View">⊞</button>
+                <button className="view-btn" title="List View">☰</button>
+              </div>
+            </div>
+          </div>
+
+          {/* Featured Kit - ROBO RACE */}
+          <div className="featured-kit-banner">
+            <div className="featured-badge">🔥 Featured Kit</div>
+            <div className="featured-content">
+              <div className="featured-image">
+                <img src={robotHands} alt="Robo Race Kit" />
+              </div>
+              <div className="featured-info">
+                <h2>ROBO RACE</h2>
+                <p>Build It. Wire It. Code It. Race It.</p>
+                <div className="featured-specs">
+                  <span>ESP32</span>
+                  <span>L298N</span>
+                  <span>Chassis</span>
+                  <span>Bluetooth Connector</span>
+                </div>
+                <div className="featured-price">
+                  <span className="old-price">₹5,000</span>
+                  <span className="new-price">₹3,499</span>
+                </div>
+                <div className="featured-actions">
+                  <button className="launch-btn">Launch Offer</button>
+                  <ButtonLink to="/robo-race" className="build-btn">Build Race →</ButtonLink>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Kits Grid */}
+          <div className="kits-grid">
+            {kits.map((kit) => <KitCard key={kit.id} kit={kit} />)}
           </div>
         </div>
       </div>
-      <div className="kits-grid">{kits.map((kit) => <KitCard key={kit.id} kit={kit} />)}</div>
-      <div className="custom-kit">
-        <img src={robotHands} alt="" />
+
+      {/* Custom Kit Section */}
+      {/* <div className="custom-kit">
+        <img src={robotHands} alt="Custom Robotics Kit" />
         <div>
-          <h3>Need a custom kit?</h3>
-          <p>Tell us your build goal, classroom size, or competition spec. We will bundle the right components.</p>
-          <ButtonLink to="/contact">Request Custom Build</ButtonLink>
+          <h3>Need a Custom Robot Kit?</h3>
+          <p>Tell us your build goal, classroom size, or competition spec. We will bundle the right components for your robotics project.</p>
+          <ButtonLink to="/contact" className="btn">Request Custom Build</ButtonLink>
         </div>
-      </div>
-    </section>
+      </div> */}
+    </main>
   );
 }
 
@@ -167,7 +290,7 @@ function KitDetailPage() {
 }
 
 function KitsPage() {
-  return <main className="kits-page-wrap"><KitsSection /></main>;
+  return <KitsSection />;
 }
 
 export { KitsSection, KitDetailPage };

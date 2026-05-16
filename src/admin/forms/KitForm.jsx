@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useAdminStore from "../../stores/useAdminStore";
-import useFileUpload from "../../hooks/useFileUpload";
+import { useFileUpload } from "../../hooks/useFileUpload";
 import AdminPage from "../AdminPage";
 import FileDrop from "../FileDrop";
 
