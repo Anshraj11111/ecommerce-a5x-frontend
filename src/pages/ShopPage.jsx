@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import SEO from "../components/common/SEO";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronLeft, ChevronRight, Filter, Grid2X2, List,
@@ -267,7 +268,12 @@ function ShopSection() {
 }
 
 function ShopPage() {
-  return <main className="shop-page-main"><ShopSection /></main>;
+  return <main className="shop-page-main"><SEO
+    title="Shop Robotics Components — Arduino, ESP32, Sensors & Motors"
+    description="Buy 500+ robotics components online in India. Arduino, ESP32, sensors, motors, motor drivers, displays, cables and more. Fast shipping, competitive prices."
+    keywords="buy arduino india, esp32 module, sensors india, motor driver, robotics components online, buy electronics india"
+    url="/shop"
+  /><ShopSection /></main>;
 }
 
 export { ShopSection };

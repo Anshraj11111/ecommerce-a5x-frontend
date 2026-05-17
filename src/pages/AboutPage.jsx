@@ -1,4 +1,5 @@
 import React from "react";
+import SEO from "../components/common/SEO";
 import { Link } from "react-router-dom";
 import { Brain, CircuitBoard, Rocket, Shield, Star, Zap } from "lucide-react";
 import aboutArc from "../assets/about-arc.jpg";
@@ -43,7 +44,12 @@ function AboutPage() {
 
   return (
     <main className="about-page-new">
-      <div className="about-hero">
+      <SEO
+        title="About A5X Robotics — Jabalpur's Robotics & AI Education Hub"
+        description="A5X Robotics is Jabalpur's leading robotics and AI education company. We conduct hands-on workshops for school students, supply STEM kits, and support lab setup across Tier 2 India."
+        keywords="a5x robotics about, robotics education jabalpur, stem workshops india, robotics company madhya pradesh"
+        url="/about"
+      />
         <div className="about-hero-bg">
           <div className="about-hero-orb about-orb-1" />
           <div className="about-hero-orb about-orb-2" />

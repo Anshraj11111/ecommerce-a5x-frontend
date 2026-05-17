@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import SEO from "../components/common/SEO";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle, ChevronLeft, ChevronRight, Play, PlayCircle, X, Star } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -102,6 +103,19 @@ function KitsSection() {
 
   return (
     <main className="kits-page-main" style={{ backgroundImage: `url(${kitBg})` }}>
+      <SEO
+        title="Robotics Kits — Starter, Pro & Elite STEM Kits"
+        description="Buy complete robotics kits in India. Starter, Pro, and Elite STEM kits for students aged 8-16+. Arduino, ESP32, sensors included. Free shipping above ₹999."
+        keywords="robotics kits india, stem kit buy, arduino kit india, esp32 robotics kit, starter robotics kit, pro robotics kit"
+        url="/kits"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "A5X Robotics Kits",
+          "description": "Complete robotics kits for students and makers — Starter, Pro, and Elite tiers.",
+          "url": "https://shop.a5x.in/kits"
+        }}
+      />
       <div className="kits-layout">
         {/* Left Sidebar */}
         <aside className="kits-sidebar">
@@ -391,6 +405,36 @@ function KitDetailPage() {
 
   return (
     <main className="page kit-detail-page">
+      <SEO
+        title={`${kit.name} — ${kit.tier}`}
+        description={kit.description || `Buy ${kit.name} robotics kit online. ${kit.tier} — includes everything you need to build and learn.`}
+        keywords={`${kit.name}, ${kit.tier?.toLowerCase()}, robotics kit india, buy robotics kit, stem kit`}
+        url={`/kits/${kit.id}`}
+        image={kit.imageUrl || undefined}
+        type="product"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": kit.name,
+          "description": kit.description || "",
+          "image": kit.imageUrl || "",
+          "brand": { "@type": "Brand", "name": "A5X Robotics" },
+          "offers": {
+            "@type": "Offer",
+            "url": `https://shop.a5x.in/kits/${kit.id}`,
+            "priceCurrency": "INR",
+            "price": kit.price,
+            "availability": "https://schema.org/InStock",
+            "seller": { "@type": "Organization", "name": "A5X Robotics" }
+          },
+          "aggregateRating": kit.rating ? {
+            "@type": "AggregateRating",
+            "ratingValue": kit.rating,
+            "reviewCount": 5,
+            "bestRating": 5
+          } : undefined
+        }}
+      />
       <section className="kit-detail-hero">
         <div className="kit-detail-gallery" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ cursor: dragStart !== null ? 'grabbing' : 'grab', userSelect: 'none' }}>
           <AnimatePresence mode="wait">

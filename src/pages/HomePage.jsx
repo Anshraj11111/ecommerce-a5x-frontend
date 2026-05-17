@@ -1,4 +1,5 @@
 import React from "react";
+import SEO from "../components/common/SEO";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Brain, CheckCircle, CircuitBoard, Cpu, Package, Rocket, ShoppingCart, Star, Truck } from "lucide-react";
@@ -314,6 +315,22 @@ function Newsletter() {
 function HomePage() {
   return (
     <main>
+      <SEO
+        title="Buy Robotics Kits, Arduino, ESP32 & Sensors in India"
+        description="A5X Robotics — India's premier robotics store. Buy Arduino kits, ESP32 modules, sensors, motors, and complete STEM robotics kits. Free shipping above ₹999. Trusted by 10,000+ makers."
+        keywords="robotics kits india, buy arduino india, esp32 kit, stem robotics kit, robotics store india, arduino sensors, motor driver, robotics workshop jabalpur"
+        url="/"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "A5X Robotics — Featured Categories",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Robotics Kits", "url": "https://shop.a5x.in/kits" },
+            { "@type": "ListItem", "position": 2, "name": "Microcontrollers", "url": "https://shop.a5x.in/shop" },
+            { "@type": "ListItem", "position": 3, "name": "Sensors", "url": "https://shop.a5x.in/shop" }
+          ]
+        }}
+      />
       <Hero />
       <TrustBar />
       <PopularCategories />

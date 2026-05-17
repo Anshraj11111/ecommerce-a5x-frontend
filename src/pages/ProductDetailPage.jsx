@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import SEO from "../components/common/SEO";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Check, CheckCircle, ChevronRight, Heart, MessageSquare, Minus, Package, Plus, Shield, ShoppingCart, Star, Truck, X, Zap } from "lucide-react";
 import useAdminStore from "../stores/useAdminStore";
@@ -104,6 +105,37 @@ function ProductDetailPage() {
 
   return (
     <main className="page product-detail-page">
+      <SEO
+        title={`${product.name} — Buy Online`}
+        description={product.shortDescription || product.description || `Buy ${product.name} online at A5X Robotics. Best price in India with fast shipping.`}
+        keywords={`${product.name}, ${product.category}, buy ${product.category} india, robotics components`}
+        url={`/shop/${product.id}`}
+        image={product.imageUrl || undefined}
+        type="product"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": product.name,
+          "description": product.shortDescription || product.description || "",
+          "image": product.imageUrl || "",
+          "sku": product.sku || product.id,
+          "brand": { "@type": "Brand", "name": "A5X Robotics" },
+          "offers": {
+            "@type": "Offer",
+            "url": `https://shop.a5x.in/shop/${product.id}`,
+            "priceCurrency": "INR",
+            "price": product.price,
+            "availability": product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            "seller": { "@type": "Organization", "name": "A5X Robotics" }
+          },
+          "aggregateRating": product.rating ? {
+            "@type": "AggregateRating",
+            "ratingValue": product.rating,
+            "reviewCount": product.reviewCount || 1,
+            "bestRating": 5
+          } : undefined
+        }}
+      />
       <nav className="breadcrumb">
         <Link to="/shop">Shop</Link><ChevronRight size={16} />
         <Link to={`/shop?cat=${product.category}`}>{product.category}</Link><ChevronRight size={16} />

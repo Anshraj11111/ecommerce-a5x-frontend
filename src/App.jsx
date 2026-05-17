@@ -70,7 +70,6 @@ function App() {
     loadProducts();
     loadKits();
   }, []);
-
   return (
     <BrowserRouter>
       <ScrollToTop />

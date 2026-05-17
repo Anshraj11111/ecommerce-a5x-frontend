@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import SEO from "../components/common/SEO";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, RefreshCw, User } from "lucide-react";
 import useAuthStore from "../stores/useAuthStore";
@@ -42,6 +43,12 @@ function LoginPage() {
 
   return (
     <main style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr', fontFamily: 'Inter, sans-serif', position: 'relative', overflow: 'hidden' }}>
+      <SEO
+        title="Login or Sign Up — A5X Robotics"
+        description="Sign in or create your A5X Robotics account to shop robotics kits, track orders, and access the A5X Academy courses."
+        url="/login"
+        noIndex={false}
+      />
       {/* Left Side - Login Form */}
       <div style={{ background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
         <div style={{ width: '100%', maxWidth: '400px' }}>

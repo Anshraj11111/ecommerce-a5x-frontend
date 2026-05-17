@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import SEO from "../components/common/SEO";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Check, ChevronLeft, ChevronRight, ListVideo, Play, Upload } from "lucide-react";
 import useAdminStore from "../stores/useAdminStore";
@@ -204,6 +205,20 @@ function LearnPage() {
 
   return (
     <main className="learn-page-new">
+      <SEO
+        title="A5X Academy — Free Robotics & AI Video Courses"
+        description="Learn robotics and AI for free with A5X Academy. Step-by-step video courses on Arduino, ESP32, sensors, and building autonomous robots. Beginner to advanced."
+        keywords="free robotics courses india, learn arduino online, esp32 tutorial, robotics video course, a5x academy"
+        url="/learn"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "EducationalOrganization",
+          "name": "A5X Academy",
+          "url": "https://shop.a5x.in/learn",
+          "description": "Free robotics and AI video courses for students and makers.",
+          "provider": { "@type": "Organization", "name": "A5X Robotics" }
+        }}
+      />
       <div className="learn-hero-new">
         <div className="learn-hero-bg">
           <div className="learn-hero-orb learn-hero-orb-1" /><div className="learn-hero-orb learn-hero-orb-2" /><div className="learn-hero-grid" />

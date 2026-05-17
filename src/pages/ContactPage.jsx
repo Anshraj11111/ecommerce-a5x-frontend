@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SEO from "../components/common/SEO";
 import robotHandshake from "../assets/robot-handshake.jpg";
 import { API_BASE } from "../config/constants";
 
@@ -63,6 +64,12 @@ function ContactPage() {
 
   return (
     <main className="contact-page">
+      <SEO
+        title="Contact A5X Robotics — Partner for Workshops & Bulk Orders"
+        description="Contact A5X Robotics for robotics workshops, school lab setup, bulk component orders, or custom kit requests. Based in Jabalpur, serving schools across India."
+        keywords="contact a5x robotics, robotics workshop inquiry, bulk robotics order, school lab setup india"
+        url="/contact"
+      />
       <section className="contact-form glass-card">
         <p className="eyebrow">CONTACT</p>
         <h1>Let's Build Together</h1>
