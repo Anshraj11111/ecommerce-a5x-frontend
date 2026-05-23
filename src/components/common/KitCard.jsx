@@ -35,9 +35,15 @@ function KitCard({ kit, listView }) {
     <Link to={`/kits/${kit.id}`} className="kit-card-v2" style={{ textDecoration: 'none', color: 'inherit' }}>
       {/* Image - fixed height, object-fit cover */}
       <div className="kit-card-v2-img">
-        <img src={kit.imageUrl || kitInnovation} alt={kit.name} />
+        <img
+          src={kit.imageUrl || kitInnovation}
+          alt={kit.name}
+          loading="lazy"
+          decoding="async"
+          width="300"
+          height="160"
+        />
         <span className={`kit-card-v2-tier tier ${kit.tier.toLowerCase().split(" ")[0]}`}>{kit.tier}</span>
-        <span className="kit-card-v2-rating">★ {kit.rating}</span>
       </div>
 
       {/* Body */}
@@ -48,9 +54,12 @@ function KitCard({ kit, listView }) {
         {/* Description - max 2 lines, truncated */}
         <p className="kit-card-v2-desc">{kit.description}</p>
 
-        {/* Footer: price + button */}
+        {/* Footer: price + rating + button */}
         <div className="kit-card-v2-footer">
-          <div className="kit-card-v2-price">{inr(Number(kit.price))}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <div className="kit-card-v2-price">{inr(Number(kit.price))}</div>
+            <span style={{ color: '#fbbf24', fontSize: '11px', fontWeight: '700' }}>★ {kit.rating}</span>
+          </div>
           <button
             className="kit-card-v2-btn"
             onClick={(e) => {

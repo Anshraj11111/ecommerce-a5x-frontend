@@ -305,6 +305,8 @@ const useAdminStore = create(persist((set, get) => ({
   },
 
   loadKits: async () => {
+    const { kitsLoaded } = get();
+    if (kitsLoaded) return; // already loaded, skip
     try {
       const response = await fetch(`${API_BASE}/api/kits?limit=1000`);
       const data = await response.json();

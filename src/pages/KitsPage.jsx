@@ -22,8 +22,12 @@ function KitsSection() {
   const [priceRange, setPriceRange] = useState([0, 15000]);
   const [sortBy, setSortBy] = useState('newest');
   const [viewMode, setViewMode] = useState('grid');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => { loadKits(); }, []);
+  useEffect(() => {
+    // Only load if not already loaded
+    if (kits.length === 0) loadKits();
+  }, []);
 
   // Derive max price from actual kits
   const maxPrice = kits.length > 0 ? Math.max(...kits.map(k => Number(k.price) || 0), 15000) : 15000;
@@ -116,8 +120,121 @@ function KitsSection() {
           "url": "https://shop.a5x.in/kits"
         }}
       />
+
+      {/* Mobile sidebar overlay — rendered at top level, above everything */}
+      {sidebarOpen && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)',
+            zIndex: 9998
+          }}
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mobile sidebar drawer — rendered at top level */}
+      <aside
+        style={{
+          position: 'fixed',
+          top: 0, left: 0,
+          width: 'min(300px, 85vw)',
+          height: '100vh',
+          background: '#0c1220',
+          borderRight: '1px solid rgba(0,229,255,0.2)',
+          boxShadow: '4px 0 40px rgba(0,0,0,0.9)',
+          zIndex: 9999,
+          overflowY: 'auto',
+          padding: '56px 16px 24px',
+          transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.3s ease',
+          backdropFilter: 'none',
+        }}
+      >
+        {/* Close button */}
+        <button
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: '#8A9BB5', cursor: 'pointer', fontSize: '24px', lineHeight: 1 }}
+          aria-label="Close filters"
+        >×</button>
+
+        <div className="sidebar-section">
+          <h3>Category</h3>
+          <div className="category-list">
+            {categories.map((category) => (
+              <div
+                key={category.id}
+                className={`category-item ${selectedCategory === category.id ? 'active' : ''}`}
+                onClick={() => { setSelectedCategory(category.id); setSidebarOpen(false); }}
+              >
+                <span>{category.name}</span>
+                <span className="count">({category.count})</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="sidebar-section">
+          <h3>Difficulty</h3>
+          <div className="difficulty-list">
+            {difficulties.map((difficulty) => (
+              <div
+                key={difficulty.id}
+                className={`difficulty-item ${selectedDifficulty === difficulty.id ? 'active' : ''}`}
+                onClick={() => setSelectedDifficulty(selectedDifficulty === difficulty.id ? '' : difficulty.id)}
+              >
+                <span className={`dot ${difficulty.class}`}></span>
+                <span>{difficulty.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="sidebar-section">
+          <h3>Age Group</h3>
+          <div className="age-list">
+            {ageGroups.map((age) => (
+              <div
+                key={age}
+                className={`age-item ${selectedAge === age ? 'active' : ''}`}
+                onClick={() => setSelectedAge(selectedAge === age ? '' : age)}
+              >
+                {age}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="sidebar-section">
+          <h3>Price Range</h3>
+          <div style={{ padding: '0 4px' }}>
+            <input
+              type="range"
+              min={0}
+              max={maxPrice}
+              step={100}
+              value={priceRange[1]}
+              onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+              style={{ width: '100%', accentColor: '#00e5ff', cursor: 'pointer' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
+              <span style={{ color: '#8A9BB5', fontSize: '13px' }}>₹{priceRange[0].toLocaleString()}</span>
+              <span style={{ color: '#00e5ff', fontSize: '13px', fontWeight: '600' }}>₹{priceRange[1].toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+
+        {hasActiveFilters && (
+          <button
+            onClick={() => { resetFilters(); setSidebarOpen(false); }}
+            style={{ width: '100%', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: '6px', padding: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+          >
+            Clear Filters
+          </button>
+        )}
+      </aside>
+
       <div className="kits-layout">
-        {/* Left Sidebar */}
+        {/* Left Sidebar — desktop only, mobile uses the top-level drawer above */}
         <aside className="kits-sidebar">
           <div className="sidebar-section">
             <h3>Category</h3>
@@ -200,13 +317,24 @@ function KitsSection() {
         <div className="kits-content">
           {/* Header Controls */}
           <div className="kits-header">
-            <div className="breadcrumb-header">
-              <span>Home</span> &gt; <span>Kits</span>
-              {hasActiveFilters && (
-                <span style={{ color: '#00e5ff', marginLeft: '8px', fontSize: '13px' }}>
-                  · {filteredKits.length} result{filteredKits.length !== 1 ? 's' : ''}
-                </span>
-              )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              {/* Mobile filter toggle */}
+              <button
+                className="kits-filter-toggle"
+                onClick={() => setSidebarOpen(true)}
+              >
+                ⚙ Filters {hasActiveFilters && `(${[selectedCategory !== 'all', selectedDifficulty, selectedAge, priceRange[1] < maxPrice].filter(Boolean).length})`}
+              </button>
+              <span className="breadcrumb-header">
+                <span style={{ color: '#8A9BB5' }}>Home</span>
+                <span style={{ color: '#8A9BB5', margin: '0 4px' }}>&gt;</span>
+                <span style={{ color: '#00f5ff', fontWeight: 600 }}>Kits</span>
+                {hasActiveFilters && (
+                  <span style={{ color: '#00e5ff', marginLeft: '8px', fontSize: '13px' }}>
+                    · {filteredKits.length} result{filteredKits.length !== 1 ? 's' : ''}
+                  </span>
+                )}
+              </span>
             </div>
             <div className="view-controls">
               <select
@@ -436,37 +564,70 @@ function KitDetailPage() {
         }}
       />
       <section className="kit-detail-hero">
-        <div className="kit-detail-gallery" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ cursor: dragStart !== null ? 'grabbing' : 'grab', userSelect: 'none' }}>
-          <AnimatePresence mode="wait">
-            <motion.img key={activeSlide} src={galleryImages[activeSlide]} alt={kit.name} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5 }} draggable={false}
-              style={zoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`, transform: 'scale(2.2)', transition: 'transform 0.1s ease', cursor: 'zoom-out' } : { cursor: 'zoom-in' }}
+        {/* Gallery + Thumbnails column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {/* Main gallery */}
+          <div className="kit-detail-gallery" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ cursor: dragStart !== null ? 'grabbing' : 'grab', userSelect: 'none' }}>
+            <AnimatePresence mode="wait">
+              <motion.img key={activeSlide} src={galleryImages[activeSlide]} alt={kit.name} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5 }} draggable={false}
+                style={zoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`, transform: 'scale(2.5)', transition: 'transform 0.1s ease', cursor: 'zoom-out' } : { cursor: 'zoom-in' }}
+              />
+            </AnimatePresence>
+            {/* Zoom overlay */}
+            <div
+              style={{ position: 'absolute', inset: 0, zIndex: 8, overflow: 'hidden', cursor: zoomed ? 'zoom-out' : 'zoom-in' }}
+              onMouseEnter={() => setZoomed(true)}
+              onMouseLeave={() => setZoomed(false)}
+              onMouseMove={handleZoomMove}
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
             />
-          </AnimatePresence>
-          {/* Zoom overlay - captures mouse events when zoomed */}
-          <div
-            style={{ position: 'absolute', inset: 0, zIndex: zoomed ? 8 : 0, overflow: 'hidden' }}
-            onMouseEnter={() => setZoomed(true)}
-            onMouseLeave={() => { setZoomed(false); }}
-            onMouseMove={handleZoomMove}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-          />
-          {/* Zoom hint */}
-          {!zoomed && (
-            <div style={{ position: 'absolute', bottom: '60px', right: '12px', background: 'rgba(0,0,0,0.6)', color: 'rgba(255,255,255,0.8)', fontSize: '11px', padding: '4px 8px', borderRadius: '4px', pointerEvents: 'none', zIndex: 6 }}>
-              🔍 Hover to zoom
-            </div>
-          )}
-          <button onClick={prevSlide} style={{ ...navBtnStyle, left: '20px' }}><ChevronLeft size={28} /></button>
-          <button onClick={nextSlide} style={{ ...navBtnStyle, right: '20px' }}><ChevronRight size={28} /></button>
-          <div className="kit-gallery-dots">
-            {galleryImages.slice(0, 8).map((_, i) => <button key={i} className={i === activeSlide % 8 ? 'active' : ''} onClick={() => setActiveSlide(i)} />)}
+            {/* Zoom hint */}
+            {!zoomed && (
+              <div style={{ position: 'absolute', bottom: '60px', right: '12px', background: 'rgba(0,0,0,0.6)', color: 'rgba(255,255,255,0.8)', fontSize: '11px', padding: '4px 8px', borderRadius: '4px', pointerEvents: 'none', zIndex: 6 }}>
+                🔍 Hover to zoom
+              </div>
+            )}
+            <button onClick={prevSlide} style={{ ...navBtnStyle, left: '20px', zIndex: 9 }}><ChevronLeft size={28} /></button>
+            <button onClick={nextSlide} style={{ ...navBtnStyle, right: '20px', zIndex: 9 }}><ChevronRight size={28} /></button>
+            <div className="kit-gallery-glow" />
+            {hasVideo && (
+              <button className="kit-video-play-btn" onClick={() => setShowVideo(true)} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}>
+                <Play size={32} style={{ marginLeft: '4px' }} />
+              </button>
+            )}
           </div>
-          <div className="kit-gallery-glow" />
-          {hasVideo && (
-            <button className="kit-video-play-btn" onClick={() => setShowVideo(true)} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}>
-              <Play size={32} style={{ marginLeft: '4px' }} />
-            </button>
+
+          {/* Thumbnail strip — Amazon style */}
+          {galleryImages.length > 1 && (
+            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '4px 0', scrollbarWidth: 'thin' }}>
+              {galleryImages.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveSlide(i)}
+                  style={{
+                    flexShrink: 0,
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    border: i === activeSlide ? '2px solid #00e5ff' : '2px solid rgba(255,255,255,0.15)',
+                    background: 'rgba(255,255,255,0.05)',
+                    padding: 0,
+                    cursor: 'pointer',
+                    transition: 'border-color 0.2s',
+                    boxShadow: i === activeSlide ? '0 0 10px rgba(0,229,255,0.4)' : 'none',
+                  }}
+                >
+                  <img
+                    src={img}
+                    alt={`${kit.name} view ${i + 1}`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    loading="lazy"
+                  />
+                </button>
+              ))}
+            </div>
           )}
         </div>
 

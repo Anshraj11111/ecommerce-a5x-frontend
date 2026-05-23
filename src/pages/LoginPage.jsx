@@ -99,81 +99,107 @@ function LoginPage() {
               </div>
             )}
             
-            <div>
-              <label style={{ fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px', display: 'block' }}>Email</label>
-              <input 
-                name="email" 
-                type="email" 
-                value={formData.email} 
-                onChange={handleChange} 
-                placeholder="admin@a5xrobotics.com" 
-                required 
-                style={{ 
-                  width: '100%', 
-                  background: '#f1f5f9', 
-                  border: '1px solid #d1d5db', 
-                  borderRadius: '8px', 
-                  color: '#1f2937 !important', 
-                  padding: '12px 16px', 
-                  fontSize: '16px', 
-                  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', 
-                  fontWeight: '500',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                  WebkitTextFillColor: '#1f2937',
-                  WebkitAppearance: 'none'
-                }} 
-              />
-            </div>
+           <div>
+  <label
+    style={{
+      fontSize: '14px',
+      fontWeight: 500,
+      color: '#374151',
+      marginBottom: '6px',
+      display: 'block',
+      
+    }}
+  >
+    Email
+  </label>
+
+  <input
+    name="email"
+    type="email"
+    value={formData.email}
+    onChange={handleChange}
+    placeholder="xyz@gmail.com"
+    required
+    className="custom-input"
+    style={{
+      width: '100%',
+      background: '#f1f5f9',
+      border: '1px solid #d1d5db',
+      borderRadius: '8px',
+      color: '#111827', // typed text dark
+      padding: '12px 16px',
+      fontSize: '16px',
+      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+      fontWeight: '500',
+      outline: 'none',
+      boxSizing: 'border-box',
+      WebkitTextFillColor: '#111827',
+      WebkitAppearance: 'none'
+    }}
+  />
+</div>
             
             <div>
-              <label style={{ fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px', display: 'block' }}>Password</label>
-              <div style={{ position: 'relative' }}>
-                <input 
-                  name="password" 
-                  type={showPassword ? 'text' : 'password'} 
-                  value={formData.password} 
-                  onChange={handleChange} 
-                  placeholder="••••••••••" 
-                  required 
-                  style={{ 
-                    width: '100%', 
-                    background: '#f1f5f9', 
-                    border: '1px solid #d1d5db', 
-                    borderRadius: '8px', 
-                    color: '#1f2937 !important', 
-                    padding: '12px 16px', 
-                    paddingRight: '45px',
-                    fontSize: '16px', 
-                    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', 
-                    fontWeight: '500',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    WebkitTextFillColor: '#1f2937',
-                    WebkitAppearance: 'none'
-                  }} 
-                />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)} 
-                  style={{ 
-                    position: 'absolute', 
-                    right: '12px', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)', 
-                    background: 'none', 
-                    border: 'none', 
-                    color: '#6b7280', 
-                    cursor: 'pointer', 
-                    padding: '4px', 
-                    display: 'flex', 
-                    alignItems: 'center' 
-                  }}
-                >
-                  <Eye size={16} />
-                </button>
-              </div>
-            </div>
+  <label
+    style={{
+      fontSize: '14px',
+      fontWeight: 500,
+      color: '#374151',
+      marginBottom: '6px',
+      display: 'block'
+    }}
+  >
+    Password
+  </label>
+
+  <div style={{ position: 'relative' }}>
+    <input
+      name="password"
+      type={showPassword ? 'text' : 'password'}
+      value={formData.password}
+      onChange={handleChange}
+      placeholder="••••••••••"
+      required
+      className="custom-input"
+      style={{
+        width: '100%',
+        background: '#f1f5f9',
+        border: '1px solid #d1d5db',
+        borderRadius: '8px',
+        color: '#111827',
+        padding: '12px 16px',
+        paddingRight: '45px',
+        fontSize: '16px',
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+        fontWeight: '500',
+        outline: 'none',
+        boxSizing: 'border-box',
+        WebkitTextFillColor: '#111827',
+        WebkitAppearance: 'none'
+      }}
+    />
+
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      style={{
+        position: 'absolute',
+        right: '12px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        background: 'none',
+        border: 'none',
+        color: '#6b7280',
+        cursor: 'pointer',
+        padding: '4px',
+        display: 'flex',
+        alignItems: 'center'
+      }}
+    >
+      <Eye size={16} />
+    </button>
+  </div>
+</div>
 
             {!isLogin && (
               <div>
