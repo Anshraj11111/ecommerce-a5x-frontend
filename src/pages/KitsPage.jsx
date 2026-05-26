@@ -568,20 +568,37 @@ function KitDetailPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {/* Main gallery */}
           <div className="kit-detail-gallery" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ cursor: dragStart !== null ? 'grabbing' : 'grab', userSelect: 'none' }}>
-            <AnimatePresence mode="wait">
-              <motion.img key={activeSlide} src={galleryImages[activeSlide]} alt={kit.name} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5 }} draggable={false}
-                style={zoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`, transform: 'scale(2.5)', transition: 'transform 0.1s ease', cursor: 'zoom-out' } : { cursor: 'zoom-in' }}
-              />
-            </AnimatePresence>
-            {/* Zoom overlay */}
+            {/* Zoom wrapper — transform applied here, not on motion.img to avoid Framer conflict */}
             <div
-              style={{ position: 'absolute', inset: 0, zIndex: 8, overflow: 'hidden', cursor: zoomed ? 'zoom-out' : 'zoom-in' }}
+              style={{
+                position: 'absolute', inset: 0, zIndex: 2,
+                overflow: 'hidden',
+                cursor: zoomed ? 'zoom-out' : 'zoom-in',
+              }}
               onMouseEnter={() => setZoomed(true)}
               onMouseLeave={() => setZoomed(false)}
               onMouseMove={handleZoomMove}
-              onMouseDown={handleMouseDown}
-              onMouseUp={handleMouseUp}
-            />
+            >
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeSlide}
+                  src={galleryImages[activeSlide]}
+                  alt={kit.name}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  draggable={false}
+                  style={{
+                    width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+                    transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                    transform: zoomed ? 'scale(2.5)' : 'scale(1)',
+                    transition: zoomed ? 'transform 0.1s ease' : 'transform 0.3s ease',
+                    willChange: 'transform',
+                  }}
+                />
+              </AnimatePresence>
+            </div>
             {/* Zoom hint */}
             {!zoomed && (
               <div style={{ position: 'absolute', bottom: '60px', right: '12px', background: 'rgba(0,0,0,0.6)', color: 'rgba(255,255,255,0.8)', fontSize: '11px', padding: '4px 8px', borderRadius: '4px', pointerEvents: 'none', zIndex: 6 }}>

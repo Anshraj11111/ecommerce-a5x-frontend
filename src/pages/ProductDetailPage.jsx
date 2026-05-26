@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SEO from "../components/common/SEO";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Check, CheckCircle, ChevronRight, Heart, MessageSquare, Minus, Package, Plus, Shield, ShoppingCart, Star, Truck, X, Zap } from "lucide-react";
@@ -23,6 +23,7 @@ function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [zoomed, setZoomed] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [activeImg, setActiveImg] = useState(0);
   const [reviews, setReviews] = useState([]);
   const [reviewForm, setReviewForm] = useState({ name: '', email: '', rating: 5, comment: '' });
   const [submittingReview, setSubmittingReview] = useState(false);
@@ -32,6 +33,7 @@ function ProductDetailPage() {
     if (id) {
       addRecent(id);
       window.scrollTo(0, 0);
+      setActiveImg(0);
       // Fetch real reviews from API
       fetch(`${API_BASE}/api/reviews/product/${id}`)
         .then(r => r.json())
@@ -39,6 +41,36 @@ function ProductDetailPage() {
         .catch(() => setReviews([]));
     }
   }, [id]);
+
+  // Build images array: primary + extra images
+  const allImages = [
+    product?.imageUrl || motorDriver,
+    ...(product?.images || []).filter(Boolean)
+  ].filter((img, idx, arr) => arr.indexOf(img) === idx); // deduplicate
+
+  // Auto-advance carousel every 16 seconds
+  const autoRef = useRef(null);
+  useEffect(() => {
+    if (allImages.length <= 1) return;
+    autoRef.current = setInterval(() => {
+      setActiveImg(prev => (prev + 1) % allImages.length);
+    }, 16000);
+    return () => clearInterval(autoRef.current);
+  }, [allImages.length]);
+
+  const goToImg = (idx) => {
+    setActiveImg(idx);
+    // Reset timer on manual navigation
+    clearInterval(autoRef.current);
+    if (allImages.length > 1) {
+      autoRef.current = setInterval(() => {
+        setActiveImg(prev => (prev + 1) % allImages.length);
+      }, 16000);
+    }
+  };
+
+  const prevImg = () => goToImg((activeImg - 1 + allImages.length) % allImages.length);
+  const nextImg = () => goToImg((activeImg + 1) % allImages.length);
 
   if (!product) return (
     <main className="page">
@@ -145,9 +177,99 @@ function ProductDetailPage() {
       {/* Hero */}
       <section className="pd-hero">
         <div className="pd-gallery">
-          <div className={`pd-main-image ${zoomed ? "zoomed" : ""}`} onMouseEnter={() => setZoomed(true)} onMouseLeave={() => setZoomed(false)} onMouseMove={handleImgMouse}>
-            <img src={product.imageUrl || motorDriver} alt={product.name} style={zoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`, transform: "scale(2)" } : {}} />
+          {/* Carousel Main Image */}
+          <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(0,229,255,0.12)' }}>
+            <div
+              className={`pd-main-image ${zoomed ? "zoomed" : ""}`}
+              onMouseEnter={() => setZoomed(true)}
+              onMouseLeave={() => setZoomed(false)}
+              onMouseMove={handleImgMouse}
+            >
+              <img
+                src={allImages[activeImg]}
+                alt={`${product.name} - image ${activeImg + 1}`}
+                style={zoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`, transform: "scale(2)" } : {}}
+              />
+            </div>
+
+            {/* Prev / Next arrows — only show if multiple images */}
+            {allImages.length > 1 && (
+              <>
+                <button
+                  onClick={prevImg}
+                  aria-label="Previous image"
+                  style={{
+                    position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)',
+                    background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(0,229,255,0.3)',
+                    borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer',
+                    color: '#00e5ff', fontSize: '18px', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', zIndex: 10, backdropFilter: 'blur(4px)',
+                    transition: 'background 0.2s'
+                  }}
+                >‹</button>
+                <button
+                  onClick={nextImg}
+                  aria-label="Next image"
+                  style={{
+                    position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                    background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(0,229,255,0.3)',
+                    borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer',
+                    color: '#00e5ff', fontSize: '18px', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', zIndex: 10, backdropFilter: 'blur(4px)',
+                    transition: 'background 0.2s'
+                  }}
+                >›</button>
+
+                {/* Dot indicators */}
+                <div style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px', zIndex: 10 }}>
+                  {allImages.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => goToImg(i)}
+                      aria-label={`Go to image ${i + 1}`}
+                      style={{
+                        width: i === activeImg ? '20px' : '8px',
+                        height: '8px',
+                        borderRadius: '4px',
+                        background: i === activeImg ? '#00e5ff' : 'rgba(255,255,255,0.35)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: 0,
+                        transition: 'all 0.3s ease'
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
+
+          {/* Thumbnail strip */}
+          {allImages.length > 1 && (
+            <div style={{ display: 'flex', gap: '8px', marginTop: '12px', overflowX: 'auto', paddingBottom: '4px' }}>
+              {allImages.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => goToImg(i)}
+                  aria-label={`View image ${i + 1}`}
+                  style={{
+                    flexShrink: 0,
+                    width: '64px', height: '64px',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    border: i === activeImg ? '2px solid #00e5ff' : '2px solid rgba(255,255,255,0.1)',
+                    background: 'rgba(255,255,255,0.04)',
+                    cursor: 'pointer',
+                    padding: 0,
+                    transition: 'border-color 0.2s'
+                  }}
+                >
+                  <img src={img} alt={`Thumbnail ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="pd-image-badges">{product.badges?.map((b) => <span key={b} className="image-badge">{b}</span>)}</div>
         </div>
 
