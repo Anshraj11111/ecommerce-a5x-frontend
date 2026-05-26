@@ -14,6 +14,7 @@ import motorDriver from "../assets/motor-driver.jpg";
 import unit003Hero from "../assets/team/unit003.jpeg";
 import holoPrism from "../assets/holo-prism.png";
 import silhouetteFigure from "../assets/silhouette-figure.png";
+import silhouetteFigure1 from "../assets/silhouette-figure1.png";
 import cyberAndroid from "../assets/cyber-android.jpg";
 import robotHands from "../assets/robot-hands.jpg";
 import futureBg from "../assets/team/future-bg.jpg";
@@ -198,7 +199,7 @@ function HomeAboutA5X() {
         <motion.div variants={scrollReveal}><ButtonLink to="/contact">Partner With Us →</ButtonLink></motion.div>
       </motion.div>
       <motion.div className="about-image-panel" initial={{ opacity: 0, y: 60, rotate: 2 }} whileInView={{ opacity: 1, y: 0, rotate: 0 }} viewport={{ once: true }} transition={{ duration: 0.9, ease: [.22,1,.36,1] }} whileHover={{ scale: 1.02, transition: { duration: 0.4 } }}>
-        <img src={silhouetteFigure} alt="Silhouette figure" />
+        <img src={silhouetteFigure1} alt="Silhouette figure" />
         <span className="about-unit-label">[ UNIT 001 ]</span>
       </motion.div>
     </section>
