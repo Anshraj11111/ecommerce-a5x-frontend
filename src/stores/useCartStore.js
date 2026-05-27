@@ -5,11 +5,24 @@ import { persist } from "zustand/middleware";
 let _showToast = null;
 export function setToastFn(fn) { _showToast = fn; }
 
+// Auth check function — set from App.jsx to avoid circular deps
+let _isAuthenticated = () => false;
+let _openAuthModal = null;
+export function setAuthCheckFn(isAuthFn, openModalFn) {
+  _isAuthenticated = isAuthFn;
+  _openAuthModal = openModalFn;
+}
+
 const useCartStore = create(persist((set, get) => ({
   open: false,
   items: [],
   toggle: () => set((s) => ({ open: !s.open })),
   add: (product) => {
+    // If not logged in, open auth modal instead of adding to cart
+    if (!_isAuthenticated()) {
+      if (_openAuthModal) _openAuthModal(null);
+      return;
+    }
     set((s) => {
       const existing = s.items.find((i) => i.id === product.id);
       if (existing) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SEO from "../components/common/SEO";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, RefreshCw, User } from "lucide-react";
 import useAuthStore from "../stores/useAuthStore";
 import { API_BASE } from "../config/constants";
@@ -12,9 +12,12 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, signup, isAuthenticated } = useAuthStore();
 
-  useEffect(() => { if (isAuthenticated) navigate('/'); }, [isAuthenticated, navigate]);
+  const from = location.state?.from?.pathname || '/';
+
+  useEffect(() => { if (isAuthenticated) navigate(from, { replace: true }); }, [isAuthenticated]);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -33,7 +36,7 @@ function LoginPage() {
       const userData = { id: data.user.id, name: data.user.username, email: data.user.email, role: data.user.role, token: data.token };
       if (isLogin) { login(userData); } else { signup(userData); }
       localStorage.setItem('a5x-token', data.token);
-      navigate('/');
+      navigate(from, { replace: true });
     } catch (error) {
       alert(error.message || 'Something went wrong. Please try again.');
     } finally {

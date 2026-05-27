@@ -15,7 +15,9 @@ import { API_BASE } from "./config/constants";
 // Stores
 import useAdminStore from "./stores/useAdminStore";
 import useToastStore from "./stores/useToastStore";
-import { setToastFn } from "./stores/useCartStore";
+import { setToastFn, setAuthCheckFn } from "./stores/useCartStore";
+import useAuthStore from "./stores/useAuthStore";
+import useAuthModalStore from "./stores/useAuthModalStore";
 
 // Layout components
 import MainLayout from "./components/layout/MainLayout";
@@ -62,10 +64,16 @@ function App() {
   const loadProducts = useAdminStore((s) => s.loadProducts);
   const loadKits = useAdminStore((s) => s.loadKits);
   const showToast = useToastStore((s) => s.showToast);
+  const openAuthModal = useAuthModalStore((s) => s.open);
 
   useEffect(() => {
     // Wire toast function into cart store once on mount
     setToastFn(showToast);
+    // Wire auth check into cart store so "Add to Cart" triggers login modal when not logged in
+    setAuthCheckFn(
+      () => useAuthStore.getState().isAuthenticated,
+      openAuthModal
+    );
     fetch(`${API_BASE}/api/health`).catch(() => {});
     loadProducts();
     loadKits();
@@ -77,21 +85,21 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/shop" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
-          <Route path="/shop/:id" element={<ProtectedRoute><ProductDetailPage /></ProtectedRoute>} />
+          <Route path="/shop" element={<ShopPage />} />
+          <Route path="/shop/:id" element={<ProductDetailPage />} />
           <Route path="/wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
-          <Route path="/kits" element={<ProtectedRoute><KitsPage /></ProtectedRoute>} />
-          <Route path="/kits/:id" element={<ProtectedRoute><KitDetailPage /></ProtectedRoute>} />
-          <Route path="/robo-race" element={<ProtectedRoute><RoboRacePage /></ProtectedRoute>} />
-          <Route path="/learn" element={<ProtectedRoute><LearnPage /></ProtectedRoute>} />
-          <Route path="/learn/:courseId" element={<ProtectedRoute><LearnPage /></ProtectedRoute>} />
-          <Route path="/learn/:courseId/:videoId" element={<ProtectedRoute><VideoPlayerPage /></ProtectedRoute>} />
-          <Route path="/pricing" element={<ProtectedRoute><PricingPage /></ProtectedRoute>} />
-          <Route path="/about" element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
-          <Route path="/contact" element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
-          <Route path="/quote" element={<ProtectedRoute><QuotePage /></ProtectedRoute>} />
+          <Route path="/kits" element={<KitsPage />} />
+          <Route path="/kits/:id" element={<KitDetailPage />} />
+          <Route path="/robo-race" element={<RoboRacePage />} />
+          <Route path="/learn" element={<LearnPage />} />
+          <Route path="/learn/:courseId" element={<LearnPage />} />
+          <Route path="/learn/:courseId/:videoId" element={<VideoPlayerPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/quote" element={<QuotePage />} />
           <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />

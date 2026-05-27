@@ -16,6 +16,7 @@ import holoPrism from "../assets/holo-prism.png";
 import silhouetteFigure from "../assets/silhouette-figure.png";
 import silhouetteFigure1 from "../assets/silhouette-figure1.png";
 import cyberAndroid from "../assets/cyber-android.jpg";
+import cyberAndroid1 from "../assets/cyber-android1.png"
 import robotHands from "../assets/robot-hands.jpg";
 import futureBg from "../assets/team/future-bg.jpg";
 import robotModel from "../assets/team/robot-model.png";
@@ -177,7 +178,7 @@ function WhyRobotics() {
         </div>
       </motion.div>
       <motion.div className="why-visual" initial={{ opacity: 0, scale: 0.85, rotate: -3 }} whileInView={{ opacity: 1, scale: 1, rotate: 0 }} viewport={{ once: true }} transition={{ duration: 1, ease: [.22,1,.36,1] }}>
-        <img src={cyberAndroid} alt="Cyberpunk robot" />
+        <img src={cyberAndroid1} alt="Cyberpunk robot" />
         <div className="why-visual-glow" />
         <span className="why-unit-tag">[ UNIT.NEURAL ]</span>
       </motion.div>

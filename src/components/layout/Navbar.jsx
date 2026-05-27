@@ -7,7 +7,6 @@ import {
 import useCartStore from "../../stores/useCartStore";
 import useWishlistStore from "../../stores/useWishlistStore";
 import useAuthStore from "../../stores/useAuthStore";
-import useAuthModalStore from "../../stores/useAuthModalStore";
 import { useScrolled } from "../../hooks/useScrolled";
 
 function Navbar() {
@@ -21,7 +20,6 @@ function Navbar() {
   const toggle = useCartStore((state) => state.toggle);
   const cartOpen = useCartStore((state) => state.open);
   const { isAuthenticated, user, logout } = useAuthStore();
-  const { open: openAuthModal } = useAuthModalStore();
 
   // Check if current page is wishlist or shop
   const isWishlistPage = location.pathname === '/wishlist';
@@ -52,13 +50,6 @@ function Navbar() {
     navigate('/');
   };
 
-  const handleNavClick = (e, to) => {
-    if (to !== '/' && !isAuthenticated) {
-      e.preventDefault();
-      openAuthModal(to);
-    }
-  };
-
   return (
     <>
       <header className={`nav-v2 ${scrolled ? "is-scrolled" : ""} ${cartOpen ? "hide-on-mobile" : ""} ${isWishlistPage || isShopPage ? "wishlist-nav-dark" : ""}`}>
@@ -68,13 +59,13 @@ function Navbar() {
         <nav className="nav-v2-links">
           {navItems.map(({ label, to, dropdown }) => (
             <div key={label} className={`nav-v2-item ${dropdown ? "has-dropdown" : ""}`}>
-              <NavLink className={({ isActive }) => `nav-v2-link ${isActive ? "active" : ""}`} to={to} onClick={(e) => handleNavClick(e, to)}>
+              <NavLink className={({ isActive }) => `nav-v2-link ${isActive ? "active" : ""}`} to={to}>
                 {label}{dropdown && <ChevronDown size={13} className="nav-v2-chevron" />}
               </NavLink>
               {dropdown && (
                 <div className="nav-v2-dropdown">
                   {dropdown.map((item) => (
-                    <Link key={item} className="nav-v2-dropdown-item" to={to} onClick={(e) => handleNavClick(e, to)}>{item}</Link>
+                    <Link key={item} className="nav-v2-dropdown-item" to={to}>{item}</Link>
                   ))}
                 </div>
               )}
