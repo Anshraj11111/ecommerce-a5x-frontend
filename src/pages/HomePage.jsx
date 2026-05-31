@@ -11,6 +11,9 @@ import aboutArc from "../assets/about-arc.jpg";
 import darkSpheres from "../assets/dark-spheres.jpg";
 import heroCarRobot from "../assets/ChatGPT Image May 5, 2026, 10_52_52 AM.png";
 import motorDriver from "../assets/motor-driver.jpg";
+import arduinoMega from "../assets/ardunio-mega.png";
+import soundSensor from "../assets/sensor.png";
+import toolsImg from "../assets/tools.png";
 import unit003Hero from "../assets/team/unit003.jpeg";
 import holoPrism from "../assets/holo-prism.png";
 import silhouetteFigure from "../assets/silhouette-figure.png";
@@ -83,10 +86,10 @@ function TrustBar() {
 function PopularCategories() {
   const cats = [
     { label: "Robotics Kits", sub: "Build. Experiment. Innovate.", img: heroCarRobot, to: "/kits" },
-    { label: "Microcontrollers", sub: "Power your ideas.", img: motorDriver, to: "/shop" },
-    { label: "Sensors", sub: "Sense. Measure. Act.", img: motorDriver, to: "/shop" },
+    { label: "Microcontrollers", sub: "Power your ideas.", img: arduinoMega, to: "/shop" },
+    { label: "Sensors", sub: "Sense. Measure. Act.", img: soundSensor, to: "/shop" },
     { label: "Motors & Drivers", sub: "Move your projects.", img: motorDriver, to: "/shop" },
-    { label: "Tools & Accessories", sub: "Everything you need.", img: motorDriver, to: "/shop" },
+    { label: "Tools & Accessories", sub: "Everything you need.", img: toolsImg, to: "/shop" },
   ];
   return (
     <section className="popular-cats">
