@@ -65,8 +65,10 @@ const useAdminStore = create(persist((set, get) => ({
   },
 
   loadProducts: async () => {
+    // Skip if already loaded
+    if (get().productsLoaded && get().products.length > 0) return;
     try {
-      const response = await fetch(`${API_BASE}/api/products?limit=1000`);
+      const response = await fetch(`${API_BASE}/api/products?limit=500`);
       const data = await response.json();
       if (data.data && Array.isArray(data.data)) {
         set({ products: data.data, productsLoaded: true });

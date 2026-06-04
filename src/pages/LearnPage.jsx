@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SEO from "../components/common/SEO";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Check, ChevronLeft, ChevronRight, ListVideo, Play, Upload } from "lucide-react";
 import useAdminStore from "../stores/useAdminStore";
 import ProductCard from "../components/common/ProductCard";
@@ -197,7 +197,20 @@ function VideoPlayerPage() {
 
 function LearnPage() {
   const courses = useAdminStore((state) => state.courses).filter((course) => course.isPublished);
-  const [active, setActive] = useState("All");
+  const [searchParams] = useSearchParams();
+  const [active, setActive] = useState(() => searchParams.get("cat") || "All");
+
+  // Sync when URL ?cat= changes
+  useEffect(() => {
+    const catParam = searchParams.get("cat");
+    if (catParam) {
+      setActive(catParam);
+      setTimeout(() => {
+        const el = document.querySelector('.learn-filter-bar');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [searchParams.get("cat")]);
   const filtered = active === "All" ? courses : courses.filter((course) => course.level === active.toUpperCase() || course.category === active);
   const featured = courses.find((course) => course.isFeatured) || courses[0];
   const featuredLink = featured ? (featured.videos?.length ? `/learn/${featured.id}/${featured.videos[0].id}` : `/learn/${featured.id}`) : "/learn";

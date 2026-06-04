@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, Filter, Grid2X2, List,
   Minus, Package, Plus, Search, SlidersHorizontal, Truck, X, Zap
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import useAdminStore from "../stores/useAdminStore";
 import useCartStore from "../stores/useCartStore";
 import useCompareStore from "../stores/useCompareStore";
@@ -69,8 +69,26 @@ function ShopSection() {
   const products = useAdminStore((s) => s.products);
   const loadProducts = useAdminStore((s) => s.loadProducts);
   const productsLoaded = useAdminStore((s) => s.productsLoaded);
+  const [searchParams] = useSearchParams();
   const defaultFilters = { category: "All", priceMin: "", priceMax: "", minRating: 0, compat: [], inStockOnly: false, deliveryType: "all" };
-  const [filters, setFilters] = useState(defaultFilters);
+  const [filters, setFilters] = useState(() => {
+    const catParam = searchParams.get("cat");
+    return { ...defaultFilters, category: catParam || "All" };
+  });
+
+  // Sync category filter when URL ?cat= changes
+  useEffect(() => {
+    const catParam = searchParams.get("cat");
+    if (catParam) {
+      setFilters(f => ({ ...f, category: catParam }));
+      setPage(1);
+      // Scroll to products section
+      setTimeout(() => {
+        const el = document.querySelector('.shop-products-area');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [searchParams.get("cat")]);
   const [sort, setSort] = useState("popular");
   const [view, setView] = useState("grid");
   const [page, setPage] = useState(1);
@@ -86,7 +104,7 @@ function ShopSection() {
     { image: cyberAndroid, title: "BUILD & INNOVATE", subtitle: "Everything You Need for Your Next Project", tag: "NEW ARRIVALS" }
   ];
 
-  useEffect(() => { loadProducts(); }, []);
+  useEffect(() => { if (!productsLoaded) loadProducts(); }, []);
   useEffect(() => {
     const timer = setInterval(() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length), 4000);
     return () => clearInterval(timer);

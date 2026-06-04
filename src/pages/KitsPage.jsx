@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import SEO from "../components/common/SEO";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle, ChevronLeft, ChevronRight, Play, PlayCircle, X, Star } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import useAdminStore from "../stores/useAdminStore";
 import useCartStore from "../stores/useCartStore";
 import ButtonLink from "../components/common/ButtonLink";
@@ -16,13 +16,27 @@ import kitBg from "../assets/kitbg.jpeg";
 function KitsSection() {
   const kits = useAdminStore((state) => state.kits);
   const loadKits = useAdminStore((state) => state.loadKits);
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchParams] = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState(() => searchParams.get("tier") || 'all');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [selectedAge, setSelectedAge] = useState('');
   const [priceRange, setPriceRange] = useState([0, 15000]);
   const [sortBy, setSortBy] = useState('newest');
   const [viewMode, setViewMode] = useState('grid');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Sync category when URL ?tier= changes
+  useEffect(() => {
+    const tierParam = searchParams.get("tier");
+    if (tierParam) {
+      setSelectedCategory(tierParam);
+      // Scroll to kits grid
+      setTimeout(() => {
+        const el = document.querySelector('.kits-content');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [searchParams.get("tier")]);
 
   useEffect(() => {
     // Only load if not already loaded

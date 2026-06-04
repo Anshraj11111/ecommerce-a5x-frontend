@@ -27,10 +27,32 @@ function Navbar() {
 
   const navItems = [
     { label: "Home", to: "/" },
-    { label: "Shop", to: "/shop", dropdown: ["All Products", "Microcontrollers", "Sensors", "Motor Drivers"] },
-    { label: "Kits", to: "/kits", dropdown: ["Starter Kit", "Pro Kits", "Elite Kits"] },
-   
-    { label: "Learn", to: "/learn", dropdown: ["All Courses", "Robotics", "IoT"] },
+    {
+      label: "Shop", to: "/shop",
+      dropdown: [
+        { label: "All Products", to: "/shop" },
+        { label: "Microcontrollers", to: "/shop?cat=MicroController" },
+        { label: "Sensors", to: "/shop?cat=Sensor" },
+        { label: "Motor Drivers", to: "/shop?cat=Motor Driver" },
+      ]
+    },
+    {
+      label: "Kits", to: "/kits",
+      dropdown: [
+        { label: "All Kits", to: "/kits" },
+        { label: "Starter Kit", to: "/kits?tier=starter" },
+        { label: "Pro Kits", to: "/kits?tier=pro" },
+        { label: "Elite Kits", to: "/kits?tier=elite" },
+      ]
+    },
+    {
+      label: "Learn", to: "/learn",
+      dropdown: [
+        { label: "All Courses", to: "/learn" },
+        { label: "Robotics", to: "/learn?cat=Robotics" },
+        { label: "IoT", to: "/learn?cat=IoT" },
+      ]
+    },
     { label: "About", to: "/about" },
     { label: "Contact", to: "/contact" },
   ];
@@ -65,7 +87,7 @@ function Navbar() {
               {dropdown && (
                 <div className="nav-v2-dropdown">
                   {dropdown.map((item) => (
-                    <Link key={item} className="nav-v2-dropdown-item" to={to}>{item}</Link>
+                    <Link key={item.label} className="nav-v2-dropdown-item" to={item.to}>{item.label}</Link>
                   ))}
                 </div>
               )}
