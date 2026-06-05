@@ -83,28 +83,41 @@ function ProductForm() {
         {error && <div style={{ padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c00', fontSize: '14px' }}>{error}</div>}
         <input name="name" defaultValue={product?.name} placeholder="Product Name*" required />
         <input name="sku" defaultValue={product?.sku || `A5X-${Date.now().toString(36).toUpperCase()}`} placeholder="SKU*" required />
-        <select name="category" defaultValue={product?.category || "MicroController"}>
-          {categories.slice(1).map((category) => <option key={category}>{category}</option>)}
+        <select name="category" defaultValue={product?.category || "MicroController"} style={{ background: '#1a2236', color: '#e8e8f0', border: '1px solid rgba(0,229,255,0.2)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', width: '100%', cursor: 'pointer', appearance: 'auto' }}>
+          {categories.slice(1).map((category) => <option key={category} style={{ background: '#1a2236', color: '#e8e8f0' }}>{category}</option>)}
         </select>
         <input name="price" type="number" defaultValue={product?.price} placeholder="Price (₹)*" required />
         <input name="mrp" type="number" defaultValue={product?.mrp} placeholder="MRP (₹)*" required />
         <input name="minQty" type="number" defaultValue={product?.minQty || 1} placeholder="Min Quantity" />
         <label><input type="checkbox" name="inStock" defaultChecked={product?.inStock ?? true} /> In Stock</label>
 
-        <div style={{ marginTop: '16px', marginBottom: '16px' }}>
-          <p style={{ marginBottom: '8px', fontWeight: 600, color: '#0066FF' }}>Delivery Type:</p>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-            <input type="radio" name="deliveryType" value="all" checked={deliveryType === 'all'} onChange={(e) => setDeliveryType(e.target.value)} />
-            <Package size={16} style={{ color: '#718096' }} /> All (Show in both filters)
-          </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-            <input type="radio" name="deliveryType" value="quick" checked={deliveryType === 'quick'} onChange={(e) => setDeliveryType(e.target.value)} />
-            <Zap size={16} style={{ color: '#0066FF' }} /> Quick Delivery (1 Day)
-          </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-            <input type="radio" name="deliveryType" value="scheduled" checked={deliveryType === 'scheduled'} onChange={(e) => setDeliveryType(e.target.value)} />
-            <Truck size={16} style={{ color: '#718096' }} /> Scheduled Delivery (1 Week)
-          </label>
+        <div style={{ marginTop: '16px', marginBottom: '16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(0,229,255,0.15)', borderRadius: '10px', padding: '16px' }}>
+          <p style={{ marginBottom: '12px', fontWeight: 600, color: '#00e5ff', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Delivery Type:</p>
+          {[
+            { value: 'all', icon: <Package size={16} />, label: 'All (Show in both filters)' },
+            { value: 'quick', icon: <Zap size={16} />, label: 'Quick Delivery (1 Day)' },
+            { value: 'scheduled', icon: <Truck size={16} />, label: 'Scheduled Delivery (1 Week)' },
+          ].map(({ value, icon, label }) => (
+            <label key={value} onClick={() => setDeliveryType(value)} style={{
+              display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px',
+              cursor: 'pointer', padding: '10px 12px', borderRadius: '8px',
+              background: deliveryType === value ? 'rgba(0,229,255,0.1)' : 'transparent',
+              border: deliveryType === value ? '1px solid rgba(0,229,255,0.3)' : '1px solid transparent',
+              transition: 'all 0.2s'
+            }}>
+              <div style={{
+                width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0,
+                border: deliveryType === value ? '2px solid #00e5ff' : '2px solid #4a5568',
+                background: deliveryType === value ? '#00e5ff' : 'transparent',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                {deliveryType === value && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#000' }} />}
+              </div>
+              <input type="radio" name="deliveryType" value={value} checked={deliveryType === value} onChange={() => setDeliveryType(value)} style={{ display: 'none' }} />
+              <span style={{ color: '#718096' }}>{icon}</span>
+              <span style={{ color: deliveryType === value ? '#e8e8f0' : '#8A9BB5', fontSize: '14px' }}>{label}</span>
+            </label>
+          ))}
         </div>
 
         <textarea name="description" placeholder="Short Description" />
