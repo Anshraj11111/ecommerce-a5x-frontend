@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Pencil, RefreshCw, Trash2, Upload, CheckSquare, Square, AlertTriangle } from "lucide-react";
 import useAdminStore from "../stores/useAdminStore";
 import AdminPage from "./AdminPage";
@@ -9,6 +9,7 @@ import motorDriver from "../assets/motor-driver.jpg";
 
 function AdminProducts({ compact }) {
   const { products, deleteProduct, loadProducts } = useAdminStore();
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [selected, setSelected] = useState(new Set());
@@ -24,6 +25,20 @@ function AdminProducts({ compact }) {
   const displayList = compact ? filtered.slice(0, 5) : filtered;
 
   useEffect(() => { loadProducts(); }, []);
+
+  // Restore scroll position when returning to products list
+  useEffect(() => {
+    const savedScroll = sessionStorage.getItem('admin-products-scroll');
+    if (savedScroll) {
+      setTimeout(() => window.scrollTo(0, parseInt(savedScroll)), 50);
+      sessionStorage.removeItem('admin-products-scroll');
+    }
+  }, []);
+
+  const handleEditClick = (productId) => {
+    sessionStorage.setItem('admin-products-scroll', String(window.scrollY));
+    navigate(`/admin/products/${productId}`);
+  };
 
   // Selection helpers
   const allSelected = displayList.length > 0 && displayList.every((p) => selected.has(p.id));
@@ -258,18 +273,18 @@ function AdminProducts({ compact }) {
                   </td>
                   <td style={tdStyle}>
                     <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
-                      <Link
-                        to={`/admin/products/${product.id}`}
+                      <button
+                        onClick={() => handleEditClick(product.id)}
                         style={{
                           display: "flex", alignItems: "center", justifyContent: "center",
                           width: "32px", height: "32px", borderRadius: "7px",
                           background: "rgba(0,229,255,0.1)", border: "1px solid rgba(0,229,255,0.25)",
-                          color: "#00e5ff", textDecoration: "none"
+                          color: "#00e5ff", cursor: "pointer"
                         }}
                         title="Edit"
                       >
                         <Pencil size={14} />
-                      </Link>
+                      </button>
                       <button
                         onClick={() => handleSingleDelete(product.id)}
                         style={{

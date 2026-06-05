@@ -36,6 +36,7 @@ function ProductForm() {
   const [saving, setSaving] = useState(false);
   const [images, setImages] = useState(product?.images || []);
   const [imagePreviews, setImagePreviews] = useState(product?.images || []);
+  const [shortDescription, setShortDescription] = useState(product?.shortDescription || '');
 
   const handleImageChange = async (e) => {
     const files = Array.from(e.target.files).slice(0, 10);
@@ -59,13 +60,16 @@ function ProductForm() {
       ...product, ...data,
       price: Number(data.price), mrp: Number(data.mrp || data.price),
       minQty: Number(data.minQty || 1), rating: Number(data.rating || 4.7),
+      stockCount: Number(data.stockCount || product?.stockCount || 0),
       inStock: data.inStock === "on", quickDelivery: quickDeliveryValue,
       imageUrl: images[0] || product?.imageUrl || upload.previewUrl || "",
       images: images.length > 0 ? images : (product?.images || []),
       features: data.features ? data.features.split(",").map(f => f.trim()).filter(Boolean) : (product?.features || []),
       compatibility: data.compatibility ? data.compatibility.split(",").map(c => c.trim()).filter(Boolean) : (product?.compatibility || []),
       software: data.software ? data.software.split(",").map(s => s.trim()).filter(Boolean) : (product?.software || []),
-      shortDescription: data.description || product?.shortDescription || ""
+      tags: data.tags ? data.tags.split(",").map(t => t.trim()).filter(Boolean) : (product?.tags || []),
+      shortDescription: shortDescription,
+      description: shortDescription,
     };
     try {
       if (product) { await updateProduct(product.id, payload); } else { await addProduct(payload); }
@@ -120,7 +124,12 @@ function ProductForm() {
           ))}
         </div>
 
-        <textarea name="description" placeholder="Short Description" />
+        <textarea 
+          name="description" 
+          value={shortDescription}
+          onChange={e => setShortDescription(e.target.value)}
+          placeholder="Short Description" 
+        />
         <textarea name="overview" defaultValue={product?.overview} placeholder="Detailed Overview (for Overview tab)" />
         <input name="features" defaultValue={product?.features?.join(", ")} placeholder="Key Features (comma-separated)" />
 
@@ -149,7 +158,7 @@ function ProductForm() {
           </div>
         )}
 
-        <input name="tags" placeholder="Tags, comma-separated" />
+        <input name="tags" defaultValue={product?.tags?.join(", ")} placeholder="Tags, comma-separated" />
         <input name="rating" type="number" step=".1" defaultValue={product?.rating || 4.7} placeholder="Rating (1-5)" />
         <button disabled={saving}>{saving ? 'Saving...' : 'Save Product'}</button>
         <Link to="/admin/products">Cancel</Link>
