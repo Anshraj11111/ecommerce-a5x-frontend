@@ -68,17 +68,10 @@ const useAdminStore = create(persist((set, get) => ({
     // Skip if already fully loaded
     if (get().productsLoaded && get().products.length > 0) return;
     try {
-      // Phase 1: Load first 12 products instantly for fast initial render
-      const quickResponse = await fetch(`${API_BASE}/api/products?limit=12&page=1`);
-      const quickData = await quickResponse.json();
-      if (quickData.data && Array.isArray(quickData.data)) {
-        set({ products: quickData.data, productsLoaded: false });
-      }
-      // Phase 2: Load all products in background
-      const fullResponse = await fetch(`${API_BASE}/api/products?limit=500`);
-      const fullData = await fullResponse.json();
-      if (fullData.data && Array.isArray(fullData.data)) {
-        set({ products: fullData.data, productsLoaded: true });
+      const response = await fetch(`${API_BASE}/api/products?limit=500`);
+      const data = await response.json();
+      if (data.data && Array.isArray(data.data)) {
+        set({ products: data.data, productsLoaded: true });
       }
     } catch (error) {
       console.error('Failed to load products:', error);
