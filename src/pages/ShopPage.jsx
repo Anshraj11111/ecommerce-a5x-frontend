@@ -136,7 +136,18 @@ function ShopSection() {
   return (
     <div className="shop-page-redesign">
       {/* Hero Carousel */}
-      <div className="shop-hero-carousel">
+      <div 
+        className="shop-hero-carousel"
+        onTouchStart={(e) => { const t = e.touches[0].clientX; e.currentTarget._touchStart = t; }}
+        onTouchEnd={(e) => {
+          const diff = e.changedTouches[0].clientX - (e.currentTarget._touchStart || 0);
+          if (Math.abs(diff) > 50) {
+            diff > 0
+              ? setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)
+              : setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+          }
+        }}
+      >
         <div className="shop-hero-slides">
           {heroSlides.map((slide, index) => (
             <div key={index} className={`shop-hero-slide ${index === currentSlide ? "active" : ""}`} style={{ backgroundImage: `url(${slide.image})` }}>
@@ -145,9 +156,9 @@ function ShopSection() {
                 <span className="shop-hero-tag">{slide.tag}</span>
                 <h1 className="shop-hero-title">{slide.title}</h1>
                 <p className="shop-hero-subtitle">{slide.subtitle}</p>
-                <button className="shop-hero-btn" onClick={() => window.scrollTo({ top: 800, behavior: 'smooth' })}>
+                {/* <button className="shop-hero-btn" onClick={() => window.scrollTo({ top: 800, behavior: 'smooth' })}>
                   Shop Now <ChevronRight size={18} />
-                </button>
+                </button> */}
               </div>
             </div>
           ))}
@@ -157,16 +168,16 @@ function ShopSection() {
             <button key={index} className={`shop-hero-indicator ${index === currentSlide ? "active" : ""}`} onClick={() => setCurrentSlide(index)} aria-label={`Go to slide ${index + 1}`} />
           ))}
         </div>
-        <button className="shop-hero-nav shop-hero-nav-prev" onClick={() => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)} aria-label="Previous slide"><ChevronLeft size={32} /></button>
-        <button className="shop-hero-nav shop-hero-nav-next" onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)} aria-label="Next slide"><ChevronRight size={32} /></button>
+        <button className="shop-hero-nav shop-hero-nav-prev hide-mobile" onClick={() => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)} aria-label="Previous slide"><ChevronLeft size={32} /></button>
+        <button className="shop-hero-nav shop-hero-nav-next hide-mobile" onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)} aria-label="Next slide"><ChevronRight size={32} /></button>
       </div>
 
       {/* Search + Categories */}
-      <div className="shop-search-section">
+      {/* <div className="shop-search-section">
         <div className="shop-search-bar-wrapper">
           <div className="shop-search-input-wrap">
             <Search size={20} className="shop-search-icon" />
-            <input type="text" className="shop-search-input" placeholder="Search products, categories, SKUs..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }} />
+            <input type="text" className="shop-search-input" placeholder="Search products, categories, SKUs..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }} style={{ paddingLeft: '8px' }} />
             {searchQuery && <button className="shop-search-clear" onClick={() => { setSearchQuery(""); setPage(1); }} aria-label="Clear search"><X size={18} /></button>}
           </div>
         </div>
@@ -175,7 +186,58 @@ function ShopSection() {
             <button key={cat} className={`shop-cat-pill ${filters.category === cat ? "active" : ""}`} onClick={() => { setFilters({ ...filters, category: cat }); setPage(1); }}>{cat}</button>
           ))}
         </div>
-      </div>
+      </div> */}
+
+      <div className="shop-search-section">
+  <div className="shop-search-bar-wrapper">
+    <div className="shop-search-input-wrap">
+      <Search size={20} className="shop-search-icon" />
+
+      <input
+        type="text"
+        className="shop-search-input"
+        placeholder="Search products, categories, SKUs..."
+        value={searchQuery}
+        onChange={(e) => {
+          setSearchQuery(e.target.value);
+          setPage(1);
+        }}
+      />
+
+      {searchQuery && (
+        <button
+          className="shop-search-clear"
+          onClick={() => {
+            setSearchQuery("");
+            setPage(1);
+          }}
+          aria-label="Clear search"
+        >
+          <X size={18} />
+        </button>
+      )}
+    </div>
+  </div>
+
+  <div className="shop-category-pills">
+    {categories.map((cat) => (
+      <button
+        key={cat}
+        className={`shop-cat-pill ${
+          filters.category === cat ? "active" : ""
+        }`}
+        onClick={() => {
+          setFilters({ ...filters, category: cat });
+          setPage(1);
+        }}
+      >
+        {cat}
+      </button>
+    ))}
+  </div>
+</div>
+
+      
 
       {/* Main Content */}
       <div className="shop-body">

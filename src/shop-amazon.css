@@ -200,24 +200,30 @@
 
 /* Mobile responsive arrows */
 @media (max-width: 640px) {
-  .shop-hero-nav {
-    width: 40px;
-    height: 40px;
-    background: rgba(0, 102, 255, 0.2);
-    border-width: 1.5px;
+  /* Hide arrows on mobile — use swipe instead */
+  .shop-hero-nav.hide-mobile {
+    display: none !important;
   }
   
-  .shop-hero-nav-prev {
-    left: 12px;
+  .shop-hero-indicators {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 16px;
+    justify-content: center;
+    gap: 8px;
   }
-  
-  .shop-hero-nav-next {
-    right: 12px;
+
+  .shop-hero-indicator {
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.7);
   }
-  
-  .shop-hero-nav svg {
-    width: 20px;
-    height: 20px;
+
+  .shop-hero-indicator.active {
+    background: #0066FF;
+    border-color: #0066FF;
+    width: 24px;
   }
 }
 
@@ -251,7 +257,7 @@
   transition: all 0.3s;
   min-height: 56px;
   padding: 0 20px;
-  gap: 12px;
+  gap: 10px;
 }
 
 .shop-search-input-wrap:focus-within {
@@ -267,7 +273,7 @@
   color: #1a1a1a;
   font-family: 'Space Grotesk', sans-serif;
   font-size: 16px;
-  padding: 16px 0 16px 16px;
+  padding: 16px 0 16px 8px;
   min-width: 0;
   flex: 1;
 }
@@ -302,6 +308,7 @@
   width: 20px;
   height: 20px;
   flex-shrink: 0;
+  margin-right: 4px;
 }
 
 .shop-category-pills {
@@ -986,7 +993,12 @@
   .shop-hero-nav { width: 40px; height: 40px; }
   .shop-hero-nav-prev { left: 16px; }
   .shop-hero-nav-next { right: 16px; }
-  .shop-hero-indicators { left: 24px; }
+  .shop-hero-indicators { 
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 16px;
+    justify-content: center;
+  }
   
   .shop-search-section { 
     padding: 18px 20px;
@@ -1055,7 +1067,12 @@
   .shop-hero-btn { padding: 12px 24px; font-size: 14px; }
   .shop-hero-nav { width: 36px; height: 36px; }
   .shop-hero-nav svg { width: 18px; height: 18px; }
-  .shop-hero-indicators { left: 20px; bottom: 20px; }
+  .shop-hero-indicators { 
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 20px;
+    justify-content: center;
+  }
   
   .shop-products-grid { 
     grid-template-columns: repeat(2, 1fr); 
@@ -1119,11 +1136,27 @@
 }
 
 @media (max-width: 480px) {
-  .shop-hero-carousel { height: 300px; }
+  .shop-hero-carousel { 
+    height: 280px;
+  }
   .shop-hero-title { font-size: clamp(20px, 5vw, 28px); }
   .shop-hero-subtitle { font-size: 12px; }
   .shop-hero-tag { font-size: 10px; padding: 6px 16px; }
   .shop-hero-btn { padding: 10px 20px; font-size: 13px; }
+  
+  /* Move arrows inside so they don't overlap content */
+  .shop-hero-nav {
+    width: 32px;
+    height: 32px;
+    top: auto;
+    bottom: 50px;
+    transform: none;
+  }
+  .shop-hero-nav:hover {
+    transform: scale(1.1);
+  }
+  .shop-hero-nav-prev { left: 16px; }
+  .shop-hero-nav-next { right: 16px; }
   
   .shop-search-section { padding: 12px; }
   .shop-body { padding: 12px; }
@@ -1537,5 +1570,57 @@ select::-ms-expand {
 @media (max-width: 480px) {
   .shop-page-redesign .shop-products-grid {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   MOBILE RESPONSIVE FIXES — Extra overrides
+   ═══════════════════════════════════════════ */
+
+/* Pagination — show fewer buttons on mobile */
+@media (max-width: 480px) {
+  .shop-pagination {
+    gap: 4px;
+    padding: 24px 0 16px;
+  }
+  .shop-page-btn {
+    min-width: 36px;
+    height: 36px;
+    font-size: 13px;
+    padding: 0 8px;
+  }
+}
+
+/* Sidebar delivery buttons — fix mobile overlap */
+@media (max-width: 640px) {
+  .shop-delivery-btns {
+    gap: 6px;
+  }
+  .shop-delivery-btn {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}
+
+/* Shop hero image — full width on all devices */
+.shop-hero-carousel {
+  width: 100%;
+  max-width: 100%;
+}
+
+.shop-hero-slide {
+  background-size: cover;
+  background-position: center;
+}
+
+/* Make sure hero nav arrows stay inside image bounds */
+@media (max-width: 640px) {
+  .shop-hero-nav {
+    top: 50%;
+    transform: translateY(-50%);
+    bottom: auto;
+  }
+  .shop-hero-nav:hover {
+    transform: translateY(-50%) scale(1.1);
   }
 }

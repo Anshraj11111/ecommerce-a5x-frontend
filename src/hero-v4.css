@@ -17,7 +17,7 @@
   --bg-x: 50%;
   --bg-y: 50%;
   width: 100%;
-  height: 100vh;
+  height: 100svh;
   min-height: 720px;
   overflow: hidden;
   background:
@@ -482,163 +482,188 @@
 /* Responsive */
 @media (max-width: 820px) {
   .hero-v4 {
-    min-height: 680px;
+    min-height: 100svh;
+    height: 100svh;
+    background-size: cover;
+    background-position: center center;
+  }
+
+  /* Hide the bottom dark arc decorations */
+  .hero-v4::before,
+  .hero-v4::after {
+    display: none;
   }
 
   .future-text {
     left: 22px;
-    top: 118px;
+    top: 80px;
     font-size: clamp(64px, 18vw, 104px);
     font-weight: 900;
+    z-index: 6;
   }
 
   .vision-text {
     left: 24%;
     right: auto;
-    top: 246px;
+    top: 200px;
     font-size: clamp(62px, 16vw, 96px);
     font-weight: 900;
+    z-index: 6;
   }
 
+  /* Robot: big, centered, fills screen */
+  .model-wrap-v4 {
+    left: 50%;
+    bottom: 0;
+    top: 0;
+    width: 140vw;
+    min-width: 0;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: 5;
+  }
+
+  .model-wrap-v4 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  /* Bottom panel sits at very bottom, tight */
   .shop-panel-v4 {
-    left: 18px;
-    right: 18px;
-    bottom: 20px;
-    width: auto;
-    padding: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    background: linear-gradient(180deg, rgba(4, 10, 19, 0.22), rgba(4, 10, 19, 0.86));
-    backdrop-filter: blur(8px);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 20px 18px max(28px, env(safe-area-inset-bottom));
+    border-radius: 0;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, rgba(4, 10, 19, 0) 0%, rgba(4, 10, 19, 0.95) 28%);
+    backdrop-filter: blur(6px);
+    z-index: 14;
   }
 
   .shop-panel-v4 p {
     font-size: 14px;
     line-height: 1.55;
     max-width: 100%;
+    margin-bottom: 0;
   }
 
   .shop-actions-v4 {
     gap: 10px;
     margin-top: 14px;
+    display: flex;
   }
 
   .shop-primary-v4,
   .shop-secondary-v4 {
     min-width: 0;
     flex: 1;
-    min-height: 48px;
+    min-height: 50px;
     padding: 0 12px;
-    font-size: 14px;
-  }
-
-  .model-wrap-v4 {
-    bottom: 126px;
-    width: min(100vw, 430px);
-    min-width: 350px;
-    transform: translateX(-50%);
+    font-size: 15px;
   }
 
   .buy-v4,
   .rating-badge-v4,
   .line-v4,
-  .node-v4 {
-    display: none;
-  }
-
+  .node-v4,
   .callout-v4 {
-    display: flex;
-    gap: 8px;
-    font-size: 7px;
-    z-index: 26;
-  }
-
-  .callout-left-v4 {
-    left: 24px;
-    top: 404px;
-  }
-
-  .callout-right-v4 {
-    right: 22px;
-    top: 242px;
-  }
-
-  .thumb-v4 {
-    width: 58px;
-    height: 42px;
-    border-radius: 7px;
+    display: none;
   }
 }
 
 @media (max-width: 520px) {
   .hero-v4 {
-    min-height: 640px;
+    min-height: 100svh;
+    height: 100svh;
+    background-size: cover;
+    background-position: center center;
+  }
+
+  .hero-v4::before,
+  .hero-v4::after {
+    display: none;
   }
 
   .future-text {
-    left: 22px;
-    top: 116px;
+    left: 16px;
+    top: 72px;
     font-size: clamp(56px, 20vw, 86px);
     line-height: 0.9;
+    z-index: 6;
   }
 
   .vision-text {
-    left: 17vw;
+    left: 16vw;
     right: auto;
-    top: min(35svh, 264px);
+    top: min(32svh, 220px);
     font-size: clamp(52px, 17vw, 74px);
     line-height: 0.9;
+    z-index: 6;
   }
 
+  /* Robot fills the whole screen */
   .model-wrap-v4 {
-    bottom: 126px;
-    width: min(98vw, 382px);
-    min-width: 322px;
+    left: 50%;
+    bottom: 0;
+    top: 0;
+    width: 160vw;
+    min-width: 0;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: 5;
+  }
+
+  .model-wrap-v4 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
   }
 
   .callout-v4 {
-    font-size: 6px;
-    line-height: 1.18;
+    display: none;
   }
 
-  .callout-left-v4 {
-    left: 18px;
-    top: 330px;
-  }
-
-  .callout-right-v4 {
-    right: 18px;
-    top: 206px;
-  }
-
-  .thumb-v4 {
-    width: 50px;
-    height: 38px;
-  }
-
+  /* Bottom panel: full width, no gap */
   .shop-panel-v4 {
-    left: 18px;
-    right: 18px;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    padding: 15px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 18px 16px max(20px, env(safe-area-inset-bottom));
+    border-radius: 0;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    background: linear-gradient(180deg, rgba(4, 10, 19, 0) 0%, rgba(4, 10, 19, 0.95) 24%);
+    backdrop-filter: blur(6px);
+    z-index: 14;
   }
 
   .shop-panel-v4 p {
     font-size: 13px;
     line-height: 1.45;
+    max-width: 100%;
+    margin-bottom: 0;
   }
 
   .shop-actions-v4 {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
+    margin-top: 12px;
   }
 
   .shop-primary-v4,
   .shop-secondary-v4 {
-    min-height: 46px;
+    min-height: 48px;
     padding: 0 10px;
-    font-size: 13px;
+    font-size: 14px;
+    border-radius: 12px;
   }
 }
 
