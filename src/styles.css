@@ -3439,6 +3439,96 @@ td button, td a { margin-right: 8px; border: 0; background: transparent; color: 
   color: rgba(255, 255, 255, 0.6);
 }
 
+/* ── Shipping Options ── */
+.shipping-weight-note {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 12px;
+}
+
+.shipping-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shipping-option {
+  cursor: pointer;
+  width: 100%;
+}
+
+.shipping-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.shipping-option-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.shipping-option:hover:not(.disabled) .shipping-option-content {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+.shipping-option.active .shipping-option-content {
+  background: rgba(0, 255, 136, 0.08);
+  border-color: #00ff88;
+  box-shadow: 0 0 0 1px rgba(0, 255, 136, 0.2);
+}
+
+.shipping-option.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.shipping-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.shipping-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.shipping-info strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.shipping-info p {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.shipping-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #00ff88;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-right: 6px;
+}
+
+.shipping-option .pay-check {
+  color: #00ff88;
+  flex-shrink: 0;
+}
+
 .notes-textarea {
   width: 100%;
   padding: 14px 16px;
@@ -3937,11 +4027,45 @@ td button, td a { margin-right: 8px; border: 0; background: transparent; color: 
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .order-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+}
+
+/* Delete button at the bottom of every order card */
+.order-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 9px 0;
+  width: 100%;
+  background: rgba(255, 68, 68, 0.08);
+  border: 1px solid rgba(255, 68, 68, 0.25);
+  border-radius: 8px;
+  color: #ff6b6b;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.order-delete-btn:hover:not(:disabled) {
+  background: rgba(255, 68, 68, 0.2);
+  border-color: #ff4444;
+  color: #ff4444;
+}
+
+.order-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .order-header {

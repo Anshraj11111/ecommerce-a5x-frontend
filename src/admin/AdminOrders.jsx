@@ -127,34 +127,15 @@ function AdminOrders() {
               <p>{order.items.length} item(s)</p>
               <p><strong>{inr(order.total)}</strong></p>
             </div>
-            {/* Delete button on card */}
+            {/* Delete button — full width at bottom of card */}
             <button
-              className="order-card-delete-btn"
+              className="order-delete-btn"
               title="Delete order"
               disabled={deletingId === order._id}
               onClick={(e) => deleteOrder(order._id, order.orderNumber, e)}
-              style={{
-                position: 'absolute',
-                top: '12px',
-                right: '12px',
-                background: 'rgba(255,68,68,0.15)',
-                border: '1px solid rgba(255,68,68,0.3)',
-                borderRadius: '8px',
-                color: '#ff4444',
-                padding: '6px 8px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.2s',
-                zIndex: 2,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,68,68,0.3)'; e.currentTarget.style.borderColor = '#ff4444'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,68,68,0.15)'; e.currentTarget.style.borderColor = 'rgba(255,68,68,0.3)'; }}
             >
-              {deletingId === order._id
-                ? <span style={{ fontSize: '11px', padding: '0 2px' }}>...</span>
-                : <Trash2 size={14} />}
+              <Trash2 size={13} />
+              {deletingId === order._id ? 'Deleting...' : 'Delete'}
             </button>
           </div>
         ))}
