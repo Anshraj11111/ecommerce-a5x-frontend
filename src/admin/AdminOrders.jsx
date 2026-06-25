@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 import AdminPage from "./AdminPage";
 import { API_BASE, inr } from "../config/constants";
 import a5xCarKit from "../assets/a5x-car-kit.jpg";
@@ -10,6 +10,7 @@ function AdminOrders() {
   const [filter, setFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const [authError, setAuthError] = useState(false);
 
   useEffect(() => { fetchOrders(); }, [filter]);
@@ -65,6 +66,33 @@ function AdminOrders() {
     }
   };
 
+  const deleteOrder = async (orderId, orderNumber, e) => {
+    // Stop card click from opening modal
+    if (e) e.stopPropagation();
+
+    if (!window.confirm(`Delete order #${orderNumber}?\n\nThis cannot be undone.`)) return;
+
+    setDeletingId(orderId);
+    try {
+      const token = localStorage.getItem('a5x-admin-token');
+      const response = await fetch(`${API_BASE}/api/orders/${orderId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        setOrders(prev => prev.filter(o => o._id !== orderId));
+        if (selectedOrder?._id === orderId) setSelectedOrder(null);
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to delete order');
+      }
+    } catch (error) {
+      alert('Failed to delete order. Check your connection.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const getStatusColor = (status) => ({ pending: '#ffa500', confirmed: '#00ff88', processing: '#00bfff', shipped: '#9370db', delivered: '#32cd32', cancelled: '#ff4444' }[status] || '#888');
 
   if (loading) return <div className="admin-page"><p>Loading orders...</p></div>;
@@ -93,12 +121,41 @@ function AdminOrders() {
               <p><strong>{order.customerName}</strong></p>
               <p>{order.customerPhone}</p>
               <p>{order.customerEmail}</p>
-              <p className="order-date">{new Date(order.orderDate).toLocaleDateString()}</p>
+              <p className="order-date">{new Date(order.orderDate || order.createdAt).toLocaleDateString()}</p>
             </div>
             <div className="order-summary">
               <p>{order.items.length} item(s)</p>
               <p><strong>{inr(order.total)}</strong></p>
             </div>
+            {/* Delete button on card */}
+            <button
+              className="order-card-delete-btn"
+              title="Delete order"
+              disabled={deletingId === order._id}
+              onClick={(e) => deleteOrder(order._id, order.orderNumber, e)}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '12px',
+                background: 'rgba(255,68,68,0.15)',
+                border: '1px solid rgba(255,68,68,0.3)',
+                borderRadius: '8px',
+                color: '#ff4444',
+                padding: '6px 8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s',
+                zIndex: 2,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,68,68,0.3)'; e.currentTarget.style.borderColor = '#ff4444'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,68,68,0.15)'; e.currentTarget.style.borderColor = 'rgba(255,68,68,0.3)'; }}
+            >
+              {deletingId === order._id
+                ? <span style={{ fontSize: '11px', padding: '0 2px' }}>...</span>
+                : <Trash2 size={14} />}
+            </button>
           </div>
         ))}
       </div>
@@ -146,6 +203,19 @@ function AdminOrders() {
                   {selectedOrder.status === 'shipped' && <button className="btn btn-success" disabled={!!updatingId} onClick={() => updateOrderStatus(selectedOrder._id, 'delivered')}>{updatingId === selectedOrder._id + 'delivered' ? 'Updating...' : '🎉 Mark as Delivered'}</button>}
                   {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && <button className="btn btn-danger" disabled={!!updatingId} onClick={() => updateOrderStatus(selectedOrder._id, 'cancelled')}>{updatingId === selectedOrder._id + 'cancelled' ? 'Cancelling...' : '❌ Cancel Order'}</button>}
                 </div>
+              </div>
+              {/* Delete from modal */}
+              <div className="detail-section" style={{ borderTop: '1px solid rgba(255,68,68,0.2)', paddingTop: '16px' }}>
+                <h3 style={{ color: '#ff4444' }}>Danger Zone</h3>
+                <button
+                  className="btn btn-danger"
+                  disabled={deletingId === selectedOrder._id}
+                  onClick={(e) => deleteOrder(selectedOrder._id, selectedOrder.orderNumber, e)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                  <Trash2 size={16} />
+                  {deletingId === selectedOrder._id ? 'Deleting...' : 'Delete Order Permanently'}
+                </button>
               </div>
             </div>
           </div>
