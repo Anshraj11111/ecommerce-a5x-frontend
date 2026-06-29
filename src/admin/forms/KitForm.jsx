@@ -110,8 +110,8 @@ function KitForm() {
           <option>PRO KIT</option>
           <option>ELITE KIT</option>
         </select>
-        <input name="price" type="number" defaultValue={kit?.price} placeholder="Price (₹)*" required />
-        <input name="mrp" type="number" defaultValue={kit?.mrp || kit?.price} placeholder="MRP (₹)* (original price before discount)" required />
+        <input name="price" type="number" defaultValue={kit?.price} placeholder="Selling Price (₹)* — discounted price" required />
+        <input name="mrp" type="number" defaultValue={kit?.mrp || kit?.price} placeholder="MRP (₹)* — original price shown with strikethrough" required />
         <textarea name="description" defaultValue={kit?.description} placeholder="Description" />
         <textarea name="overview" defaultValue={kit?.overview} placeholder="Detailed Overview (for Overview tab)" />
         <input name="features" defaultValue={kit?.features?.join(", ")} placeholder="Key Features (comma-separated)" />

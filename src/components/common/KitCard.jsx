@@ -19,15 +19,17 @@ function KitCard({ kit, listView }) {
         </div>
         <div className="kit-card-list-footer">
           <span className="kit-card-v2-rating">★ {kit.rating}</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+            {!!kit.mrp && Number(kit.mrp) > 0 && (
+              <s style={{ color: 'rgba(255,255,255,0.38)', fontSize: '13px', fontWeight: '500' }}>
+                {inr(Number(kit.mrp))}
+              </s>
+            )}
             <div className="kit-card-v2-price">{inr(Number(kit.price))}</div>
-            {!!kit.mrp && kit.mrp > kit.price && (
-              <>
-                <s style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>{inr(Number(kit.mrp))}</s>
-                <span style={{ background: 'rgba(0,255,136,0.15)', color: '#00ff88', fontSize: '10px', fontWeight: '800', padding: '1px 5px', borderRadius: '4px' }}>
-                  {Math.round((1 - kit.price / kit.mrp) * 100)}% OFF
-                </span>
-              </>
+            {!!kit.mrp && Number(kit.mrp) > Number(kit.price) && (
+              <span style={{ background: 'rgba(0,255,136,0.15)', color: '#00ff88', fontSize: '10px', fontWeight: '800', padding: '1px 5px', borderRadius: '4px' }}>
+                {Math.round((1 - kit.price / kit.mrp) * 100)}% OFF
+              </span>
             )}
           </div>
           <button
@@ -67,15 +69,17 @@ function KitCard({ kit, listView }) {
         {/* Footer: price + rating + button */}
         <div className="kit-card-v2-footer">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
+              {!!kit.mrp && Number(kit.mrp) > 0 && (
+                <s style={{ color: 'rgba(255,255,255,0.38)', fontSize: '13px', fontWeight: '500' }}>
+                  {inr(Number(kit.mrp))}
+                </s>
+              )}
               <div className="kit-card-v2-price">{inr(Number(kit.price))}</div>
-              {!!kit.mrp && kit.mrp > kit.price && (
-                <>
-                  <s style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px', fontWeight: '500' }}>{inr(Number(kit.mrp))}</s>
-                  <span style={{ background: 'rgba(0,255,136,0.15)', color: '#00ff88', fontSize: '10px', fontWeight: '800', padding: '1px 5px', borderRadius: '4px' }}>
-                    {Math.round((1 - kit.price / kit.mrp) * 100)}% OFF
-                  </span>
-                </>
+              {!!kit.mrp && Number(kit.mrp) > Number(kit.price) && (
+                <span style={{ background: 'rgba(0,255,136,0.15)', color: '#00ff88', fontSize: '10px', fontWeight: '800', padding: '1px 5px', borderRadius: '4px' }}>
+                  {Math.round((1 - kit.price / kit.mrp) * 100)}% OFF
+                </span>
               )}
             </div>
             <span style={{ color: '#fbbf24', fontSize: '11px', fontWeight: '700' }}>★ {kit.rating}</span>
