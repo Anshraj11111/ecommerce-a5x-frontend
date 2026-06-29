@@ -16,7 +16,7 @@ import carousel1 from "../assets/team/crausel 1.png";
 import robotUnit003 from "../assets/robot-unit-003.jpg";
 import cyberAndroid from "../assets/cyber-android.jpg";
 import StarRating from "../components/common/StarRating";
-
+87
 function QuickViewModal({ product, onClose }) {
   const add = useCartStore((s) => s.add);
   const [qty, setQty] = useState(1);
@@ -317,7 +317,7 @@ function ShopSection() {
               ))}
             </div>
           ) : paged.length === 0 ? (
-            <div className="shop-empty">
+            <div className="shop-empty">Z
               <Search size={48} style={{ opacity: 0.3, marginBottom: 16 }} />
               <h3>No products found</h3>
               <p>Try adjusting your filters</p>

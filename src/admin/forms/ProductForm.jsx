@@ -41,13 +41,27 @@ function ProductForm() {
   const handleImageChange = async (e) => {
     const files = Array.from(e.target.files).slice(0, 10);
     const compressed = await Promise.all(files.map(f => compressImage(f)));
-    setImagePreviews(compressed);
-    setImages(compressed);
+    const combined = [...imagePreviews, ...compressed].slice(0, 10);
+    setImagePreviews(combined);
+    setImages(combined);
   };
 
   const removeImage = (index) => {
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
     setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const setAsMain = (index) => {
+    setImages(prev => {
+      const arr = [...prev];
+      const [chosen] = arr.splice(index, 1);
+      return [chosen, ...arr];
+    });
+    setImagePreviews(prev => {
+      const arr = [...prev];
+      const [chosen] = arr.splice(index, 1);
+      return [chosen, ...arr];
+    });
   };
 
   async function submit(event) {
@@ -147,14 +161,46 @@ function ProductForm() {
         <input type="file" accept="image/*" multiple onChange={handleImageChange} style={{ padding: '12px', border: '2px dashed rgba(0,229,255,0.3)', borderRadius: '8px', background: 'rgba(0,229,255,0.05)', color: '#fff', cursor: 'pointer', width: '100%' }} />
 
         {imagePreviews.length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px', marginBottom: '1rem', marginTop: '12px' }}>
-            {imagePreviews.map((preview, index) => (
-              <div key={index} style={{ position: 'relative', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: index === 0 ? '2px solid #00e5ff' : '1px solid rgba(255,255,255,0.2)' }}>
-                <img src={preview} alt={`Preview ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                {index === 0 && <span style={{ position: 'absolute', top: '4px', left: '4px', background: '#00e5ff', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: '700' }}>MAIN</span>}
-                <button type="button" onClick={() => removeImage(index)} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,0,0,0.8)', border: 'none', borderRadius: '4px', color: '#fff', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>×</button>
-              </div>
-            ))}
+          <div style={{ marginBottom: '1rem', marginTop: '12px' }}>
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>
+              ⭐ Click an image to set it as the <strong style={{color:'#00e5ff'}}>main cover image</strong>
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
+              {imagePreviews.map((preview, index) => (
+                <div
+                  key={index}
+                  onClick={() => setAsMain(index)}
+                  title={index === 0 ? 'This is the main image' : 'Click to set as main image'}
+                  style={{
+                    position: 'relative', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden',
+                    border: index === 0 ? '2px solid #00e5ff' : '1px solid rgba(255,255,255,0.2)',
+                    cursor: 'pointer', transition: 'border-color 0.2s',
+                    boxShadow: index === 0 ? '0 0 12px rgba(0,229,255,0.4)' : 'none'
+                  }}
+                >
+                  <img src={preview} alt={`Preview ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {index === 0 && (
+                    <span style={{ position: 'absolute', top: '4px', left: '4px', background: '#00e5ff', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '800' }}>
+                      ⭐ MAIN
+                    </span>
+                  )}
+                  {index !== 0 && (
+                    <div
+                      style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s', fontSize: '11px', color: '#fff', fontWeight: '700' }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                      onMouseLeave={e => e.currentTarget.style.opacity = 0}
+                    >
+                      Set as Main
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); removeImage(index); }}
+                    style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,0,0,0.85)', border: 'none', borderRadius: '4px', color: '#fff', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '14px', fontWeight: '700' }}
+                  >×</button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
