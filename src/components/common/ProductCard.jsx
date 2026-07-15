@@ -1,6 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Eye, Heart, ShoppingCart, Star } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, Heart, ShoppingCart, Star, Zap } from "lucide-react";
 import useCartStore from "../../stores/useCartStore";
 import useWishlistStore from "../../stores/useWishlistStore";
 import { inr } from "../../config/constants";
@@ -8,9 +8,17 @@ import motorDriver from "../../assets/motor-driver.jpg";
 
 function ProductCard({ product, compact, onQuickView }) {
   const add = useCartStore((s) => s.add);
+  const navigate = useNavigate();
   const wishToggle = useWishlistStore((s) => s.toggle);
   const wishlisted = useWishlistStore((s) => s.ids.includes(product.id));
   const discount = product.mrp ? Math.round((1 - product.price / product.mrp) * 100) : 0;
+
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    add(product);
+    navigate('/checkout');
+  };
 
   if (compact) {
     return (
@@ -55,10 +63,16 @@ function ProductCard({ product, compact, onQuickView }) {
           <strong>{inr(product.price)}</strong>
           {product.mrp && <s>{inr(product.mrp)}</s>}
         </div>
-        <button className="product-card-add-btn" onClick={() => add(product)} disabled={!product.inStock}>
-          <ShoppingCart size={15} />
-          {product.inStock ? "Add to Cart" : "Out of Stock"}
-        </button>
+        <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+          <button className="product-card-add-btn" onClick={() => add(product)} disabled={!product.inStock} style={{ flex: 1 }}>
+            <ShoppingCart size={15} />
+            {product.inStock ? "Add to Cart" : "Out of Stock"}
+          </button>
+          <button className="product-card-buy-btn" onClick={handleBuyNow} disabled={!product.inStock} style={{ flex: 1, background: 'linear-gradient(135deg, #00ff88 0%, #00e5ff 100%)', color: '#000', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.3s ease', opacity: product.inStock ? 1 : 0.5 }}>
+            <Zap size={15} />
+            Buy Now
+          </button>
+        </div>
       </div>
     </article>
   );

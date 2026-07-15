@@ -1,10 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Zap } from "lucide-react";
 import useCartStore from "../../stores/useCartStore";
 import { inr } from "../../config/constants";
 import kitInnovation from "../../assets/kit-innovation.jpg";
 
 function KitCard({ kit, listView }) {
   const add = useCartStore((state) => state.add);
+  const navigate = useNavigate();
+
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    add({ ...kit, category: "Kits", sku: kit.tier });
+    navigate('/checkout');
+  };
 
   if (listView) {
     return (
@@ -32,12 +41,22 @@ function KitCard({ kit, listView }) {
               </span>
             )}
           </div>
-          <button
-            className="kit-card-v2-btn"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); add({ ...kit, category: "Kits", sku: kit.tier }); }}
-          >
-            Add to Cart
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              className="kit-card-v2-btn"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); add({ ...kit, category: "Kits", sku: kit.tier }); }}
+            >
+              Add to Cart
+            </button>
+            <button
+              className="kit-card-v2-btn"
+              onClick={handleBuyNow}
+              style={{ background: 'linear-gradient(135deg, #00ff88 0%, #00e5ff 100%)', color: '#000', display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <Zap size={14} />
+              Buy Now
+            </button>
+          </div>
         </div>
       </Link>
     );
@@ -84,16 +103,27 @@ function KitCard({ kit, listView }) {
             </div>
             <span style={{ color: '#fbbf24', fontSize: '11px', fontWeight: '700' }}>★ {kit.rating}</span>
           </div>
-          <button
-            className="kit-card-v2-btn"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              add({ ...kit, category: "Kits", sku: kit.tier });
-            }}
-          >
-            Add to Cart
-          </button>
+          <div style={{ display: 'flex', gap: '6px', width: '100%' }}>
+            <button
+              className="kit-card-v2-btn"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                add({ ...kit, category: "Kits", sku: kit.tier });
+              }}
+              style={{ flex: 1 }}
+            >
+              Add to Cart
+            </button>
+            <button
+              className="kit-card-v2-btn"
+              onClick={handleBuyNow}
+              style={{ flex: 1, background: 'linear-gradient(135deg, #00ff88 0%, #00e5ff 100%)', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+            >
+              <Zap size={14} />
+              Buy Now
+            </button>
+          </div>
         </div>
       </div>
     </Link>

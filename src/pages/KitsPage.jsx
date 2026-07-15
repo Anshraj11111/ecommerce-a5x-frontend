@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SEO from "../components/common/SEO";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle, ChevronLeft, ChevronRight, Play, PlayCircle, X, Star } from "lucide-react";
+import { CheckCircle, ChevronLeft, ChevronRight, Play, PlayCircle, X, Star, Zap } from "lucide-react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import useAdminStore from "../stores/useAdminStore";
 import useCartStore from "../stores/useCartStore";
@@ -685,9 +685,19 @@ function KitDetailPage() {
           <div className="kit-detail-includes">
             {kit.includes.map((item) => <div key={item} className="glass-card"><CheckCircle size={16} />{item}</div>)}
           </div>
-          <button className="btn" onClick={() => add({ ...kit, category: 'Kits', sku: kit.tier })} style={{ marginBottom: '1rem' }}>
-            Add to Cart — {inr(Number(kit.price))}
-          </button>
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '1rem' }}>
+            <button className="btn" onClick={() => add({ ...kit, category: 'Kits', sku: kit.tier })} style={{ flex: 1 }}>
+              Add to Cart — {inr(Number(kit.price))}
+            </button>
+            <button 
+              className="btn" 
+              onClick={() => { add({ ...kit, category: 'Kits', sku: kit.tier }); navigate('/checkout'); }} 
+              style={{ flex: 1, background: 'linear-gradient(135deg, #00ff88 0%, #00e5ff 100%)', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            >
+              <Zap size={18} />
+              Buy Now
+            </button>
+          </div>
           <ButtonLink to="/contact" ghost>Request Custom Version</ButtonLink>
         </div>
       </section>
