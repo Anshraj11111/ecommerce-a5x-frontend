@@ -164,26 +164,21 @@ function CheckoutPage() {
                 <div className="input-group"><span className="input-prefix-icon">🗺️</span><input type="text" name="landmark" placeholder="Landmark (Optional)" value={formData.landmark} onChange={handleChange} /></div>
               </div>
             </div>
+            {/* Shipping Cost Info — read-only, no user selection */}
             <div className="form-section">
-              <div className="section-header"><div className="section-icon"><Package size={18} /></div><h3>Shipping Method</h3></div>
-              <p className="shipping-weight-note">
-                Est. parcel weight: <strong>{shipping.grams >= 1000 ? `${(shipping.grams/1000).toFixed(2)} kg` : `${shipping.grams} g`}</strong>
-                {formData.pincode.length < 6 && <span style={{opacity:0.5}}> — enter pincode for accurate rates</span>}
-              </p>
-              <div className="shipping-options">
-                {shipping.options.map(opt => (
-                  <label key={opt.id} className={`shipping-option ${selectedShipping===opt.id?'active':''} ${opt.disabled?'disabled':''}`}>
-                    <input type="radio" name="shippingMethod" value={opt.id} checked={selectedShipping===opt.id} disabled={opt.disabled} onChange={()=>!opt.disabled&&setSelectedShipping(opt.id)} />
-                    <div className="shipping-option-content">
-                      <span className="shipping-icon">{opt.icon}</span>
-                      <div className="shipping-info"><strong>{opt.label}</strong><p>{opt.sub}</p></div>
-                      <span className="shipping-price">
-                        {opt.disabled ? <span style={{fontSize:11,opacity:0.5}}>Min ₹999</span> : opt.cost===0 ? <span className="free-badge">FREE</span> : <strong>{inr(opt.cost)}</strong>}
-                      </span>
-                      {selectedShipping===opt.id&&!opt.disabled&&<Check size={15} className="pay-check"/>}
-                    </div>
-                  </label>
-                ))}
+              <div className="section-header"><div className="section-icon"><Package size={18} /></div><h3>Shipping Details</h3></div>
+              <div style={{ background: 'rgba(255,255,255,0.04)', border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '14px 16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '20px' }}>⚡</span>
+                    <strong style={{ fontSize: '14px', color: '#fff' }}>Speed Post</strong>
+                  </div>
+                  <strong style={{ fontSize: '16px', color: '#00ff88' }}>{shippingCost === 0 ? <span className="free-badge">FREE</span> : inr(shippingCost)}</strong>
+                </div>
+                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', margin: '4px 0 0' }}>
+                  Est. delivery: 3–5 business days • Parcel weight: <strong style={{color:'rgba(255,255,255,0.8)'}}>{shipping.grams >= 1000 ? `${(shipping.grams/1000).toFixed(2)} kg` : `${shipping.grams} g`}</strong>
+                </p>
+                {shippingCost === 0 && <p style={{ fontSize: '11px', color: 'rgba(0,255,136,0.8)', margin: '6px 0 0', fontWeight: '600' }}>✨ Free shipping on orders ≥ ₹999</p>}
               </div>
             </div>
             <div className="form-section">
