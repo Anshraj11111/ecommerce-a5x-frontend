@@ -108,11 +108,29 @@ function CheckoutPage() {
         subtotal: subtotal(), shippingCost, shippingMethod: selectedShipping, tax: 0, total: orderTotal,
         paymentMethod: formData.paymentMethod, customerNotes: formData.customerNotes
       };
+      
+      console.log('Sending order data:', orderData);
+      
       const response = await fetch(`${API_BASE}/api/orders`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
       const data = await response.json();
-      if (data.success) { clearInterval(timerRef.current); setSuccess(true); setOrderNumber(data.order.orderNumber); useCartStore.setState({ items: [] }); setTimeout(() => navigate('/'), 5000); }
-      else { alert('Order failed. Please try again.'); }
-    } catch (error) { alert('Order failed. Please try again.'); }
+      
+      console.log('Order response:', data);
+      
+      if (response.ok && data.success) { 
+        clearInterval(timerRef.current); 
+        setSuccess(true); 
+        setOrderNumber(data.order.orderNumber); 
+        useCartStore.setState({ items: [] }); 
+        setTimeout(() => navigate('/'), 5000); 
+      }
+      else { 
+        console.error('Order failed:', data);
+        alert(`Order failed: ${data.error || data.message || 'Please try again.'}`); 
+      }
+    } catch (error) { 
+      console.error('Order submission error:', error);
+      alert(`Order failed: ${error.message}. Please try again.`); 
+    }
     finally { setLoading(false); }
   };
 
