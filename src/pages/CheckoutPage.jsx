@@ -6,7 +6,7 @@ import useCartStore from "../stores/useCartStore";
 import { API_BASE, inr } from "../config/constants";
 import a5xCarKit from "../assets/a5x-car-kit.jpg";
 
-// ── India Post Shipping Calculator ──────────────────────────
+// ── A5X Shipping Calculator (Flat Rate) ──────────────────────────
 function parseWeightGrams(w) {
   if (!w) return null;
   const s = String(w).toLowerCase().trim();
@@ -20,29 +20,18 @@ function categoryWeight(cat) {
 function calcTotalWeightGrams(items) {
   return items.reduce((sum, item) => sum + (parseWeightGrams(item.weight) || categoryWeight(item.category)) * item.qty, 0);
 }
-function calcSpeedPost(grams, distance) {
-  const slabs = [[50,15,25,35],[200,25,45,70],[500,30,65,90]];
-  const add = { local:10, short:30, long:50 };
-  const idx = { local:1, short:2, long:3 };
-  for (const row of slabs) if (grams <= row[0]) return row[idx[distance]];
-  return { local:30, short:65, long:90 }[distance] + Math.ceil((grams-500)/500)*add[distance];
-}
-function calcRegisteredParcel(grams) {
-  return 19 + Math.ceil(Math.max(0, grams-500)/500)*16;
-}
 function getShippingOptions(items, pincode) {
   const grams = calcTotalWeightGrams(items);
-  const pin = String(pincode||'');
-  let distance = 'long';
-  if (pin.startsWith('48')||pin.startsWith('47')||pin.startsWith('49')) distance='local';
-  else if (pin.startsWith('4')||pin.startsWith('3')||pin.startsWith('5')) distance='short';
   const subtotalVal = items.reduce((s,i)=>s+i.price*i.qty,0);
+  
+  // Flat rate shipping: ₹79 for all orders, free above ₹999
+  const standardShippingCost = 79;
+  
   return {
     grams,
     options: [
-      { id:'speed_post', label:'Speed Post', sub:'3–5 business days', cost:calcSpeedPost(grams,distance), icon:'⚡' },
-      { id:'registered', label:'Registered Parcel', sub:'5–7 business days', cost:calcRegisteredParcel(grams), icon:'📦' },
-      { id:'free', label:'Standard Shipping', sub:'Free — orders above ₹999', cost:0, icon:'🎁', disabled:subtotalVal<999 },
+      { id:'standard', label:'Standard Delivery', sub:'3–5 business days', cost: standardShippingCost, icon:'📦' },
+      { id:'free', label:'Free Shipping', sub:'Free — orders above ₹999', cost:0, icon:'🎁', disabled:subtotalVal<999 },
     ],
   };
 }
@@ -57,7 +46,7 @@ function CheckoutPage() {
   const [qrTimer, setQrTimer] = useState(120);
   const [qrExpired, setQrExpired] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-  const [selectedShipping, setSelectedShipping] = useState('speed_post');
+  const [selectedShipping, setSelectedShipping] = useState('standard');
   const timerRef = useRef(null);
 
   const upiId = localStorage.getItem('a5x-upi-id') || '';
@@ -188,8 +177,8 @@ function CheckoutPage() {
               <div style={{ background: 'rgba(255,255,255,0.04)', border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '14px 16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '20px' }}>⚡</span>
-                    <strong style={{ fontSize: '14px', color: '#fff' }}>Speed Post</strong>
+                    <span style={{ fontSize: '20px' }}>📦</span>
+                    <strong style={{ fontSize: '14px', color: '#fff' }}>Standard Delivery</strong>
                   </div>
                   <strong style={{ fontSize: '16px', color: '#00ff88' }}>{shippingCost === 0 ? <span className="free-badge">FREE</span> : inr(shippingCost)}</strong>
                 </div>
