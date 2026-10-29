@@ -17,11 +17,24 @@ function OrdersPage() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem('a5x-token');
+      
+      if (!token) {
+        throw new Error('Please login to view your orders');
+      }
+      
       const response = await fetch(`${API_BASE}/api/orders`, {
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       
-      if (!response.ok) throw new Error('Failed to fetch orders');
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Session expired. Please login again');
+        }
+        throw new Error('Failed to fetch orders');
+      }
       
       const data = await response.json();
       // Sort by date - newest first

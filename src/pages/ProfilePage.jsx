@@ -59,10 +59,20 @@ function ProfilePage() {
     setMessage({ text: '', type: '' });
 
     try {
+      const token = localStorage.getItem('a5x-token');
+      
+      if (!token) {
+        setMessage({ text: 'Session expired. Please login again.', type: 'error' });
+        setSaving(false);
+        return;
+      }
+
       const response = await fetch(`${API_BASE}/api/auth/profile`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(formData)
       });
 
@@ -74,7 +84,11 @@ function ProfilePage() {
         setMessage({ text: 'Profile updated successfully!', type: 'success' });
         setTimeout(() => setMessage({ text: '', type: '' }), 3000);
       } else {
-        setMessage({ text: data.error || 'Failed to update profile', type: 'error' });
+        if (response.status === 401) {
+          setMessage({ text: 'Session expired. Please login again.', type: 'error' });
+        } else {
+          setMessage({ text: data.error || 'Failed to update profile', type: 'error' });
+        }
       }
     } catch (error) {
       console.error('Profile update error:', error);
