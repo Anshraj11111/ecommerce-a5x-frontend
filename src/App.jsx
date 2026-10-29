@@ -28,6 +28,10 @@ import CartToast from "./components/common/CartToast";
 // Auth components
 import GoogleAuthSuccess from "./components/auth/GoogleAuthSuccess";
 
+// User pages
+import OrdersPage from "./pages/OrdersPage";
+import ProfilePage from "./pages/ProfilePage";
+
 // Pages
 import HomePage from "./pages/HomePage";
 import ShopPage from "./pages/ShopPage";
@@ -101,6 +105,8 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/quote" element={<QuotePage />} />
           <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />

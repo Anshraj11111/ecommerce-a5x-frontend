@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
-  ChevronDown, ChevronRight, Heart, LogOut, Menu, Search, ShoppingCart, User, X
+  ChevronDown, ChevronRight, Heart, LogOut, Menu, Search, ShoppingCart, User, X, Package, Settings
 } from "lucide-react";
 import useCartStore from "../../stores/useCartStore";
 import useWishlistStore from "../../stores/useWishlistStore";
@@ -13,6 +13,8 @@ function Navbar() {
   const scrolled = useScrolled();
   const [mobile, setMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const count = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
@@ -69,8 +71,20 @@ function Navbar() {
 
   const handleLogout = () => {
     logout();
+    setUserMenuOpen(false);
     navigate('/');
   };
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <>
@@ -104,9 +118,114 @@ function Navbar() {
             {count > 0 && <b className="nav-v2-badge">{count}</b>}
           </button>
           {isAuthenticated ? (
-            <button className="nav-v2-action-btn" onClick={handleLogout} aria-label="Logout" title="Logout">
-              <LogOut size={18} /><span>Logout</span>
-            </button>
+            <div style={{ position: 'relative' }} ref={userMenuRef}>
+              <button 
+                className="nav-v2-action-btn" 
+                onClick={() => setUserMenuOpen(!userMenuOpen)} 
+                aria-label="User menu" 
+                title="User menu"
+                style={{ position: 'relative' }}
+              >
+                <User size={18} /><span>{user?.name || user?.username || 'Profile'}</span>
+                <ChevronDown size={14} style={{ transition: 'transform 0.2s', transform: userMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+              </button>
+              <AnimatePresence>
+                {userMenuOpen && (
+                  <motion.div
+                    className="user-dropdown-menu"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.15 }}
+                    style={{
+                      position: 'absolute',
+                      top: '110%',
+                      right: 0,
+                      background: 'rgba(13, 22, 33, 0.98)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 12,
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                      minWidth: 200,
+                      zIndex: 9999,
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 2 }}>{user?.name || user?.username}</div>
+                      <div style={{ fontSize: 12, opacity: 0.6 }}>{user?.email}</div>
+                    </div>
+                    <button
+                      onClick={() => { navigate('/orders'); setUserMenuOpen(false); }}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: '10px 16px',
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'inherit',
+                        fontSize: 14,
+                        cursor: 'pointer',
+                        transition: 'background 0.2s',
+                        textAlign: 'left'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <Package size={16} />
+                      <span>My Orders</span>
+                    </button>
+                    <button
+                      onClick={() => { navigate('/profile'); setUserMenuOpen(false); }}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: '10px 16px',
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'inherit',
+                        fontSize: 14,
+                        cursor: 'pointer',
+                        transition: 'background 0.2s',
+                        textAlign: 'left'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <Settings size={16} />
+                      <span>Profile Settings</span>
+                    </button>
+                    <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
+                    <button
+                      onClick={handleLogout}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: '10px 16px',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#ef4444',
+                        fontSize: 14,
+                        cursor: 'pointer',
+                        transition: 'background 0.2s',
+                        textAlign: 'left'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239,68,68,0.1)'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <LogOut size={16} />
+                      <span>Logout</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           ) : (
             <button className="nav-v2-action-btn" onClick={() => navigate('/login')} aria-label="Login">
               <User size={18} /><span>Login</span>
