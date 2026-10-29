@@ -7,6 +7,7 @@ const useAuthStore = create(persist((set, get) => ({
   login: (userData) => set({ user: userData, isAuthenticated: true }),
   logout: () => set({ user: null, isAuthenticated: false }),
   signup: (userData) => set({ user: userData, isAuthenticated: true }),
+  setUser: (userData) => set({ user: userData }),
 }), { name: "a5x-auth" }));
 
 export default useAuthStore;
