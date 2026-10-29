@@ -20,7 +20,9 @@ function OrdersPage() {
       const token = localStorage.getItem('a5x-token');
       
       if (!token) {
-        throw new Error('Please login to view your orders');
+        // Redirect to login if no token found
+        window.location.href = '/login?redirect=/orders';
+        return;
       }
       
       const response = await fetch(`${API_BASE}/api/orders`, {
@@ -31,12 +33,16 @@ function OrdersPage() {
       
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Session expired. Please login again');
+          // Clear invalid token and redirect to login
+          localStorage.removeItem('a5x-token');
+          window.location.href = '/login?redirect=/orders';
+          return;
         }
         throw new Error('Failed to fetch orders');
       }
       
       const data = await response.json();
+      console.log('Orders fetched:', data); // Debug log
       // Sort by date - newest first
       const sortedOrders = (data.orders || []).sort((a, b) => 
         new Date(b.createdAt) - new Date(a.createdAt)
