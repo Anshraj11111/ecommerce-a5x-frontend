@@ -167,12 +167,11 @@ function ProfilePage() {
               Personal Information
             </h3>
             <div style={{ display: 'grid', gap: 20 }}>
-              <div className="input-group">
+              <div>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 500, marginBottom: 8, opacity: 0.8 }}>
                   Full Name
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <span className="input-prefix-icon">👤</span>
                   <input
                     type="text"
                     name="name"
@@ -180,37 +179,71 @@ function ProfilePage() {
                     onChange={handleChange}
                     disabled={!editing}
                     required
-                    style={{ opacity: editing ? 1 : 0.7 }}
+                    style={{ 
+                      width: '100%',
+                      padding: '12px 16px 12px 44px',
+                      background: editing ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 10,
+                      color: 'inherit',
+                      fontSize: 14,
+                      opacity: editing ? 1 : 0.7,
+                      cursor: editing ? 'text' : 'not-allowed'
+                    }}
                   />
+                  <span style={{ 
+                    position: 'absolute', 
+                    left: 16, 
+                    top: '50%', 
+                    transform: 'translateY(-50%)', 
+                    fontSize: 18,
+                    pointerEvents: 'none'
+                  }}>👤</span>
                 </div>
               </div>
 
-              <div className="input-group">
+              <div>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 500, marginBottom: 8, opacity: 0.8 }}>
                   Email Address
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <span className="input-prefix-icon">📧</span>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     disabled={true}
-                    style={{ opacity: 0.7, cursor: 'not-allowed' }}
+                    style={{ 
+                      width: '100%',
+                      padding: '12px 16px 12px 44px',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 10,
+                      color: 'inherit',
+                      fontSize: 14,
+                      opacity: 0.7, 
+                      cursor: 'not-allowed'
+                    }}
                   />
+                  <span style={{ 
+                    position: 'absolute', 
+                    left: 16, 
+                    top: '50%', 
+                    transform: 'translateY(-50%)', 
+                    fontSize: 18,
+                    pointerEvents: 'none'
+                  }}>📧</span>
                 </div>
                 <p style={{ fontSize: 12, opacity: 0.5, marginTop: 6 }}>
                   Email cannot be changed for security reasons
                 </p>
               </div>
 
-              <div className="input-group">
+              <div>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 500, marginBottom: 8, opacity: 0.8 }}>
                   Phone Number
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <span className="input-prefix-icon">📱</span>
                   <input
                     type="tel"
                     name="phone"
@@ -220,8 +253,27 @@ function ProfilePage() {
                     maxLength={10}
                     pattern="\d{10}"
                     inputMode="numeric"
-                    style={{ opacity: editing ? 1 : 0.7 }}
+                    placeholder="10-digit phone number"
+                    style={{ 
+                      width: '100%',
+                      padding: '12px 16px 12px 44px',
+                      background: editing ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 10,
+                      color: 'inherit',
+                      fontSize: 14,
+                      opacity: editing ? 1 : 0.7,
+                      cursor: editing ? 'text' : 'not-allowed'
+                    }}
                   />
+                  <span style={{ 
+                    position: 'absolute', 
+                    left: 16, 
+                    top: '50%', 
+                    transform: 'translateY(-50%)', 
+                    fontSize: 18,
+                    pointerEvents: 'none'
+                  }}>📱</span>
                 </div>
               </div>
             </div>
@@ -240,66 +292,116 @@ function ProfilePage() {
               Default Shipping Address
             </h3>
             <div style={{ display: 'grid', gap: 20 }}>
-              <div className="input-group">
+              <div>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 500, marginBottom: 8, opacity: 0.8 }}>
                   Street Address
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <span className="input-prefix-icon">🏠</span>
                   <input
                     type="text"
                     name="address.street"
                     value={formData.address.street}
                     onChange={handleChange}
                     disabled={!editing}
-                    style={{ opacity: editing ? 1 : 0.7 }}
+                    style={{ 
+                      width: '100%',
+                      padding: '12px 16px 12px 44px',
+                      background: editing ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 10,
+                      color: 'inherit',
+                      fontSize: 14,
+                      opacity: editing ? 1 : 0.7,
+                      cursor: editing ? 'text' : 'not-allowed'
+                    }}
                   />
+                  <span style={{ 
+                    position: 'absolute', 
+                    left: 16, 
+                    top: '50%', 
+                    transform: 'translateY(-50%)', 
+                    fontSize: 18,
+                    pointerEvents: 'none'
+                  }}>🏠</span>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div className="input-group">
+                <div>
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 500, marginBottom: 8, opacity: 0.8 }}>
                     City
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="input-prefix-icon">🏙️</span>
                     <input
                       type="text"
                       name="address.city"
                       value={formData.address.city}
                       onChange={handleChange}
                       disabled={!editing}
-                      style={{ opacity: editing ? 1 : 0.7 }}
+                      style={{ 
+                        width: '100%',
+                        padding: '12px 16px 12px 44px',
+                        background: editing ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: 10,
+                        color: 'inherit',
+                        fontSize: 14,
+                        opacity: editing ? 1 : 0.7,
+                        cursor: editing ? 'text' : 'not-allowed'
+                      }}
                     />
+                    <span style={{ 
+                      position: 'absolute', 
+                      left: 16, 
+                      top: '50%', 
+                      transform: 'translateY(-50%)', 
+                      fontSize: 18,
+                      pointerEvents: 'none'
+                    }}>🏙️</span>
                   </div>
                 </div>
 
-                <div className="input-group">
+                <div>
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 500, marginBottom: 8, opacity: 0.8 }}>
                     State
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="input-prefix-icon">📍</span>
                     <input
                       type="text"
                       name="address.state"
                       value={formData.address.state}
                       onChange={handleChange}
                       disabled={!editing}
-                      style={{ opacity: editing ? 1 : 0.7 }}
+                      style={{ 
+                        width: '100%',
+                        padding: '12px 16px 12px 44px',
+                        background: editing ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: 10,
+                        color: 'inherit',
+                        fontSize: 14,
+                        opacity: editing ? 1 : 0.7,
+                        cursor: editing ? 'text' : 'not-allowed'
+                      }}
                     />
+                    <span style={{ 
+                      position: 'absolute', 
+                      left: 16, 
+                      top: '50%', 
+                      transform: 'translateY(-50%)', 
+                      fontSize: 18,
+                      pointerEvents: 'none'
+                    }}>📍</span>
                   </div>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div className="input-group">
+                <div>
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 500, marginBottom: 8, opacity: 0.8 }}>
                     Pincode
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="input-prefix-icon">📮</span>
                     <input
                       type="text"
                       name="address.pincode"
@@ -307,17 +409,34 @@ function ProfilePage() {
                       onChange={handleChange}
                       disabled={!editing}
                       maxLength={6}
-                      style={{ opacity: editing ? 1 : 0.7 }}
+                      style={{ 
+                        width: '100%',
+                        padding: '12px 16px 12px 44px',
+                        background: editing ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: 10,
+                        color: 'inherit',
+                        fontSize: 14,
+                        opacity: editing ? 1 : 0.7,
+                        cursor: editing ? 'text' : 'not-allowed'
+                      }}
                     />
+                    <span style={{ 
+                      position: 'absolute', 
+                      left: 16, 
+                      top: '50%', 
+                      transform: 'translateY(-50%)', 
+                      fontSize: 18,
+                      pointerEvents: 'none'
+                    }}>📮</span>
                   </div>
                 </div>
 
-                <div className="input-group">
+                <div>
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 500, marginBottom: 8, opacity: 0.8 }}>
                     Landmark
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="input-prefix-icon">🗺️</span>
                     <input
                       type="text"
                       name="address.landmark"
@@ -325,8 +444,26 @@ function ProfilePage() {
                       onChange={handleChange}
                       disabled={!editing}
                       placeholder="Optional"
-                      style={{ opacity: editing ? 1 : 0.7 }}
+                      style={{ 
+                        width: '100%',
+                        padding: '12px 16px 12px 44px',
+                        background: editing ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: 10,
+                        color: 'inherit',
+                        fontSize: 14,
+                        opacity: editing ? 1 : 0.7,
+                        cursor: editing ? 'text' : 'not-allowed'
+                      }}
                     />
+                    <span style={{ 
+                      position: 'absolute', 
+                      left: 16, 
+                      top: '50%', 
+                      transform: 'translateY(-50%)', 
+                      fontSize: 18,
+                      pointerEvents: 'none'
+                    }}>🗺️</span>
                   </div>
                 </div>
               </div>
